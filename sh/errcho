@@ -1,0 +1,47 @@
+#!/usr/bin/bash
+
+PAUSE=${PAUSE:-0}
+DEBUG=${DEBUG:-0}
+PAUSE_DEBUG=${PAUSE_DEBUG:-1}
+
+# For coloured output see https://stackoverflow.com/a/20983251/2334574
+RED=$(tput setaf 1);        GREEN=$(tput setaf 2)
+YELLOW=$(tput setaf 3);     RESET=$(tput sgr0)
+
+# errxit "the foobar failed" 2
+errxit() {
+    local message="$1"
+    local rc="${2:-1}"
+
+    # shellcheck disable=SC2046
+    set $(caller 0)
+    line=$1; subroutine=$2; filename=$3
+
+    rerrcho "ERROR at line $line in ${subroutine}() of $filename: $message [$rc]"
+
+    exit "$rc"
+}
+
+errcho () { printf "[%s]: %s\n" "$(date +'%Y-%m-%d_%H:%M:%S')" "$*" >&2; }
+
+yerrcho () { echo -n "${YELLOW}" >&2; errcho "$1${RESET}"; }
+rerrcho () { echo -n "${RED}" >&2;    errcho "$1${RESET}"; }
+gerrcho () { echo -n "${GREEN}" >&2;  errcho "$1${RESET}"; }
+
+debug () { [[ $DEBUG -eq 1 ]] && yerrcho "$*"; return 0; }
+
+pause () {
+    [[ $PAUSE == 1 ]] && local PAUSE_DEBUG=1
+
+    [[ -n $1 && $PAUSE_DEBUG == 1 ]] && gerrcho "$1"
+
+    [[ $PAUSE == 0 ]] && return 0
+
+    read -n 1 -s -r -p "Press any key to continue"
+
+    errcho
+}
+
+pause_fn () {
+    pause ": ${FUNCNAME[1]}"
+}

@@ -1,0 +1,41 @@
+#!/usr/bin/bash
+
+import errcho 
+
+waitfor.socket () { waitfor.type "socket" "$1"; }
+waitfor.file   () { waitfor.type "file"   "$1"; }
+
+waitfor.type () {
+    local type; type="$1"
+    local file; file="$2"
+    local c; c=0
+    local cmax; cmax=100
+
+    while ! waitfor.exists "$type" "$file"
+    do
+        (( c++ )) || :
+        sleep 0.1
+        if [[ $c -gt $cmax ]]; then
+            errxit "TIMEOUT: $type '$file' not created after $c/10 seconds" 1
+        fi
+    done
+
+    return 0
+}
+
+waitfor.exists () {
+    local type; type="$1"
+    local file; file="$2"
+
+    case $type in
+        socket)
+            [[ -S $file ]]
+            ;;
+        file)
+            [[ -f $file ]]
+            ;;
+        *)
+            errxit "$0: unknown type '$type'" 1
+            ;;
+    esac
+}

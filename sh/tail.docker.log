@@ -1,0 +1,36 @@
+#!/usr/bin/bash
+
+# How to launch a process in background and wait for it to start before moving on
+# https://stackoverflow.com/a/33564955/2334574
+
+tail.docker.log () {
+    local docker_name="$1"
+    local logfile="$2"
+    local pid
+    local count
+
+    while true; do
+        docker logs -f "$docker_name" > "$logfile" 2>&1 &
+        pid=$!
+
+        count=$(ps -A | grep -c $pid)   # check whether process is still running
+
+        # if process is already terminated, then there can be two cases:
+        #   the process executed and stopped successfully, or it terminated abnormally
+        if [[ $count -eq 0 ]]; then
+            if wait $pid    # checks if process executed successfully or not
+            then                                        
+                errxit "docker logs $docker_name ran and exited - that's unexpected" 1
+            else            # process terminated abnormally                                          
+                errcho "docker $docker_name not ready - can't start logging yet (returned $?)"
+                sleep 0.1
+            fi
+        else                # process is still running
+            errcho "docker logs $docker_name is running" 
+            break
+        fi
+    done
+
+    echo "$pid"
+    return 0
+}

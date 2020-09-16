@@ -1,0 +1,10 @@
+#!/usr/bin/bash
+
+if [[ -z $K2_ROOT_DIR ]]; then
+    echo "K2_ROOT_DIR not defined" >&2
+    exit 1
+fi
+
+conf.get () { 
+    "$K2_ROOT_DIR/docker/d.start.k2.conf.get" "$1"
+}

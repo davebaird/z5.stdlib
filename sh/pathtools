@@ -1,0 +1,27 @@
+#!/usr/bin/bash
+
+import errcho
+
+path.rootdir () {
+    local markerfile; markerfile="$1"
+    
+    # shellcheck disable=SC2046
+    set $(caller 0)
+    local filename; filename=$3
+
+    local dir; dir="$(dirname "$(readlink -f "$filename")")"
+    
+    local startdir; startdir="$dir"
+
+    while [[ $dir != / ]] ; do
+        [[ -f $dir/$markerfile ]] && break
+        dir=$(dirname "$dir")        
+    done
+
+    if [[ $dir == / ]]; then
+        errcho "No rootdir/$markerfile found above $startdir"
+        return 1
+    fi 
+
+    echo "$dir"
+}

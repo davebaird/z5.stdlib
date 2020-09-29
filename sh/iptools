@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# https://stackoverflow.com/a/56486428/2334574
+iptools.myip () {
+    ip route get 1 | sed -n 's/^.*src \([0-9.]*\) .*$/\1/p'
+}

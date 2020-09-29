@@ -4,24 +4,34 @@ import errcho
 
 path.rootdir () {
     local markerfile; markerfile="$1"
-    
-    # shellcheck disable=SC2046
-    set $(caller 0)
+    local depth; depth=${2:-0}
+
+    # shellcheck disable=SC2046,2086
+    set $(caller $depth)
     local filename; filename=$3
 
+    #yerrcho "Searching for $markerfile above $filename using depth $depth"
+
     local dir; dir="$(dirname "$(readlink -f "$filename")")"
-    
+
     local startdir; startdir="$dir"
 
     while [[ $dir != / ]] ; do
         [[ -f $dir/$markerfile ]] && break
-        dir=$(dirname "$dir")        
+        dir=$(dirname "$dir")
     done
 
     if [[ $dir == / ]]; then
         errcho "No rootdir/$markerfile found above $startdir"
         return 1
-    fi 
+    fi
 
     echo "$dir"
+}
+
+# when searching for rootdir from another stdlib function, need to go back one
+# more frame in the callstack for the calling stdlib function, plus one more
+# for this function
+path.their.rootdir () {
+    path.rootdir "$1" 2
 }

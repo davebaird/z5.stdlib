@@ -1,20 +1,20 @@
 #!/usr/bin/bash
 
-import errcho 
+import errcho
 
 # First arg: filename
 # Optional second arg: timeout in 1/10 s (default 10 i.e. 1 second)
 
-waitfor.socket () { waitfor.type "socket" "$@"; }
-waitfor.file   () { waitfor.type "file"   "$@"; }
+waitfor.socket () { __waitfor_type "socket" "$@"; }
+waitfor.file   () { __waitfor_type "file"   "$@"; }
 
-waitfor.type () {
+__waitfor_type () {
     local type; type="$1"
     local file; file="$2"
     local c; c=0
     local cmax; cmax=${3:-10}
 
-    while ! waitfor.exists "$type" "$file"
+    while ! __waitfor_exists "$type" "$file"
     do
         (( c++ )) || :
         sleep 0.1
@@ -26,7 +26,7 @@ waitfor.type () {
     return 0
 }
 
-waitfor.exists () {
+__waitfor_exists () {
     local type; type="$1"
     local file; file="$2"
 
@@ -41,4 +41,25 @@ waitfor.exists () {
             errxit "$0: unknown type '$type'" 1
             ;;
     esac
+}
+
+waitfor.umount () {
+    local mountpoint; mountpoint="$1"
+
+    if ! mountpoint -q "$mountpoint"
+    then
+        errcho "$mountpoint is not a mount point"
+        return 1
+    fi
+
+    errcho -n "Unmounting $mountpoint..."
+
+    while : ; do
+        umount "$mountpoint" 2> /dev/null && break
+
+        errcho -n '.'
+        sleep 1
+    done
+
+    errcho
 }

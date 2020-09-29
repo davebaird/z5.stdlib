@@ -22,7 +22,19 @@ errxit() {
     exit "$rc"
 }
 
-errcho () { printf "[%s]: %s\n" "$(date +'%Y-%m-%d_%H:%M:%S')" "$*" >&2; }
+errcho () {
+    if [[ -z $1 ]]; then
+        echo >&2
+        return 0
+    fi
+
+    if [[ $1 == -n ]]; then
+        shift
+        printf "[%s]: %s" "$(date +'%Y-%m-%d_%H:%M:%S')" "$*" >&2;
+    else
+        printf "[%s]: %s\n" "$(date +'%Y-%m-%d_%H:%M:%S')" "$*" >&2;
+    fi
+}
 
 yerrcho () { echo -n "${YELLOW}" >&2; errcho "$1${RESET}"; }
 rerrcho () { echo -n "${RED}" >&2;    errcho "$1${RESET}"; }

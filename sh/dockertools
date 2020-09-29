@@ -4,7 +4,7 @@ import errcho
 import stop.pid
 
 dtools.ip () {
-    local dname; dname="$1" 
+    local dname; dname="$1"
     local ip
 
     local max; max=50
@@ -37,9 +37,9 @@ dtools.stop () {
         docker stop "$dname"
     fi
 
-    if dtools.container.exists  "$dname"  
+    if dtools.container.exists  "$dname"
     then
-        docker rm "$dname"
+        docker rm --force "$dname"
     fi
 
 }
@@ -78,14 +78,14 @@ dtools.tail.log () {
         #   the process executed and stopped successfully, or it terminated abnormally
         if [[ $count -eq 0 ]]; then
             if wait $pid    # checks if process executed successfully or not
-            then                                        
+            then
                 errxit "docker logs $dname ran and exited - that's unexpected" 1
-            else            # process terminated abnormally                                          
+            else            # process terminated abnormally
                 debug "docker $dname not ready - can't start logging yet (returned $?)"
                 sleep 0.1
             fi
         else                # process is still running
-            errcho "docker logs $dname is running" 
+            errcho "docker logs $dname is running"
             break
         fi
     done

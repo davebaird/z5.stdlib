@@ -1,0 +1,11 @@
+#!/bin/bash
+
+import pathtools
+
+git.ignore () {
+    local rootdir; rootdir="$(path.their.rootdir .gitignore)"
+    local gitignore; gitignore="$rootdir/.gitignore"
+    local path; path="$1"
+
+    grep "^$path$" "$gitignore" > /dev/null || echo "$path" >> "$gitignore"
+}

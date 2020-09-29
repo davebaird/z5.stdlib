@@ -1,5 +1,10 @@
 #!/usr/bin/bash
 
+if [[ -n ${1:-} && $1 == strict ]]; then
+    set -e
+    set -o nounset
+fi
+
 # https://unix.stackexchange.com/questions/4650/determining-path-to-sourced-shell-script
 
 # don't put this inside the function, it'll get it wrong (see link)
@@ -9,10 +14,10 @@ _importer_source_dir="$( dirname "$(readlink -f "${BASH_SOURCE[0]}")" )"
 import () {
     local lib; lib="$1"
     local libdir; libdir="$_importer_source_dir"
-    
+
     declare -A imported
 
-    if [[ -f "$libdir/$lib" ]]; then 
+    if [[ -f "$libdir/$lib" ]]; then
         [[ -n ${imported[$lib]+x} ]] && [[ ${imported[$lib]} -eq 1 ]] && return 0
 
         # shellcheck disable=SC1090

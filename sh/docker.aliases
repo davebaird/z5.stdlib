@@ -8,14 +8,10 @@
 # <source> can be a URL or file.
 # Outputs XML, generated from Atom formatted data by default, but can optionally
 # specify a different source_output_format
-alias xml.feed.reader='docker run --rm -it --user "$(id -u):$(id -g)" --volume "$PWD:/workdir" dvz5/xml.feed.reader'
+alias xml.feed.reader='docker run --rm -i --user "$(id -u):$(id -g)" --volume "$PWD:/workdir" dvz5/xml.feed.reader'
 
-# Send data on stdin, specify options on command line.
-alias catmandu='docker run --rm -i --user "$(id -u):$(id -g)" --volume "$PWD:/workdir" dvz5/catmandu'
+alias        catmandu='docker run --rm -i --user "$(id -u):$(id -g)" --volume "$PWD:/workdir" dvz5/catmandu'
 
-# colourise YAML - use hicat instead
-#alias yc='docker run --rm -i --user "$(id -u):$(id -g)" --volume "$PWD:/workdir" dvz5/yc'
+alias           hicat='docker run --rm -i --user "$(id -u):$(id -g)" --volume "$PWD:/workdir" dvz5/hicat'
 
-alias hicat='docker run --rm -i --user "$(id -u):$(id -g)" --volume "$PWD:/workdir" dvz5/hicat'
-
-alias json2perl='/home/dave/code/z5.json2perl/json2perl'
+alias       json2perl='docker run --rm -i --user "$(id -u):$(id -g)" --volume "$PWD:/workdir" dvz5/json2perl'

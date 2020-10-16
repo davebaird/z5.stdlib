@@ -14,13 +14,12 @@ fi
 _importer_source_dir="$( dirname "$(readlink -f "${BASH_SOURCE[0]}")" )"
 
 _stdlib_self_update () {
-    echo "${BASH_SOURCE[0]}: selfupdate"
     if which git > /dev/null && [[ -O ${BASH_SOURCE[0]} ]]; then
         local dir; dir="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
         local upone; upone="$(dirname "$dir")"
         (
             cd "$upone"
-            git pull
+            git pull > /dev/null
         )
     fi
 }

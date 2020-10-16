@@ -1,9 +1,8 @@
 #!/bin/bash
 
-# Add an entry to the .gitignore file of the current repo
-
 import pathtools
 
+# Add an entry to the .gitignore file of the current repo
 git.ignore () {
     local rootdir; rootdir="$(path.their.rootdir .gitignore)"
     local gitignore; gitignore="$rootdir/.gitignore"

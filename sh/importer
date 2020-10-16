@@ -1,14 +1,31 @@
 #!/usr/bin/bash
 
 if [[ -n ${1:-} && $1 == strict ]]; then
+    # saner programming env: these switches turn some bugs into errors
     set -o errexit
     set -o nounset
+    set -o pipefail
+    #set -o noclobber
 fi
 
 # https://unix.stackexchange.com/questions/4650/determining-path-to-sourced-shell-script
 
 # don't put this inside the function, it'll get it wrong (see link)
 _importer_source_dir="$( dirname "$(readlink -f "${BASH_SOURCE[0]}")" )"
+
+_stdlib_self_update () {
+    echo "${BASH_SOURCE[0]}: selfupdate"
+    if which git > /dev/null && [[ -O ${BASH_SOURCE[0]} ]]; then
+        local dir; dir="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+        local upone; upone="$(dirname "$dir")"
+        (
+            cd "$upone"
+            git pull
+        )
+    fi
+}
+
+_stdlib_self_update
 
 # import somelib
 import () {

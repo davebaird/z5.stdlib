@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Add an entry to the .gitignore file of the current repo
+
 import pathtools
 
 git.ignore () {

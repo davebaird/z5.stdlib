@@ -7,7 +7,7 @@ dtools.ip () {
     local dname; dname="$1"
     local ip
 
-    local max; max=50
+    local cmax; cmax=50
     local c; c=0
 
     while true; do

@@ -12,10 +12,7 @@ dtools.ip () {
 
     while true; do
         (( c++ ))
-        if ip=$(docker inspect --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$dname")
-        then
-            break
-        fi
+        ! ip=$(docker inspect --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$dname") && break
 
         if [[ $c -gt $cmax ]]; then
             errcho "${FUNCNAME[0]} timed out"

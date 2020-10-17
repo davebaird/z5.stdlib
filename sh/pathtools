@@ -35,3 +35,7 @@ path.rootdir () {
 path.their.rootdir () {
     path.rootdir "$1" 2
 }
+
+pathtools.dir_is_empty () {
+    [[ -n $(find "$1" -maxdepth 0 -type d -empty 2> /dev/null) ]]
+}

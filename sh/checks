@@ -1,0 +1,12 @@
+#!/bin/bash
+import errcho
+
+check.i_am_root () {
+    if [[ $EUID -ne 0 ]]; then
+        errxit "$0 must be run as root"
+    fi
+
+    if ! which groupadd > /dev/null; then
+        errxit "root environment not properly initialised - can't find groupadd"
+    fi
+}

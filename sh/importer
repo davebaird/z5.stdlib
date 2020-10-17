@@ -45,3 +45,22 @@ import () {
         return 1
     fi
 }
+
+import.utils () {
+    local lib; lib="$1"
+    local libdir; libdir="$(dirname "$_importer_source_dir")/z5.utils"
+
+    declare -A imported_utils
+
+    if [[ -f "$libdir/$lib" ]]; then
+        [[ -n ${imported_utils[$lib]+x} ]] && [[ ${imported_utils[$lib]} -eq 1 ]] && return 0
+
+        # shellcheck disable=SC1090
+        source "$libdir/$lib"
+        imported_utils[$lib]=1
+        return 0
+    else
+        echo "ERROR: Library '$lib' not found in $libdir" >&2
+        return 1
+    fi
+}

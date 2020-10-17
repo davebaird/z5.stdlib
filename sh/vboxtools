@@ -1,0 +1,17 @@
+#!/bin/bash
+import errcho
+
+vboxtools.fix_hostonly_networking () {
+    [[ -f /etc/network/interfaces.d/vbox-host-only ]] && return 0
+
+    {
+        echo "allow-hotplug enp0s8"
+        echo "iface enp0s8 inet dhcp"
+    } > /etc/network/interfaces.d/vbox-host-only
+
+    ifup enp0s8 > /dev/null 2>&1 || errxit "ifup enp0s8 failed" $?
+}
+
+vboxtools.is_vbox () {
+    [[ $(dmidecode -s system-manufacturer) == "innotek GmbH" ]]
+}

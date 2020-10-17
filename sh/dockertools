@@ -91,3 +91,23 @@ dtools.tail.log () {
     return 0
 }
 
+# https://docs.docker.com/engine/install/debian/
+dtools.docker.install () {
+    curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
+
+    add-apt-repository \
+        "deb [arch=amd64] https://download.docker.com/linux/debian \
+        $(lsb_release -cs) stable"
+
+    apt-get update
+
+    apt-get -y --no-install-recommends install \
+        apt-transport-https ca-certificates curl gnupg-agent gnupg2 software-properties-common \
+        docker-ce docker-ce-cli containerd.io
+
+    if ! getent group docker > /dev/null; then
+        groupadd docker
+    fi
+
+    systemctl enable docker > /dev/null 2>&1
+}

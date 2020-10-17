@@ -1,0 +1,16 @@
+#!/bin/bash
+import errcho
+
+# If want to give keyfile arg, must also give comment.
+sshtools.generate_keypair () {
+    local comment; comment=${1:-"$USER@$(hostname)"}
+    local keyfile; keyfile=${2:-"$HOME/.ssh/id_rsa"}
+
+    if [[ -f $keyfile ]]; then
+        gerrcho "keyfile $keyfile already exists - skipping"
+        return 0
+    fi
+
+    # -t: type; -b: bits; -C: comment; -q: quiet; -N: new passphrase; -f: output filename
+    ssh-keygen -t rsa -b 4096 -C "$comment" -q -N "" -f "$keyfile"
+}

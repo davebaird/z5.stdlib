@@ -15,7 +15,7 @@ dtools.ip () {
         ! ip=$(docker inspect --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$dname") && break
 
         if [[ $c -gt $cmax ]]; then
-            errcho "${FUNCNAME[0]} timed out"
+            errcho "${FUNCNAME[0]} timed out waiting for $dname (caller: ${FUNCNAME[1]})"
             return 1
         fi
 

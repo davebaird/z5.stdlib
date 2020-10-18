@@ -1,18 +1,16 @@
-#!/usr/bin/bash
+#!/bin/bash
+import errcho
 
 # Pass '--quiet' as first arg to silence the warning about no /proc/$pid
-
-import errcho
-import list.descendants
-
 stop.pid () {
     local opt_quiet=0
 
     if [[ $# -eq 2 ]]; then
-        if [[ $1 == "--quiet" ]]; then 
+        if [[ $1 == "--quiet" ]]; then
             opt_quiet=1
-        else 
-            errxit "Unknown option: $1" 1
+        else
+            errcho "Unknown option: $1"
+            return 1
         fi
         shift
     fi
@@ -25,8 +23,7 @@ stop.pid () {
     fi
 
     if ! [[ -d /proc/$pid ]]; then
-        [[ $opt_quiet -eq 1 ]] && return 0
-        errcho "WARNING: no /proc/$pid to stop"
+        [[ $opt_quiet -ne 1 ]] && errcho "WARNING: no /proc/$pid to stop"
         return 0
     fi
 
@@ -50,4 +47,19 @@ stop.pid () {
         # shellcheck disable=SC2046,SC2086
         kill -9 $pid $(list.descendants $pid) || :
     fi
+}
+
+
+list.descendants () {
+    local children; children=$(ps -o pid= --ppid "$1")
+
+    for pid in $children; do
+        list.descendants "$pid"
+    done
+
+    echo "$children"
+}
+
+list.descendants.comma_separated () {
+    list.descendants "$1" | tr '\n' ',' | sed 's/,\+/,/g' | sed 's/\s\+//g' | sed 's/,$//'
 }

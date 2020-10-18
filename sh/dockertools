@@ -1,32 +1,33 @@
 #!/usr/bin/bash
 
 import errcho
-import stop.pid
+import pidtools
+
+
+# dtools.ip () {
+#     local dname; dname="$1"
+#     local ip
+
+#     local cmax; cmax=50
+#     local c; c=0
+
+#     while true; do
+#         (( c++ ))
+#         ! ip=$(docker inspect --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$dname") && break
+
+#         if [[ $c -gt $cmax ]]; then
+#             rerrcho "${FUNCNAME[0]} timed out waiting for $dname (caller: ${FUNCNAME[1]})"
+#             return 1
+#         fi
+
+#         sleep 0.1
+#     done
+
+#     echo "$ip"
+#     return 0
+# }
 
 dtools.ip () {
-    local dname; dname="$1"
-    local ip
-
-    local cmax; cmax=50
-    local c; c=0
-
-    while true; do
-        (( c++ ))
-        ! ip=$(docker inspect --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$dname") && break
-
-        if [[ $c -gt $cmax ]]; then
-            rerrcho "${FUNCNAME[0]} timed out waiting for $dname (caller: ${FUNCNAME[1]})"
-            return 1
-        fi
-
-        sleep 0.1
-    done
-
-    echo "$ip"
-    return 0
-}
-
-dtools.ip2 () {
     local dname; dname="$1"
     dtools.waitfor "$dname"
     local ip; ip=$(docker inspect --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$dname")

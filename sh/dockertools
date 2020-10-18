@@ -26,6 +26,14 @@ dtools.ip () {
     return 0
 }
 
+dtools.ip2 () {
+    local dname; dname="$1"
+    dtools.waitfor "$dname"
+    local ip; ip=$(docker inspect --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$dname")
+    echo "$ip"
+    return 0
+}
+
 dtools.stop () {
     local dname; dname="$1"
 
@@ -51,6 +59,8 @@ dtools.container.exists () {
     return 1
 }
 
+# Wait for the container to be up, running, and functional, by checking it can
+# generate log output. Then cleanup the log process.
 dtools.waitfor () {
     local dname; dname="$1"
     local pid; pid=$(dtools.tail.log "$dname" /dev/null)
@@ -69,14 +79,15 @@ dtools.tail.log () {
         docker logs -f "$dname" > "$logfile" 2>&1 &
         pid=$!
 
-        count=$(ps -A | grep -c $pid)   # check whether process is still running
+        count=$(ps -A | grep --count $pid)   # check whether process is still running
 
         # if process is already terminated, then there can be two cases:
         #   the process executed and stopped successfully, or it terminated abnormally
         if [[ $count -eq 0 ]]; then
             if wait $pid    # checks if process executed successfully or not
             then
-                errxit "docker logs $dname ran and exited - that's unexpected" 1
+                errcho "docker logs $dname ran and exited - that's unexpected"
+                return 1
             else            # process terminated abnormally
                 debug "docker $dname not ready - can't start logging yet (returned $?)"
                 sleep 0.1

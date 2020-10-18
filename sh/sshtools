@@ -14,3 +14,14 @@ sshtools.generate_keypair () {
     # -t: type; -b: bits; -C: comment; -q: quiet; -N: new passphrase; -f: output filename
     ssh-keygen -t rsa -b 4096 -C "$comment" -q -N "" -f "$keyfile"
 }
+
+sshtools.allowuser () {
+    local username; username="$1"
+    local allowusersline; allowusersline="$(grep -i "AllowUsers" /etc/ssh/sshd_config)"
+
+    [[ $allowusersline =~ / $username/ ]] && return 0
+
+    local newallowusersline; newallowusersline="$allowusersline $username"
+
+    perl -pi -e 's/$allowusersline/$newallowusersline/' /etc/ssh/sshd_config
+}

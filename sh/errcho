@@ -40,7 +40,7 @@ yerrcho () { echo -n "${YELLOW}" >&2; errcho "$1${RESET}"; }
 rerrcho () { echo -n "${RED}" >&2;    errcho "$1${RESET}"; }
 gerrcho () { echo -n "${GREEN}" >&2;  errcho "$1${RESET}"; }
 
-debug () { [[ $DEBUG -eq 1 ]] && yerrcho "$*"; return 0; }
+debug () { [[ $DEBUG -eq 1 ]] && yerrcho "${FUNCNAME[1]}: $*"; return 0; }
 
 pause () {
     [[ $PAUSE == 1 ]] && local PAUSE_DEBUG=1

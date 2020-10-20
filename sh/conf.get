@@ -1,7 +1,19 @@
 #!/usr/bin/bash
 import errcho
 
+# Use value passed on import line, or if not present, K2_ROOT_DIR from ENV
+
+root_dir=
+
+if [[ -n ${1:-} ]]; then
+    root_dir="$1"
+fi
+
 conf.get () {
-    [[ -z $K2_ROOT_DIR ]] && errxit "K2_ROOT_DIR not defined"
-    "$K2_ROOT_DIR/docker/d.start.k2.conf.get" "$1"
+    if [[ -z $root_dir ]]; then
+        [[ -z $K2_ROOT_DIR ]] && errxit "K2_ROOT_DIR not defined"
+        root_dir="$K2_ROOT_DIR"
+    fi
+
+    "$root_dir/docker/d.start.k2.conf.get" "$1"
 }

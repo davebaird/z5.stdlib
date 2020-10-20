@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 if [[ -n ${1:-} && $1 == strict ]]; then
     # saner programming env: these switches turn some bugs into errors

@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 import errcho
 
 # Use value passed on import line, or if not present, K2_ROOT_DIR from ENV

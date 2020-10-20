@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 PAUSE=${PAUSE:-0}
 DEBUG=${DEBUG:-0}

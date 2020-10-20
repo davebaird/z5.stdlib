@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# xml.feed.reader https://news.yale.edu/topics/science-technology/rss | catmandu convert XML to YAML
+# xml.feed.reader https://news.yale.edu/topics/science-technology/rss | catmandu convert XML to JSON | jq
+# xml.feed.reader https://news.yale.edu/topics/science-technology/rss | catmandu convert XML to Table
+
+# $ xml.feed.reader <source> [source_output_format]
+# <source> can be a URL or file.
+# Outputs XML, generated from Atom formatted data by default, but can optionally
+# specify a different source_output_format
+docker pull dvz5/xml.feed.reader
+alias xml.feed.reader='docker run --rm -i --user "$(id -u):$(id -g)" --volume "$PWD:/workdir" dvz5/xml.feed.reader'
+
+docker pull dvz5/catmandu
+alias        catmandu='docker run --rm -i --user "$(id -u):$(id -g)" --volume "$PWD:/workdir" dvz5/catmandu'
+
+docker pull dvz5/hicat
+alias           hicat='docker run --rm -i --user "$(id -u):$(id -g)" --volume "$PWD:/workdir" dvz5/hicat'
+
+docker pull dvz5/json2perl
+alias       json2perl='docker run --rm -i --user "$(id -u):$(id -g)" --volume "$PWD:/workdir" dvz5/json2perl'

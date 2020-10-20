@@ -2,6 +2,7 @@
 
 import errcho
 import pidtools
+import checks
 
 
 # dtools.ip () {
@@ -104,11 +105,16 @@ dtools.tail.log () {
 }
 
 # https://docs.docker.com/engine/install/debian/
+# https://docs.docker.com/engine/install/ubuntu/
 dtools.docker.install () {
-    curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
+    local os; os=$(check.os)
+
+    apt-get remove docker docker-engine docker.io containerd runc
+
+    curl -fsSL "https://download.docker.com/linux/$os/gpg" | apt-key add -
 
     add-apt-repository \
-        "deb [arch=amd64] https://download.docker.com/linux/debian \
+        "deb [arch=amd64] "https://download.docker.com/linux/$os" \
         $(lsb_release -cs) stable"
 
     apt-get update
@@ -123,3 +129,4 @@ dtools.docker.install () {
 
     systemctl enable docker > /dev/null 2>&1
 }
+

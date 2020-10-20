@@ -10,26 +10,26 @@ main () {
     setup_testfile
 
     rerrcho "add dev 127.0.1.1"
-    iptools.hosts.add dev 127.0.1.1
+    iptools.etchosts.add dev 127.0.1.1
 
     rerrcho "add newhost 1.2.3.4"
-    iptools.hosts.add newhost 1.2.3.4 test_hosts
+    iptools.etchosts.add newhost 1.2.3.4 test_hosts
 
     rerrcho "add newhost2 1.2.3.4"
-    iptools.hosts.add newhost2 1.2.3.4 test_hosts
+    iptools.etchosts.add newhost2 1.2.3.4 test_hosts
 
     rerrcho "rm removeme"
-    iptools.hosts.rm removeme test_hosts
+    iptools.etchosts.rm removeme test_hosts
 
 
     rerrcho "rm removeme2"
-    iptools.hosts.rm removeme2 test_hosts
+    iptools.etchosts.rm removeme2 test_hosts
 
     rerrcho "add newhost 1.2.3.55"
-    iptools.hosts.add newhost 1.2.3.55 test_hosts
+    iptools.etchosts.add newhost 1.2.3.55 test_hosts
 
     rerrcho "add lockserver.k2 99.88.77.66"
-    iptools.hosts.add lockserver.k2 99.88.77.66 test_hosts
+    iptools.etchosts.add lockserver.k2 99.88.77.66 test_hosts
 }
 
 

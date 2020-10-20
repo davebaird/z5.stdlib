@@ -1,0 +1,14 @@
+#!/bin/bash
+
+azuretools.is_azure () {
+    [[ $(dmidecode -s system-manufacturer) == "Microsoft Corporation" ]]
+}
+
+# configure swap (Azure)
+# https://support.microsoft.com/en-us/help/4010058/how-to-add-a-swap-file-in-linux-azure-virtual-machines
+azuretools.set_up_swap () {
+    sed -i 's|ResourceDisk.Format=n|ResourceDisk.Format=y|' /etc/waagent.conf
+    sed -i 's|ResourceDisk.EnableSwap=n|ResourceDisk.EnableSwap=y|' /etc/waagent.conf
+    sed -i 's|ResourceDisk.SwapSizeMB=0|ResourceDisk.SwapSizeMB=2048|' /etc/waagent.conf
+    service walinuxagent restart
+}

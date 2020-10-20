@@ -9,5 +9,6 @@ Usage:
     source [/path/to/z5.stdlib]/sh/importer strict || exit 1
     import errcho
     import pathtools
+    import stacktrace
     ...
 

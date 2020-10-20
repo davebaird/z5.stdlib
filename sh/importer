@@ -5,7 +5,7 @@ if [[ -n ${1:-} && $1 == strict ]]; then
     set -o errexit
     set -o nounset
     set -o pipefail
-    #set -o noclobber
+    set -o noclobber
 fi
 
 # https://unix.stackexchange.com/questions/4650/determining-path-to-sourced-shell-script

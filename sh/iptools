@@ -10,8 +10,10 @@ iptools.get_ip () {
     dig "$1" +short
 }
 
+# TODO: check out Hostfile::Manager, hostfiles debian package (which is a script on top
+# of Hostfile::Manager), and Config::Hosts to do this more robustly
 # also updates if existing hostname entry has a different IP
-iptools.hosts.add () {
+iptools.etchosts.add () {
     local hostname; hostname="$1"
     local ip; ip="$2"
     local etc_hosts; etc_hosts=${3:-/etc/hosts} # useful for debugging
@@ -31,13 +33,13 @@ iptools.hosts.add () {
 
     if grep --extended-regexp "\s$hostname(\s|$)" "$etc_hosts" > /dev/null
     then
-        iptools.hosts.rm "$hostname" "$etc_hosts"
+        iptools.etchosts.rm "$hostname" "$etc_hosts"
     fi
 
     echo "$ip $hostname" >> "$etc_hosts"
 }
 
-iptools.hosts.rm () {
+iptools.etchosts.rm () {
     local hostname; hostname="$1"
     local etc_hosts; etc_hosts=${2:-/etc/hosts} # useful for debugging
 
@@ -45,7 +47,7 @@ iptools.hosts.rm () {
 
     if ! line="$(grep --extended-regexp "\s$hostname(\s|$)" "$etc_hosts")"
     then
-        errcho "Did not find hostname $hostname"
+        errcho "hostname $hostname not found in $etc_hosts"
         return 0
     fi
 

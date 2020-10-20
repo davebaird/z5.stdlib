@@ -1,0 +1,11 @@
+#!/bin/bash
+
+xtools.is_active () {
+    systemctl is-active --quiet lightdm
+}
+
+# turn off the X subsystem that might be active for some reason
+xtools.turn_off_x () {
+    systemctl set-default multi-user.target
+    systemctl stop lightdm.service
+}

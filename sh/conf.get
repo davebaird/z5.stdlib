@@ -11,9 +11,10 @@ fi
 
 conf.get () {
     if [[ -z $root_dir ]]; then
-        [[ -z $K2_ROOT_DIR ]] && errxit "K2_ROOT_DIR not defined"
+        [[ -z $K2_ROOT_DIR ]] && errxit "K2_ROOT_DIR not exported"
         root_dir="$K2_ROOT_DIR"
     fi
 
-    "$root_dir/docker/d.start.k2.conf.get" "$1"
+    # need to put K2_ROOT_DIR on the line to guarantee it's available in the start script
+    K2_ROOT_DIR="$root_dir" "$root_dir/docker/d.start.k2.conf.get" "$1"
 }

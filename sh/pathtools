@@ -33,7 +33,7 @@ path.rootdir () {
 # more frame in the callstack for the calling stdlib function, plus one more
 # for this function
 path.their.rootdir () {
-    path.rootdir "$1" 2
+    path._rootdir "$1" 2
 }
 
 pathtools.dir_is_empty () {

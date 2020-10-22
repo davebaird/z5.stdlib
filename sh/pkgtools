@@ -1,0 +1,46 @@
+#!/bin/bash
+import errcho
+
+cpanfile2pkglist () {
+    declare cpanfilecontents=${1:-$(</dev/stdin)} # https://stackoverflow.com/a/35512655
+
+    echo "$cpanfilecontents" | sed '/^#/d' | sed '/^$/d' | sed 's/requires //' | \
+        tr -d '"' | tr -d "'" | tr -d ';' | sed 's/\s.*$//' | sed 's/,.*$//'
+}
+
+pkglist2deblist () {
+    declare pkglist=${1:-$(</dev/stdin)}
+
+    echo "$pkglist" | while read -r perlpkg
+    do
+        aptpkg="$(echo "$perlpkg" | perl -ne 's/::/-/g; s/$/-perl/; print "lib".lc')"
+
+        if [[ -n $(apt-cache search "$aptpkg") ]]
+        then
+            echo "$aptpkg"
+        else
+            echo "requires '$perlpkg';" >&2
+        fi
+    done
+}
+
+cpanfileshowdeps () {
+    declare cpanfilecontents=${1:-$(</dev/stdin)}
+
+    echo "$cpanfilecontents" | cpanfile2pkglist "$@" | \
+        while read -r pkg
+        do
+            cpanm --showdeps "$pkg"
+        done 2> /dev/null | \
+            sed '/^Fetching/d' | sed '/^--/d' | sed '/^Configu/d' | sed '/^perl/d' | \
+            sed 's/~.*$//' | sort -u | \
+                while read -r maybepkg
+                do
+                    if cpanm --info "$maybepkg" > /dev/null 2>&1
+                    then
+                        echo "$maybepkg"
+                    else
+                        yerrcho "$maybepkg"
+                    fi
+                done
+}

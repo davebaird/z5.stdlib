@@ -1,6 +1,6 @@
 #!/bin/bash
-set -o errexit
-set -o nounset
+import /usr/local/src/z5.stdlib strict || exit 1
+import errcho
 
 # $1 is the path supplied to the 'import poettools' line
 main () {

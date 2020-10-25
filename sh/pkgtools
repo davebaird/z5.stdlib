@@ -15,9 +15,15 @@ pkglist2deblist () {
     do
         aptpkg="$(echo "$perlpkg" | perl -ne 's/::/-/g; s/$/-perl/; print "lib".lc')"
 
-        if [[ -n $(apt-cache search "$aptpkg") ]]
+        # Some packages are provided by others e.g.
+        #   apt-cache search libhtml-treebuilder-perl
+        #   libhtml-treebuilder-xpath-perl - Perl module to add XPath support to HTML::TreeBuilder
+
+        searchpkg="$(apt-cache search "$aptpkg")"
+        #echo ":: $aptpkg"
+        if [[ -n $searchpkg ]]
         then
-            echo "$aptpkg"
+            echo "$searchpkg" | sed 's/\s\-\s.*$//'
         else
             echo "requires '$perlpkg';" >&2
         fi

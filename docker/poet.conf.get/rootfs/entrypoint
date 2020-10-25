@@ -1,0 +1,23 @@
+#!/bin/bash
+
+cleanup() {
+    rm -f /usr/local/src/poet/bin/poet.conf.get.pl
+}
+
+trap 'cleanup' EXIT
+
+if  ! [[ -f /poet.conf.get.pl ]]; then
+    echo "ERROR: /poet.conf.get.pl not found (or not a file)" >&2
+    exit 1
+fi
+
+if ! [[ -d /usr/local/src/poet/bin ]];then
+    echo "ERROR: /usr/local/src/poet/bin not found (or not a dir)" >&2
+    exit 1
+fi
+
+cp /poet.conf.get.pl /usr/local/src/poet/bin/poet.conf.get.pl
+
+/usr/local/src/poet/bin/poet.conf.get.pl "$@"
+
+rm -f /usr/local/src/poet/bin/poet.conf.get.pl

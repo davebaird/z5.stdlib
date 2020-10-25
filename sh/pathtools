@@ -6,13 +6,49 @@ path.rootdir () {
     local markerfile; markerfile="$1"
     local depth; depth=${2:-0}
 
-    # shellcheck disable=SC2046,2086
-    set $(caller $depth)
-    local filename; filename=$3
+    # set +o nounset
+    # errcho $0
+    # errcho ${FUNCNAME[0]}
+    # errcho ${FUNCNAME[1]}
+    # errcho ${FUNCNAME[2]}
+    # errcho ${BASHSOURCE[0]}
+    # errcho ${BASHSOURCE[1]}
+    # errcho ${BASHSOURCE[2]}
+    # caller 0 >&2
+    # caller 1 >&2
+    # caller 2 >&2
+    # return 10
 
-    #yerrcho "Searching for $markerfile above $filename using depth $depth"
+    # If the supplied markerfile is the actual path to the file, we simply use its dir
+    if [[ -f $markerfile ]]; then
+        readlink --canonicalize-existing "$(dirname "$markerfile")"
+        return 0
+    fi
 
-    local dir; dir="$(dirname "$(readlink -f "$filename")")"
+    # user supplied a relative or absolute path that includes at least one dir
+    # component, but the file does not exist there
+    if [[ $(dirname "$markerfile") != '.' ]]; then
+        errcho "ERROR: markerfile '$markerfile' was expected to exist but it doesn't"
+        return 1
+    fi
+
+    # search for the markerfile starting from where we are
+
+    local scriptfile
+    if [[ $0 == '-bash' ]]; then
+        # called directly from commandline
+        yerrcho "Called from CLI"
+        scriptfile=./DUMMY
+    else
+        yerrcho "Called from script"
+        # shellcheck disable=SC2046,2086
+        set $(caller $depth)
+        scriptfile=$3
+    fi
+
+    #yerrcho "Searching for $markerfile above $scriptfile using depth $depth"
+
+    local dir; dir="$(dirname "$(readlink --canonicalize "$scriptfile")")"
 
     local startdir; startdir="$dir"
 
@@ -26,7 +62,7 @@ path.rootdir () {
         return 1
     fi
 
-    echo "$dir"
+    readlink --canonicalize-existing "$dir"
 }
 
 # when searching for rootdir from another stdlib function, need to go back one

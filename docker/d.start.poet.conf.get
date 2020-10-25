@@ -1,0 +1,33 @@
+#!/bin/bash
+set -o errexit
+set -o nounset
+
+main () {
+    local poet_root; poet_root="$1"
+    shift
+
+    setup_args "$poet_root"
+
+    docker run "${DArgs[@]}" poet.conf.get "$@"
+}
+
+setup_args () {
+    local poet_root; poet_root="$1"
+
+    DArgs=(
+        --init
+        --name "poet.conf.get.$$"
+
+        --rm
+
+        # mount the target Poet application into the container, then inject our
+        # script into the app so it picks up (via Poet::Script) the correct Poet root
+        --volume "$poet_root:/usr/local/src/poet"
+
+        # this is specific to the k2 project, is necessary to silence an error
+        --volume /usr/local/share/k2.data/logs/poet:/usr/local/share/k2.data/logs/poet
+        # TODO --user "$(id -u):$(id -g)"
+    )
+}
+
+main "$@"

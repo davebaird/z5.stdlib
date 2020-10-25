@@ -26,6 +26,7 @@ stacktrace() {
 # trap ERR to provide an error handler whenever a command exits nonzero
 #  this is a more verbose version of set -o errexit
 trap 'stacktrace' ERR
+
 # setting errtrace allows our ERR trap handler to be propagated to functions,
 #  expansions and subshells
 set -o errtrace

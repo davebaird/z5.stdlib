@@ -5,8 +5,27 @@ DEBUG=${DEBUG:-0}
 PAUSE_DEBUG=${PAUSE_DEBUG:-1}
 
 # For coloured output see https://stackoverflow.com/a/20983251/2334574
+# tput setab [1-7] # Set the background colour using ANSI escape
+# tput setaf [1-7] # Set the foreground colour using ANSI escape
+
+# Colours are as follows:
+
+# Num  Colour    #define         R G B
+
+# 0    black     COLOR_BLACK     0,0,0
+# 1    red       COLOR_RED       1,0,0
+# 2    green     COLOR_GREEN     0,1,0
+# 3    yellow    COLOR_YELLOW    1,1,0
+# 4    blue      COLOR_BLUE      0,0,1
+# 5    magenta   COLOR_MAGENTA   1,0,1
+# 6    cyan      COLOR_CYAN      0,1,1
+# 7    white     COLOR_WHITE     1,1,1
+
 RED=$(tput setaf 1);        GREEN=$(tput setaf 2)
-YELLOW=$(tput setaf 3);     RESET=$(tput sgr0)
+YELLOW=$(tput setaf 3);     BLUE=$(tput setaf 4);
+MAGENTA=$(tput setaf 5);    CYAN=$(tput setaf 6);
+WHITE=$(tput setaf 7);      RESET=$(tput sgr0)
+
 
 # errxit "the foobar failed" 2
 errxit() {
@@ -36,9 +55,13 @@ errcho () {
     fi
 }
 
-yerrcho () { echo -n "${YELLOW}" >&2; errcho "$1${RESET}"; }
-rerrcho () { echo -n "${RED}" >&2;    errcho "$1${RESET}"; }
-gerrcho () { echo -n "${GREEN}" >&2;  errcho "$1${RESET}"; }
+# echo first, to set the colour before errcho adds the timestamp prefix
+yerrcho () { echo -n "${YELLOW}" >&2;  errcho "$1${RESET}"; }
+rerrcho () { echo -n "${RED}" >&2;     errcho "$1${RESET}"; }
+gerrcho () { echo -n "${GREEN}" >&2;   errcho "$1${RESET}"; }
+berrcho () { echo -n "${BLUE}" >&2;    errcho "$1${RESET}"; }
+merrcho () { echo -n "${MAGENTA}" >&2; errcho "$1${RESET}"; }
+cerrcho () { echo -n "${CYAN}" >&2;    errcho "$1${RESET}"; }
 
 debug () { [[ $DEBUG -eq 1 ]] && yerrcho "${FUNCNAME[1]}: $*"; return 0; }
 

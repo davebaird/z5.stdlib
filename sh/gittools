@@ -1,8 +1,8 @@
 #!/bin/bash
-
+import errcho
 import pathtools
 
-# Add an entry to the .gitignore file of the current repo
+# Add an entry to the .gitignore file of the current repo, from anywhere inside it
 git.ignore () {
     local rootdir; rootdir="$(path.their.rootdir .gitignore)"
     local gitignore; gitignore="$rootdir/.gitignore"
@@ -10,3 +10,61 @@ git.ignore () {
 
     grep "^$path$" "$gitignore" > /dev/null || echo "$path" >> "$gitignore"
 }
+
+git-new-empty-repo () {
+    errxit "git-new-empty-repo is broken, but useful"
+
+    mkdir "$1"
+
+    (
+        cd "$1" || return $?
+        git init
+    )
+
+    git clone --bare "$1" "$1.git"
+    scp -r "$1.git" dave@clyde:/srv/git
+    rm -r "$1.git"
+
+    (
+        cd "$1" || return $?
+        git remote add origin dave@clyde:"/srv/git/$1.git"
+    )
+}
+
+git-cmp-remote () {
+    git fetch origin master
+    git diff --summary FETCH_HEAD
+}
+
+git3 () {
+    local logmsg; logmsg=${1-No log message supplied}
+    git add .               || return $?
+    git commit -m "$logmsg" || return $?
+    git push origin master  || return $?
+}
+
+git3- () {
+    local logmsg; logmsg=${1-No log message supplied}
+    for d in "$PWD"/*; do
+        if [[ -d "$d" ]]; then
+        (
+            cd "$d" || return 1
+            gerrcho "Committing $d"
+            git3 "$logmsg"
+        )
+        fi
+    done
+}
+
+gitpull- () {
+    for d in "$PWD"/*; do
+        if [[ -d "$d" ]]; then
+        (
+            cd "$d" || return 1
+            gerrcho "Updating $d"
+            git pull
+        )
+        fi
+    done
+}
+

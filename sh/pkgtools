@@ -1,6 +1,35 @@
 #!/bin/bash
 import errcho
 
+generate.pkglists () {
+    [[ -z ${1:-} ]] && errxit "Must supply cpanfile sourcefile"
+
+    if [[ $1 == cpanfile ]]; then
+        errxit "Do not operate directly on cpanfile - use a surrogate e.g. cpanfile.source"
+    fi
+
+    [[ -f $1 ]] || errxit "File not found: $1"
+
+    trap generate.pkglists._cleanup EXIT
+
+    tmpfile=$(mktemp)
+
+    rm -f cpanfile apt.list
+
+    cpanfile2pkglist < "$1" | pkglist2deblist > apt.list 3> cpanfile
+
+    rm "$tmpfile"
+    cpanfileshowdeps < cpanfile | pkglist2deblist >> apt.list 3> "$tmpfile"
+    cat "$tmpfile" >> cpanfile
+
+    rm "$tmpfile"; sort -u cpanfile > "$tmpfile"; rm cpanfile; cat "$tmpfile" > cpanfile
+    rm "$tmpfile"; sort -u apt.list > "$tmpfile"; rm apt.list; cat "$tmpfile" > apt.list
+}
+
+generate.pkglists._cleanup () {
+    rm -f "$tmpfile"
+}
+
 cpanfile2pkglist () {
     declare cpanfilecontents=${1:-$(</dev/stdin)} # https://stackoverflow.com/a/35512655
 
@@ -8,6 +37,7 @@ cpanfile2pkglist () {
         tr -d '"' | tr -d "'" | tr -d ';' | sed 's/\s.*$//' | sed 's/,.*$//'
 }
 
+# shellcheck disable=SC2120
 pkglist2deblist () {
     declare pkglist=${1:-$(</dev/stdin)}
 
@@ -23,16 +53,19 @@ pkglist2deblist () {
         #echo ":: $aptpkg"
         if [[ -n $searchpkg ]]
         then
+            # shellcheck disable=SC2001
             echo "$searchpkg" | sed 's/\s\-\s.*$//'
         else
-            echo "requires '$perlpkg';" >&2
+            echo "requires '$perlpkg';" >&3
         fi
     done
 }
 
+# shellcheck disable=SC2120
 cpanfileshowdeps () {
     declare cpanfilecontents=${1:-$(</dev/stdin)}
 
+    # ! I think the "$@" is unnecessary and could cause problems
     echo "$cpanfilecontents" | cpanfile2pkglist "$@" | \
         while read -r pkg
         do

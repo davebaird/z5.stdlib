@@ -2,13 +2,16 @@
 set -o errexit
 set -o nounset
 
+# $1 is the path supplied to the 'import poettools' line
 main () {
     local poet_root; poet_root="$1"
-    shift
+    local keyspec; keyspec="$2"
 
     setup_args "$poet_root"
 
-    docker run "${DArgs[@]}" poet.conf.get "$@"
+    rerrcho "Launching poet.conf.get container --volume $poet_root:/usr/local/src/poet"
+
+    docker run "${DArgs[@]}" poet.conf.get "$keyspec"
 }
 
 setup_args () {
@@ -24,7 +27,7 @@ setup_args () {
         # script into the app so it picks up (via Poet::Script) the correct Poet root
         --volume "$poet_root:/usr/local/src/poet"
 
-        # this is specific to the k2 project, is necessary to silence an error
+        # ! this is specific to the k2 project, is necessary to silence an error
         --volume /usr/local/share/k2.data/logs/poet:/usr/local/share/k2.data/logs/poet
         # TODO --user "$(id -u):$(id -g)"
     )

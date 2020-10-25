@@ -39,7 +39,7 @@ poet.switchroot () {
 
 poet._build () {(
     cd "$__ptools_mydir/../docker/poet.conf.get" || return 1
-    # when debugging is done, put this on docker hub and pull the image instead
+    # TODO when debugging is done, put this on docker hub and pull the image instead
     docker build -t poet.conf.get . > /dev/null
 )}
 

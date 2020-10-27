@@ -107,7 +107,7 @@ dtools.tail.log () {
 # https://docs.docker.com/engine/install/debian/
 # https://docs.docker.com/engine/install/ubuntu/
 dtools.docker.install () {
-    local os; os=$(check.os)
+    local os; os=$(get.os)
 
     apt-get remove docker docker-engine docker.io containerd runc
 

@@ -1,0 +1,16 @@
+#!/bin/bash
+import errcho
+import checks
+
+usertools.make.sudoer () {
+    local user; user="$1"
+
+    check.i_can_root
+
+    if [[ -f /etc/sudoers.d/${user}_passwordless ]]; then
+        gerrcho "/etc/sudoers.d/${user}_passwordless found - skipping"
+    else
+        echo "${user} ALL = (ALL) NOPASSWD: ALL" > "/etc/sudoers.d/${user}_passwordless"
+        chmod 0440 "/etc/sudoers.d/${user}_passwordless"
+    fi
+}

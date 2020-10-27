@@ -21,12 +21,6 @@ PAUSE_DEBUG=${PAUSE_DEBUG:-1}
 # 6    cyan      COLOR_CYAN      0,1,1
 # 7    white     COLOR_WHITE     1,1,1
 
-RED=$(tput setaf 1);        GREEN=$(tput setaf 2)
-YELLOW=$(tput setaf 3);     BLUE=$(tput setaf 4);
-MAGENTA=$(tput setaf 5);    CYAN=$(tput setaf 6);
-WHITE=$(tput setaf 7);      RESET=$(tput sgr0)
-
-
 # errxit "the foobar failed" 2
 errxit() {
     local message="$1"
@@ -56,12 +50,40 @@ errcho () {
 }
 
 # echo first, to set the colour before errcho adds the timestamp prefix
-yerrcho () { echo -n "${YELLOW}" >&2;  errcho "$1${RESET}"; }
-rerrcho () { echo -n "${RED}" >&2;     errcho "$1${RESET}"; }
-gerrcho () { echo -n "${GREEN}" >&2;   errcho "$1${RESET}"; }
-berrcho () { echo -n "${BLUE}" >&2;    errcho "$1${RESET}"; }
-merrcho () { echo -n "${MAGENTA}" >&2; errcho "$1${RESET}"; }
-cerrcho () { echo -n "${CYAN}" >&2;    errcho "$1${RESET}"; }
+# yerrcho () { echo -n "${YELLOW}" >&2;  errcho "$1${RESET}"; }
+# rerrcho () { echo -n "${RED}" >&2;     errcho "$1${RESET}"; }
+# gerrcho () { echo -n "${GREEN}" >&2;   errcho "$1${RESET}"; }
+# berrcho () { echo -n "${BLUE}" >&2;    errcho "$1${RESET}"; }
+# merrcho () { echo -n "${MAGENTA}" >&2; errcho "$1${RESET}"; }
+# cerrcho () { echo -n "${CYAN}" >&2;    errcho "$1${RESET}"; }
+
+RED=1; GREEN=2; YELLOW=3; BLUE=4; MAGENTA=5; CYAN=6; # WHITE=7;
+
+yerrcho () { _colour_errcho $RED,     "$1"; }
+rerrcho () { _colour_errcho $GREEN,   "$1"; }
+gerrcho () { _colour_errcho $YELLOW,  "$1"; }
+berrcho () { _colour_errcho $BLUE,    "$1"; }
+merrcho () { _colour_errcho $MAGENTA, "$1"; }
+cerrcho () { _colour_errcho $CYAN,    "$1"; }
+
+_colour_errcho () {
+    local colour; colour="$1"
+    local msg; msg="$2"
+
+    if [[ -n $TERM ]] && [[ $TERM != dumb ]]; then
+        local colseq; colseq="$(tput setaf "$colour")"
+        local reset; reset="$(tput setaf sgr0)"
+
+        echo -n "$colseq" >&2
+        errcho "$msg$reset"
+    else
+        errcho "$msg"
+    fi
+}
+
+becho () {
+    echo "$(tput setaf "$BLUE")$1$(tput setaf sgr0)"
+}
 
 debug () { [[ $DEBUG -eq 1 ]] && yerrcho "${FUNCNAME[1]}: $*"; return 0; }
 

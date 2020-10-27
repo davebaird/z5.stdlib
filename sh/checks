@@ -2,12 +2,16 @@
 import errcho
 
 check.i_am_root () {
-    if [[ $EUID -ne 0 ]]; then
-        errxit "$0 must be run as root"
-    fi
+    check.i_can_root
 
     if ! which groupadd > /dev/null; then
         errxit "root environment not properly initialised - can't find groupadd"
+    fi
+}
+
+check.i_can_root () {
+    if [[ $EUID -ne 0 ]]; then
+        errxit "$0 must be run as root"
     fi
 }
 
@@ -15,15 +19,15 @@ check.i_am_root () {
 # cat /etc/os-release
 # cat /etc/lsb-release
 # uname -a
-check.is_debian () {
-    [[ $(check.os) == debian ]]
+test.is_debian () {
+    [[ $(get.os) == debian ]]
 }
 
-check.is_ubuntu () {
-    [[ $(check.os) == ubuntu ]]
+test.is_ubuntu () {
+    [[ $(get.os) == ubuntu ]]
 }
 
-check.os () {
+get.os () {
     source /etc/os-release
     echo "$ID"
 }

@@ -9,7 +9,7 @@ main () {
 
     setup_args "$poet_root"
 
-    rerrcho "Launching poet.conf.get container --volume $poet_root:/usr/local/src/poet"
+    # rerrcho "Launching poet.conf.get container --volume $poet_root:/usr/local/src/poet"
 
     docker run "${DArgs[@]}" poet.conf.get "$keyspec"
 }

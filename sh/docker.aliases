@@ -20,5 +20,5 @@ alias           hicat='docker run --rm -i --user "$(id -u):$(id -g)" --volume "$
 docker pull dvz5/json2perl
 alias       json2perl='docker run --rm -i --user "$(id -u):$(id -g)" --volume "$PWD:/workdir" dvz5/json2perl'
 
-docker pull mikefarah/yq
-alias              yq='docker run --rm -i --user "$(id -u):$(id -g)" --volume "$PWD:/workdir" mikefarah/yq yq'
+# docker pull mikefarah/yq
+# alias              yq='docker run --rm -i --user "$(id -u):$(id -g)" --volume "$PWD:/workdir" mikefarah/yq yq'

@@ -1,18 +1,31 @@
 #!/bin/bash
 import errcho
 
+# checks errexit
+# tests return 0/1 return code
+# gets echo a piece of information
+
 check.i_am_root () {
     check.i_can_root
 
-    if ! which groupadd > /dev/null; then
-        errxit "root environment not properly initialised - can't find groupadd"
+    # there are bound to be more elegant tests
+    if ! which groupadd > /dev/null
+    then
+        errxit "root environment not properly initialised"
     fi
 }
 
 check.i_can_root () {
-    if [[ $EUID -ne 0 ]]; then
-        errxit "$0 must be run as root"
-    fi
+    [[ $EUID -ne 0 ]] && errxit "$0 must be run as root"
+}
+
+check.is_getopt_enhanced () {
+    # The leading exclamation does this:
+    #   - allow a command to fail with !'s side effect on errexit
+    #   - use return value from ${PIPESTATUS[0]}, because ! hosed $?
+    ! getopt --test > /dev/null
+    [[ ${PIPESTATUS[0]} -eq 4 ]] && return 0
+    errxit 'getopt (enhanced) not available in this environment'
 }
 
 # server info

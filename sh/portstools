@@ -1,5 +1,6 @@
 #!/bin/bash
 import errcho
+import checks
 
 # https://serverfault.com/questions/576910/how-to-find-full-process-arguments-and-associated-listening-ports
 # ss -a -tu -n -p | awk 'NR>1 { split($7,p,","); split(p[2],pid,"="); printf "Listen: "$5 " Command: "; system("ps --no-headers -ww -o args p "pid[2]); }'
@@ -53,7 +54,7 @@ ports._split_users () {
 # ----- options ----------------------------------------------------------------
 # For getopt (enhanced): https://stackoverflow.com/a/29754866/2334574
 ports._parseopts () {
-    ports._check_is_getopt_enhanced
+    check.is_getopt_enhanced
 
     ! PARSED=$(getopt --options=$OPTIONS --longoptions=$LONGOPTS --name "$0" -- "$@")
     if [[ ${PIPESTATUS[0]} -ne 0 ]]; then
@@ -83,11 +84,4 @@ ports._parseopts () {
     done
 }
 
-ports._check_is_getopt_enhanced () {
-    # The leading exclamation does this:
-    #   - allow a command to fail with !'s side effect on errexit
-    #   - use return value from ${PIPESTATUS[0]}, because ! hosed $?
-    ! getopt --test > /dev/null
-    [[ ${PIPESTATUS[0]} -eq 4 ]] && return 0
-    errxit 'getopt (enhanced) not available in this environment'
-}
+

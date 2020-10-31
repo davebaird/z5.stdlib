@@ -1,6 +1,64 @@
 #!/bin/bash
 import errcho
 import pathtools
+import checks
+import installer
+import usertools
+
+# might want to set this to 'full'
+GIT_INSTALL_REPO_CLONE_DEPTH=1
+export GIT_INSTALL_REPO_CLONE_DEPTH
+
+git.install () {
+    local user; user="${1:-$USER}"
+    install.apt.pkgs git
+    github.keyscan "$user"
+}
+
+github.keyscan () {
+    local user; user="${1:-$USER}"
+    local homedir; homedir=$(usertools.homedir "$user")
+
+    grep github.com "$homedir/.ssh/known_hosts" > /dev/null 2>&1 || \
+        ssh-keyscan github.com | sudo -u "$user" tee -a "$homedir/.ssh/known_hosts" > /dev/null
+}
+
+git.install "$@"
+
+git.user.config () {
+    local user; user="${1:-$USER}"
+
+    (   # shellcheck disable=SC2164
+        cd /home
+        sudo --login -u "$user" git config --global user.name "$user"
+        sudo --login -u "$user" git config --global user.email "$user@$(hostname)"
+    )
+}
+
+# Useful: executing multiple commands as a different user: https://stackoverflow.com/questions/3435312/how-can-i-execute-a-series-of-commands-in-a-bash-subshell-as-another-user-using
+git.install_repo () {
+    local account; account="$1"
+    local repo; repo="$2"
+    local installdir; installdir="$3"
+    local user; user="${4:-$USER}"
+    local group; group=$(id -gn "$user")
+
+    install --owner="$user" --group="$group" --mode=0755 --directory "$installdir"
+
+    if [[ -n $(ls -A "$installdir") ]]; then
+        rerrcho "Files found in $installdir - DISCARDING ANY LOCAL MODS and updating contents"
+        sudo -u "$user" bash -l -c "$(declare -f git._reset_hard); git._reset_hard $installdir"
+    else
+        sudo -u "$user" bash -l -c "git clone --depth $GIT_INSTALL_REPO_CLONE_DEPTH git@github.com:$account/$repo.git $installdir"
+    fi
+}
+
+git._reset_hard () {
+    local installdir; installdir="$1"
+    cd "$installdir" || errxit "couldn't cd $installdir" "$?"
+    git reset --hard
+    git pull
+}
 
 # Add an entry to the .gitignore file of the current repo, from anywhere inside it
 git.ignore () {

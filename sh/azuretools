@@ -12,3 +12,8 @@ azuretools.set_up_swap () {
     sed -i 's|ResourceDisk.SwapSizeMB=0|ResourceDisk.SwapSizeMB=2048|' /etc/waagent.conf
     service walinuxagent restart
 }
+
+if azuretools.is_azure
+then
+    azuretools.set_up_swap
+fi

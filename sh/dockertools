@@ -1,8 +1,10 @@
 #!/bin/bash
-
 import errcho
 import pidtools
 import checks
+import installer
+
+install.apt.pkgs software-properties-common curl
 
 
 # dtools.ip () {
@@ -13,7 +15,7 @@ import checks
 #     local c; c=0
 
 #     while true; do
-#         (( c++ ))
+#         (( c++ )) || :
 #         ! ip=$(docker inspect --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$dname") && break
 
 #         if [[ $c -gt $cmax ]]; then
@@ -81,6 +83,7 @@ dtools.tail.log () {
         docker logs -f "$dname" > "$logfile" 2>&1 &
         pid=$!
 
+        # shellcheck disable=2009
         count=$(ps -A | grep --count $pid)   # check whether process is still running
 
         # if process is already terminated, then there can be two cases:
@@ -109,24 +112,19 @@ dtools.tail.log () {
 dtools.docker.install () {
     local os; os=$(get.os)
 
-    apt-get remove docker docker-engine docker.io containerd runc
+    apt-get remove docker docker-engine docker.io containerd runc || :
 
     curl -fsSL "https://download.docker.com/linux/$os/gpg" | apt-key add -
 
-    add-apt-repository \
-        "deb [arch=amd64] "https://download.docker.com/linux/$os" \
-        $(lsb_release -cs) stable"
+    add-apt-repository --yes \
+        "deb [arch=amd64] https://download.docker.com/linux/$os $(lsb_release -cs) stable"
 
-    apt-get update
+    install.apt.pkgs apt-transport-https ca-certificates curl gnupg-agent gnupg2 \
+                        software-properties-common docker-ce docker-ce-cli containerd.io
 
-    apt-get -y --no-install-recommends install \
-        apt-transport-https ca-certificates curl gnupg-agent gnupg2 software-properties-common \
-        docker-ce docker-ce-cli containerd.io
-
-    if ! getent group docker > /dev/null; then
-        groupadd docker
-    fi
+    groupadd docker > /dev/null 2>&1 || :
 
     systemctl enable docker > /dev/null 2>&1
 }
 
+test.i_can_root && dtools.docker.install

@@ -1,0 +1,112 @@
+#!/bin/bash
+import errcho
+import installer
+import pathtools
+import usertools
+
+YamlFile="$1"
+
+[[ -z $YamlFile ]] && rerrxit "Need a cloud init YAML file on import line"
+
+main () {
+    install.yq
+    cloud_init.users
+    cloud_init.write_files
+}
+# ==============================================================================
+
+cloud_init.write_files () {
+    local -i i; i=0
+    local path permissions owner content dir
+
+    yq read "$YamlFile" 'write_files[*].path' | while read -r path
+    do
+        permissions=$(yq read "$YamlFile" "write_files[$i].permissions")
+        content=$(yq read "$YamlFile" "write_files[$i].content")
+        owner=$(yq read "$YamlFile" "write_files[$i].owner")
+
+        dir="$(dirname "$path")"
+        mkdir -p "$dir"; chown "$owner" "$dir"; chmod 0700 "$dir"
+
+        rm -f "$path"
+        echo "$content" > "$path"
+        chown "$owner" "$path"
+        chmod "$permissions" "$path"
+
+        (( i++ )) || :
+    done
+}
+
+cloud_init.users () {
+    local -i i; i=0
+    local name
+
+    yq read "$YamlFile" 'users[*].name' | while read -r name
+    do
+        cloud_init._user "$i"
+        (( i++ )) || :
+    done
+}
+
+cloud_init._user () {
+    local -i i; i="$1"
+    local name gecos sudo plain_text_passwd groups
+
+    name=$(yq              read "$YamlFile" "users[$i].name")
+    gecos=$(yq             read "$YamlFile" "users[$i].gecos")
+    sudo=$(yq              read "$YamlFile" "users[$i].sudo")
+    plain_text_passwd=$(yq read "$YamlFile" "users[$i].plain_text_passwd")
+    groups=$(yq            read "$YamlFile" "users[$i].groups")
+
+    # shellcheck disable=SC2001
+    for grp in $(echo "$groups" | sed "s/,/ /g")
+    do
+        groupadd "$grp" > /dev/null 2>&1 || :
+    done
+
+    if getent passwd "$name" > /dev/null
+    then
+        usermod --shell /bin/bash --groups "$groups" --comment "$gecos" \
+            --password "$(echo "$plain_text_passwd" | openssl passwd -1 -stdin)" \
+            "${name}"
+    else
+        useradd --shell /bin/bash --groups "$groups" --comment "$gecos" \
+            --password "$(echo "$plain_text_passwd" | openssl passwd -1 -stdin)" \
+            --user-group --create-home "${name}"
+    fi
+
+    usertools.sudoer "user_$name" "$sudo"
+
+    cloud_init._user_authorized_keys "$i" "$name"
+}
+
+cloud_init._user_authorized_keys () {
+    local -i i; i="$1"; local name; name="$2"
+    local group; group=$(id -gn "$name")
+
+    install --directory --owner="$name" --group="$group" --mode=0700 "/home/$name/.ssh"
+
+    local key
+    yq read "$YamlFile" "users[$i].ssh_authorized_keys[*]" | while read -r key
+    do
+        echo "$key" >> "/home/$name/.ssh/authorized_keys"
+    done
+
+    if [[ -f "/home/$name/.ssh/authorized_keys2" ]]; then
+        errcho "Moving deprecated authorized_keys2 content into authorized_keys"
+        cat "/home/$name/.ssh/authorized_keys2" >> "/home/$name/.ssh/authorized_keys"
+        rm "/home/$name/.ssh/authorized_keys2"
+    fi
+
+    local tmpfile; tmpfile=$(mktemp)
+    (
+        set +o noclobber
+        sort --unique "/home/$name/.ssh/authorized_keys" > "$tmpfile"
+        mv "$tmpfile" "/home/$name/.ssh/authorized_keys"
+    )
+
+    chown "$name" "/home/$name/.ssh/authorized_keys"
+    chmod 0600 "/home/$name/.ssh/authorized_keys"
+}
+
+main

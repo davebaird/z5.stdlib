@@ -1,4 +1,5 @@
 #!/bin/bash
+import errcho
 
 xtools.is_active () {
     systemctl is-active --quiet lightdm
@@ -9,3 +10,9 @@ xtools.turn_off_x () {
     systemctl set-default multi-user.target
     systemctl stop lightdm.service
 }
+
+if xtools.is_active
+then
+    yerrcho "WARNING: de-activating X - this should never be necessary, but it seems to be"
+    xtools.turn_off_x
+fi

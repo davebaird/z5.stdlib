@@ -1,5 +1,6 @@
 #!/bin/bash
 import errcho
+import usertools
 
 # If want to give keyfile arg, must also give comment.
 sshtools.generate_keypair () {
@@ -13,4 +14,22 @@ sshtools.generate_keypair () {
 
     # -t: type; -b: bits; -C: comment; -q: quiet; -N: new passphrase; -f: output filename
     ssh-keygen -t rsa -b 4096 -C "$comment" -q -N "" -f "$keyfile"
+}
+
+# Avoid the need to prepend every git command (for example) with:
+    #   GIT_SSH_COMMAND="ssh -i /home/user$userN/.ssh/git_rw.k2vm.id_rsa -o IdentitiesOnly=yes"
+sshtools.configure_identity_files () {
+    local user; user="$1"
+    local keysdir; keysdir="${2:-keys}"
+
+    local homedir; homedir=$(usertools.homedir "$user")
+
+    rm -f "$homedir/.ssh/config" # TODO: edit this file instead of nuking it
+
+    for key in "$homedir/.ssh/$keysdir"/*
+    do
+        echo "IdentityFile $key" | sudo -u "$user" tee -a "$homedir/.ssh/config" > /dev/null
+    done
+
+    chmod 0600 "$homedir/.ssh/config"
 }

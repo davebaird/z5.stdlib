@@ -15,8 +15,14 @@ check.i_am_root () {
     fi
 }
 
+# shellcheck disable=SC2120
 check.i_can_root () {
-    [[ $EUID -ne 0 ]] && errxit "$0 must be run as root"
+    local msg; msg=${1:-$0 must be run as root}
+    test.i_can_root || errxit "$msg"
+}
+
+test.i_can_root () {
+    [[ $EUID -eq 0 ]]
 }
 
 check.is_getopt_enhanced () {

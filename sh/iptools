@@ -15,6 +15,10 @@ iptools.get_ip_etc_hosts () {
     getent ahostsv4 "$1" | cut -d' ' -f1 | sort -u
 }
 
+iptools.get_ip_prefer_etc_hosts () {
+    iptools.get_ip_etc_hosts "$1" || iptools.get_ip_dns "$1"
+}
+
 # TODO: check out Hostfile::Manager, hostfiles debian package (which is a script on top
 # of Hostfile::Manager), and Config::Hosts to do this more robustly
 # also updates if existing hostname entry has a different IP

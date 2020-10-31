@@ -1,0 +1,38 @@
+#!/bin/bash
+import errcho
+import checks
+
+install.yq () {
+    which yq > /dev/null && return 0
+    test.i_can_root || errxit "Must be root to ${FUNCNAME[0]}"
+
+    install.snap
+
+    snap install yq
+}
+
+install.snap () {
+    which snap > /dev/null && return 0
+    test.i_can_root || errxit "Must be root to ${FUNCNAME[0]}"
+    test.is_debian  || errxit "Don't know how to install snap on this platform"
+
+    install.apt.pkgs snapd
+
+    snap install core
+
+    debug_stdlib "This sucks so much"
+    set +o nounset
+    source /etc/profile
+    set -o nounset
+}
+
+test.installed.apt.pkgs () {
+    dpkg --status "$@" > /dev/null 2>&1
+}
+
+install.apt.pkgs () {
+    test.installed.apt.pkgs "$@" && return 0
+    check.i_can_root "Must be root to ${FUNCNAME[0]} $*"
+    apt-get update
+    apt-get install --yes --quiet --no-install-recommends "$@"
+}

@@ -2,15 +2,32 @@
 import errcho
 import checks
 
-usertools.make.sudoer () {
-    local user; user="$1"
+# will remove specified rule if $2 is empty
+# Suggested labels: user_${username} or group_${groupname}
+usertools.sudoer () {
+    local label sudo; label="$1"; sudo="$2"
 
     check.i_can_root
 
-    if [[ -f /etc/sudoers.d/${user}_passwordless ]]; then
-        gerrcho "/etc/sudoers.d/${user}_passwordless found - skipping"
-    else
-        echo "${user} ALL = (ALL) NOPASSWD: ALL" > "/etc/sudoers.d/${user}_passwordless"
-        chmod 0440 "/etc/sudoers.d/${user}_passwordless"
+    rm -f "/etc/sudoers.d/${label}"
+
+    if [[ -n $sudo ]]; then
+        echo "$sudo" > "/etc/sudoers.d/${label}"
+        chmod 0440 "/etc/sudoers.d/${label}"
     fi
+}
+
+# this works even if $1 is 'root'
+usertools.homedir () {
+    local user; user="${1:-$USER}"
+
+    local homedir; homedir="$(eval echo "~$user")"
+
+    if [[ -d $homedir ]]; then
+        echo "$homedir"
+        return 0
+    fi
+
+    errcho "Home dir '$homedir' for user '$user' does not exist"
+    return 1
 }

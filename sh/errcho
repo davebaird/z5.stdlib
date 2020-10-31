@@ -68,20 +68,37 @@ cerrcho () { _colour_errcho $errchoCYAN    "$1"; }
 
 _colour_errcho () {
     local -i colour; colour="$1"
-    local msg; msg="$2"
+    shift
 
     if [[ -n $TERM ]] && [[ $TERM != dumb ]]; then
         local colseq; colseq="$(tput setaf "$colour")"
         local reset; reset="$(tput sgr0)"
 
-        echo -n "${colseq}" >&2; errcho "$msg${reset}"
+        echo -n "${colseq}" >&2; errcho "$@" "${reset}"
     else
-        errcho "$msg"
+        errcho "$@"
     fi
 }
 
-becho () {
-    echo "$(tput setaf "$errchoBLUE")$1$(tput sgr0)"
+recho () { _colour_echo $errchoRED     "$1"; }
+gecho () { _colour_echo $errchoGREEN   "$1"; }
+yecho () { _colour_echo $errchoYELLOW  "$1"; }
+becho () { _colour_echo $errchoBLUE    "$1"; }
+mecho () { _colour_echo $errchoMAGENTA "$1"; }
+cecho () { _colour_echo $errchoCYAN    "$1"; }
+
+_colour_echo () {
+    local -i colour; colour="$1"
+    shift
+
+    if [[ -n $TERM ]] && [[ $TERM != dumb ]]; then
+        local colseq; colseq="$(tput setaf "$colour")"
+        local reset; reset="$(tput sgr0)"
+
+        echo -n "${colseq}"; echo "$@" "${reset}"
+    else
+        echo "$@"
+    fi
 }
 
 debug () { [[ $DEBUG -eq 1 ]] && yerrcho "${FUNCNAME[1]}: $*"; return 0; }
@@ -99,5 +116,6 @@ pause () {
 }
 
 pause_fn () {
-    pause ": ${FUNCNAME[1]}"
+    local msg; msg="${1:-}"
+    pause ": ${FUNCNAME[1]}() $msg"
 }

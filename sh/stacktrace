@@ -4,6 +4,8 @@ import errcho
 # https://gist.github.com/ahendrix/7030300
 
 stacktrace() {
+    shopt -qo errexit || return 0
+
     local err=$?
     set +o xtrace
     local code="${1:-1}"

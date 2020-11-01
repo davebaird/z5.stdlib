@@ -103,6 +103,13 @@ git3 () {
 
 git3- () {
     local logmsg; logmsg=${1-No log message supplied}
+
+    if git rev-parse 2> /dev/null
+    then
+        rerrcho "Do not run git3- from inside a repo"
+        return 1
+    fi
+
     for d in "$PWD"/*; do
         if [[ -d "$d" ]]; then
         (

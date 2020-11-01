@@ -26,9 +26,10 @@ install.snap () {
     set -o nounset
 }
 
-test.installed.apt.pkgs () {
+test.installed.apt.pkgs () {(
+    set +e
     dpkg --status "$@" > /dev/null 2>&1
-}
+)}
 
 install.apt.pkgs () {
     test.installed.apt.pkgs "$@" && return 0

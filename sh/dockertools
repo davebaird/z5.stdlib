@@ -6,7 +6,6 @@ import installer
 
 install.apt.pkgs software-properties-common curl
 
-
 # dtools.ip () {
 #     local dname; dname="$1"
 #     local ip
@@ -127,4 +126,11 @@ dtools.docker.install () {
     systemctl enable docker > /dev/null 2>&1
 }
 
-test.i_can_root && dtools.docker.install
+# don't use the shortcut, the script returns 1 if not root, but somehow doesn't
+# trigger en exit under set -e, unless stacktrace is loaded, and other hidden
+# weird shit as well
+if test.i_can_root
+then
+    dtools.docker.install
+fi
+

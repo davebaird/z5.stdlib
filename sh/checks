@@ -21,9 +21,10 @@ check.i_can_root () {
     test.i_can_root || errxit "$msg"
 }
 
-test.i_can_root () {
+test.i_can_root () {(
+    set +e
     [[ $EUID -eq 0 ]]
-}
+)}
 
 check.is_getopt_enhanced () {
     # The leading exclamation does this:

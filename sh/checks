@@ -7,12 +7,12 @@ import errcho
 
 check.i_am_root () {
     check.i_can_root
+    check.homedir root
+    check.i_can_sbin
+}
 
-    # there are bound to be more elegant tests
-    if ! which groupadd > /dev/null
-    then
-        errxit "root environment not properly initialised"
-    fi
+check.i_can_sbin () {
+    which groupadd > /dev/null || errxit "root environment not properly initialised - sbin not in PATH"
 }
 
 # shellcheck disable=SC2120
@@ -50,4 +50,21 @@ test.is_ubuntu () {
 get.os () {
     source /etc/os-release
     echo "$ID"
+}
+
+# how sudo and su set up things is subtle and can vary from one host to another
+check.homedir () {
+    local user; user="${1}"
+
+    homedir="$(eval echo "~$user")"
+
+    if [[ "$HOME" != "$homedir" ]]; then
+        errxit "\$HOME [$HOME] does not agree with \$(eval echo "~\$user") [$homedir] for user $user"
+    fi
+
+    if [[ $user == root ]]; then
+        [[ $HOME == /root ]]       || errxit "Wrong home for root: $HOME"
+    else
+        [[ $HOME == /home/$user ]] || errxit "Wrong home for $user: $HOME"
+    fi
 }

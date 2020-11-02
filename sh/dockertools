@@ -6,29 +6,6 @@ import installer
 
 install.apt.pkgs software-properties-common curl
 
-# dtools.ip () {
-#     local dname; dname="$1"
-#     local ip
-
-#     local cmax; cmax=50
-#     local c; c=0
-
-#     while true; do
-#         (( c++ )) || :
-#         ! ip=$(docker inspect --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$dname") && break
-
-#         if [[ $c -gt $cmax ]]; then
-#             rerrcho "${FUNCNAME[0]} timed out waiting for $dname (caller: ${FUNCNAME[1]})"
-#             return 1
-#         fi
-
-#         sleep 0.1
-#     done
-
-#     echo "$ip"
-#     return 0
-# }
-
 dtools.ip () {
     local dname; dname="$1"
     dtools.waitfor "$dname"
@@ -113,12 +90,14 @@ dtools.docker.install () {
 
     apt-get remove docker docker-engine docker.io containerd runc || :
 
+    install.apt.pkgs gnupg2
+
     curl -fsSL "https://download.docker.com/linux/$os/gpg" | apt-key add -
 
     add-apt-repository --yes \
         "deb [arch=amd64] https://download.docker.com/linux/$os $(lsb_release -cs) stable"
 
-    install.apt.pkgs apt-transport-https ca-certificates curl gnupg-agent gnupg2 \
+    install.apt.pkgs apt-transport-https ca-certificates curl gnupg-agent \
                         software-properties-common docker-ce docker-ce-cli containerd.io
 
     groupadd docker > /dev/null 2>&1 || :

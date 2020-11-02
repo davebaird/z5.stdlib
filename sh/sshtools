@@ -1,6 +1,7 @@
 #!/bin/bash
 import errcho
 import usertools
+import pathtools
 
 # If want to give keyfile arg, must also give comment.
 sshtools.generate_keypair () {
@@ -19,10 +20,12 @@ sshtools.generate_keypair () {
 # Avoid the need to prepend every git command (for example) with:
     #   GIT_SSH_COMMAND="ssh -i /home/user$userN/.ssh/git_rw.k2vm.id_rsa -o IdentitiesOnly=yes"
 sshtools.configure_identity_files () {
-    local user; user="$1"
+    local user; user="${1:-$USER}"
     local keysdir; keysdir="${2:-keys}"
 
     local homedir; homedir=$(usertools.homedir "$user")
+
+    pathtools.dir_is_empty "$homedir/.ssh/$keysdir" && errxit "No keys in $homedir/.ssh/$keysdir"
 
     rm -f "$homedir/.ssh/config" # TODO: edit this file instead of nuking it
 

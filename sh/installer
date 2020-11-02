@@ -20,10 +20,11 @@ install.snap () {
 
     snap install core
 
-    debug_stdlib "This sucks so much"
+    local nounset; nounset=0
+    shopt -qo nounset && nounset=1
     set +o nounset
-    source /etc/profile
-    set -o nounset
+    source /etc/profile.d/apps-bin-path.sh
+    [[ $nounset -eq 1 ]] && set -o nounset
 }
 
 test.installed.apt.pkgs () {(

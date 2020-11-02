@@ -10,11 +10,11 @@ cleanup.shared_memory () {
         fi
 
         local output
-        if output=$(sudo ipcrm shm "$id" 2>&1); then
+        if output=$(ipcrm shm "$id" 2>&1); then
             gerrcho "Cleanup shared memory: removed [${key} ${id} ${owner} ${nattch}]"
         else
             errcho "Failed to delete line from ipcs: [${key} ${id} ${owner} ${nattch}]"
             errcho "Output given: [${output}]"
         fi
-    done < <(sudo ipcs -m | grep "^0x" | awk '{print $1, $2, $3, $6}' | grep " 0$")
+    done < <(ipcs -m | grep "^0x" | awk '{print $1, $2, $3, $6}' | grep " 0$")
 }

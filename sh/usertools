@@ -5,21 +5,24 @@ import checks
 # will remove specified rule if $2 is empty
 # Suggested labels: user_${username} or group_${groupname}
 usertools.sudoer () {
-    local label sudo; label="$1"; sudo="$2"
+    local label rule; label="$1"; rule="${2:-}"
 
     check.i_can_root
+    which sudo > /dev/null || install.apt.pkgs sudo
 
     rm -f "/etc/sudoers.d/${label}"
 
-    if [[ -n $sudo ]]; then
-        echo "$sudo" > "/etc/sudoers.d/${label}"
-        chmod 0440 "/etc/sudoers.d/${label}"
-    fi
+    [[ -z $rule ]] && return 0
+
+    echo "$rule" > "/etc/sudoers.d/${label}"
+    chmod 0440 "/etc/sudoers.d/${label}"
 }
 
-# this works even if $1 is 'root'
+# this works even if user is 'root'
 usertools.homedir () {
     local user; user="${1:-$USER}"
+
+    check.homedir "$user"
 
     local homedir; homedir="$(eval echo "~$user")"
 

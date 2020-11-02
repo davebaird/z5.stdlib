@@ -7,7 +7,6 @@ import usertools
 
 # might want to set this to 'full'
 GIT_INSTALL_REPO_CLONE_DEPTH=1
-export GIT_INSTALL_REPO_CLONE_DEPTH
 
 git.install () {
     local user; user="${1:-$USER}"
@@ -15,9 +14,16 @@ git.install () {
     github.keyscan "$user"
 }
 
+# To run this under sudo, make sure the homedir has been properly changed
+# (sometimes sudo doesn't change it). Note: this can be run for the root user
+# early in host setups, perhaps before sudo is available, so don't be tempted to
+# improve it by passing in the username and using sudo here.
 github.keyscan () {
     local user; user="${1:-$USER}"
+    local group; group=$(id -gn "$user")
     local homedir; homedir=$(usertools.homedir "$user")
+
+    install --owner="$user" --group="$group" --mode=0700 --directory "$homedir/.ssh"
 
     grep github.com "$homedir/.ssh/known_hosts" > /dev/null 2>&1 || \
         ssh-keyscan github.com | sudo -u "$user" tee -a "$homedir/.ssh/known_hosts" > /dev/null
@@ -27,15 +33,13 @@ git.install "$@"
 
 git.user.config () {
     local user; user="${1:-$USER}"
-
-    (   # shellcheck disable=SC2164
+    (
         cd /home
         sudo --login -u "$user" git config --global user.name "$user"
         sudo --login -u "$user" git config --global user.email "$user@$(hostname)"
     )
 }
 
-# Useful: executing multiple commands as a different user: https://stackoverflow.com/questions/3435312/how-can-i-execute-a-series-of-commands-in-a-bash-subshell-as-another-user-using
 git.install_repo () {
     local account; account="$1"
     local repo; repo="$2"
@@ -47,17 +51,14 @@ git.install_repo () {
 
     if [[ -n $(ls -A "$installdir") ]]; then
         rerrcho "Files found in $installdir - DISCARDING ANY LOCAL MODS and updating contents"
-        sudo -u "$user" bash -l -c "$(declare -f git._reset_hard); git._reset_hard $installdir"
+        (
+            cd "$installdir" || errxit "couldn't cd $installdir" "$?"
+            sudo -u "$user" git reset --hard
+            sudo -u "$user" git pull
+        )
     else
-        sudo -u "$user" bash -l -c "git clone --depth $GIT_INSTALL_REPO_CLONE_DEPTH git@github.com:$account/$repo.git $installdir"
+        sudo -u "$user" git clone --depth $GIT_INSTALL_REPO_CLONE_DEPTH "git@github.com:$account/$repo.git" "$installdir"
     fi
-}
-
-git._reset_hard () {
-    local installdir; installdir="$1"
-    cd "$installdir" || errxit "couldn't cd $installdir" "$?"
-    git reset --hard
-    git pull
 }
 
 # Add an entry to the .gitignore file of the current repo, from anywhere inside it

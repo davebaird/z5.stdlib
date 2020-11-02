@@ -1,0 +1,25 @@
+#!/bin/bash
+import errcho
+import installer
+
+# Interesting, but ultimately of very limited utility. This approach fails as
+# soon as the function we are trying to run calls another function.
+
+which sudo > /dev/null || install.apt.pkgs sudo
+
+# https://unix.stackexchange.com/a/438712/154825
+Sudo () {
+    Sudo_u "$USER" "$@"
+}
+
+Sudo_u () {
+    local user; user="$1"
+    local f; f="$2"
+    shift; shift
+
+    if [[ $(type -t "$f") == "function" ]]; then
+        command sudo -u "$user" bash -c "$(declare -f "$f"); $f $*"
+    else
+        errxit "Function '$f' not recognised as a function"
+    fi
+}

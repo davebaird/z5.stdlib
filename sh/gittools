@@ -112,7 +112,9 @@ git3- () {
         then
         (
             cd "$d" || errxit "Couldn't cd $d" $? # exits the subshell
+            merrcho "==================================="
             merrcho "=====##### Committing $d #####====="
+            merrcho "==================================="
             git3 "$logmsg"
         )
         fi

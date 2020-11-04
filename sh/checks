@@ -52,14 +52,22 @@ get.os () {
     echo "$ID"
 }
 
-# how sudo and su set up things is subtle and can vary from one host to another
+# How sudo and su set up things is subtle and can vary from one host to another.
+# This function is for when we need to be sure changes will be made in the intended
+# user's homedir.
 check.homedir () {
+    # Could just use $USER here but if we're paranoid about $HOME, might as well
+    # be paranoid about $USER. Try and remember not to simply use $USER when
+    # calling this function, although the homedir checks are still valid and
+    # probably we can trust $USER?
     local user; user="${1}"
+
+    [[ $user != "$USER" ]] && errxit "${FUNCNAME[0]} only makes sense while running as same user [got USER: '$USER' and user: '$user']"
 
     homedir="$(eval echo "~$user")"
 
     if [[ "$HOME" != "$homedir" ]]; then
-        errxit "\$HOME [$HOME] does not agree with \$(eval echo "~\$user") [$homedir] for user $user"
+        errxit "\$HOME [$HOME] does not agree with \$(eval echo \"~\$user\") [$homedir] for user $user"
     fi
 
     if [[ $user == root ]]; then

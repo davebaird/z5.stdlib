@@ -10,7 +10,7 @@ GIT_INSTALL_REPO_CLONE_DEPTH=1
 
 git.install () {
     local user; user="${1:-$USER}"
-    install.apt.pkgs git
+    install.apt.pkgs git sudo
     github.keyscan "$user"
 }
 
@@ -115,6 +115,7 @@ git3- () {
         if [[ -d "$d" ]]; then
         (
             cd "$d" || return 1
+            git rev-parse 2> /dev/null || return 0
             gerrcho "Committing $d"
             git3 "$logmsg"
         )

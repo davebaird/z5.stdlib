@@ -8,7 +8,11 @@ if [[ -n ${1:-} && $1 == strict ]]; then
     set -o noclobber
 fi
 
-declare -A Imported
+# https://unix.stackexchange.com/a/246703/154825
+if [[ -z "${Imported+set}" ]]; then
+    declare -A Imported
+    Imported[0]="i am set"
+fi
 
 # set DEBUG_STDLIB unless it was already exported by caller
 test_debug=${DEBUG_STDLIB:-}

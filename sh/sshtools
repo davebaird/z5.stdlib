@@ -2,6 +2,7 @@
 import errcho
 import usertools
 import pathtools
+import installer
 
 # If want to give keyfile arg, must also give comment.
 sshtools.generate_keypair () {
@@ -35,4 +36,25 @@ sshtools.configure_identity_files () {
     done
 
     chmod 0600 "$homedir/.ssh/config"
+}
+
+sshtools.mount_remote () {
+    local remote_dir local_dir id_file; remote_dir="$1"; local_dir="$2"
+    id_file="${3:-~/.ssh/id_rsa}"
+
+    [[ -z $remote_dir ]] && { errcho "ERROR: remote dir not supplied"; return 1; }
+    [[ -z $local_dir ]]  && { errcho "ERROR: local dir not supplied"; return 1; }
+    # shellcheck disable=SC2015
+    [[ -f $id_file ]] && [[ -r $id_file ]] || \
+        { errcho "ERROR: ID file '$id_file' not found or not readable"; return 1; }
+
+    install.apt.pkgs sshfs
+    # the grep is to skip the sudo call for non-sudoers - presumably the file has already been fixed
+    grep '#user_allow_other' /etc/fuse.conf > /dev/null && \
+        sudo perl -pi -e 's/#user_allow_other/user_allow_other/' /etc/fuse.conf
+
+    mkdir -p "$local_dir"
+
+    sshfs -o allow_other,default_permissions,IdentityFile="$id_file" \
+        "$remote_dir" "$local_dir"
 }

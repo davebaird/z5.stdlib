@@ -22,8 +22,6 @@ usertools.sudoer () {
 usertools.homedir () {
     local user; user="${1:-$USER}"
 
-    check.homedir "$user"
-
     local homedir; homedir="$(eval echo "~$user")"
 
     if [[ -d $homedir ]]; then

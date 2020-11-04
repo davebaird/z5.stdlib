@@ -1,14 +1,23 @@
 #!/bin/bash
 import errcho
 
+A note on versions
+
+# In cpanfile2pkglist we drop any package declaration line that has a comma in it, because we're
+# handling version declarations separately. If you want to install *both* the deb
+# pkg (because it will pick up non-Perl dependencies, along with the older version
+# of the Perl lib), *and* the versioned version via cpanm, simply list the package
+# twice in the cpanfile source file - once with the version, and once without.
+# Of course, that won't work with max versions. ATM, for max versions, check
+# the contents of apt.list, if it's not there then fine. If it is, you'll need to
+# modify this code.
+
 generate.pkglists () {
-    [[ -z ${1:-} ]] && errxit "Must supply cpanfile sourcefile"
+    [[ -z ${1:-} ]]      && errxit "Must supply cpanfile sourcefile"
+    [[ $1 == cpanfile ]] && errxit "Do not operate directly on cpanfile - use a surrogate e.g. cpanfile.source"
+    [[ -f $1 ]]          || errxit "File not found: $1"
 
-    if [[ $1 == cpanfile ]]; then
-        errxit "Do not operate directly on cpanfile - use a surrogate e.g. cpanfile.source"
-    fi
-
-    [[ -f $1 ]] || errxit "File not found: $1"
+    local cpansourcefile; cpansourcefile="$1"
 
     trap generate.pkglists._cleanup EXIT
 
@@ -16,7 +25,8 @@ generate.pkglists () {
 
     rm -f cpanfile apt.list
 
-    cpanfile2pkglist < "$1" | pkglist2deblist > apt.list 3> cpanfile
+    cpanfile2pkglist < "$cpansourcefile" | pkglist2deblist > apt.list 3> cpanfile
+    sed '/^#/d' < "$cpansourcefile" | grep , >> cpanfile
 
     rm "$tmpfile"
     cpanfileshowdeps < cpanfile | pkglist2deblist >> apt.list 3> "$tmpfile"
@@ -33,8 +43,8 @@ generate.pkglists._cleanup () {
 cpanfile2pkglist () {
     declare cpanfilecontents=${1:-$(</dev/stdin)} # https://stackoverflow.com/a/35512655
 
-    echo "$cpanfilecontents" | sed '/^#/d' | sed '/^$/d' | sed 's/requires //' | \
-        tr -d '"' | tr -d "'" | tr -d ';' | sed 's/\s.*$//' | sed 's/,.*$//'
+    echo "$cpanfilecontents" | sed '/^#/d' | sed '/^$/d' | grep -v , | sed 's/requires //' | \
+        tr --delete '"' | tr --delete "'" | tr --delete ';' | sed 's/\s.*$//' | sed 's/,.*$//'
 }
 
 # shellcheck disable=SC2120

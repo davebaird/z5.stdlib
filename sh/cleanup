@@ -1,4 +1,5 @@
 #!/bin/bash
+import errcho
 
 # Modified from script found here: https://blog.dhampir.no/content/fixing-shmget-failed-no-space-left-on-device
 cleanup.shared_memory () {
@@ -16,5 +17,5 @@ cleanup.shared_memory () {
             errcho "Failed to delete line from ipcs: [${key} ${id} ${owner} ${nattch}]"
             errcho "Output given: [${output}]"
         fi
-    done < <(ipcs -m | grep "^0x" | awk '{print $1, $2, $3, $6}' | grep " 0$")
+    done < <(ipcs -m | grep "^0x" | awk '{print $1, $2, $3, $6}' | grep " 0$" | grep "$USER")
 }

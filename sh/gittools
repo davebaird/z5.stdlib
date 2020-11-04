@@ -105,23 +105,25 @@ git3 () {
 git3- () {
     local logmsg; logmsg=${1-No log message supplied}
 
-    if git rev-parse 2> /dev/null
-    then
-        rerrcho "Do not run git3- from inside a repo"
-        return 1
-    fi
+    test.is_git_repo && errxit "Don't run git3- from inside a repo"
 
     for d in "$PWD"/*; do
-        if [[ -d "$d" ]]; then
+        if [[ -d "$d" ]] && test.is_git_repo "$d"
+        then
         (
-            cd "$d" || return 1
-            git rev-parse 2> /dev/null || return 0
-            gerrcho "Committing $d"
+            cd "$d" || errxit "Couldn't cd $d" $? # exits the subshell
+            merrcho "=====##### Committing $d #####====="
             git3 "$logmsg"
         )
         fi
     done
 }
+
+test.is_git_repo () {(
+    local dir; dir="${1:-$PWD}"
+    cd "$dir" || return 2
+    git rev-parse 2> /dev/null
+)}
 
 gitpull- () {
     for d in "$PWD"/*; do

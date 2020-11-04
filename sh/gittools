@@ -70,6 +70,22 @@ git.ignore () {
     grep "^$path$" "$gitignore" > /dev/null || echo "$path" >> "$gitignore"
 }
 
+git.init.repo () {
+    local remote_repo_url; remote_repo_url="$1"
+
+    if [[ -z $remote_repo_url ]]; then
+        rerrcho "${FUNCNAME[0]}: must supply a remote repo URL"
+        return 1
+    fi
+
+    git init
+    git add .
+    git commit -m 'First commit'
+    git branch -M master
+    git remote add origin "$remote_repo_url"
+    git push -u origin master
+}
+
 git-new-empty-repo () {
     errxit "git-new-empty-repo is broken, but useful"
 

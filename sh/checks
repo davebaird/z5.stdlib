@@ -26,15 +26,6 @@ test.i_can_root () {(
     [[ $EUID -eq 0 ]]
 )}
 
-check.is_getopt_enhanced () {
-    # The leading exclamation does this:
-    #   - allow a command to fail with !'s side effect on errexit
-    #   - use return value from ${PIPESTATUS[0]}, because ! hosed $?
-    ! getopt --test > /dev/null
-    [[ ${PIPESTATUS[0]} -eq 4 ]] && return 0
-    errxit 'getopt (enhanced) not available in this environment'
-}
-
 # server info
 # cat /etc/os-release
 # cat /etc/lsb-release

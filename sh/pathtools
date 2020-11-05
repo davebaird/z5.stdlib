@@ -29,10 +29,10 @@ path.rootdir () {
     local scriptfile
     if [[ $0 == '-bash' ]]; then
         # called directly from commandline
-        yerrcho "Called from CLI"
+        # yerrcho "Called from CLI"
         scriptfile=./DUMMY
     else
-        yerrcho "Called from script"
+        # yerrcho "Called from script"
         # shellcheck disable=SC2046,2086
         set $(caller $depth)
         scriptfile=$3
@@ -75,4 +75,11 @@ path.backup () {
         local ts; ts=$(date +"%Y-%m-%d_%H-%M-%S")
         mv "$path" "$path.$ts"
     fi
+}
+
+# mkdir -p is too loose, mkdir EXISTING_DIR is an error
+path.mkdir.ifmissing () {
+    local dir; dir="$1"
+    [[ -d $dir ]] && return 0
+    mkdir "$dir"
 }

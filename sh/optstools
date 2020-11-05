@@ -1,0 +1,32 @@
+#!/bin/bash
+import errcho
+
+# Don´t use this by saying:
+#   eval set -- "$(parseopts "$Options" "$LongOpts" "$@")"
+# Instead, assign to an intermediate variable, to ensure usage() exits properly
+# parsed="$(parseopts "$Options" "$LongOpts" "$@")"
+# eval set -- "$parsed"
+parseopts () {
+    local options longoptions; options="$1"; longoptions="$2"; shift 2
+
+    check.is_getopt_enhanced
+
+    local parsed rc
+    # shellcheck disable=SC2251
+    ! parsed=$(getopt --options="$options" --longoptions="$longoptions" --name "$0" -- "$@")
+    rc="${PIPESTATUS[0]}"
+    if [[ $rc -ne 0 ]]; then # getopt has already complained about wrong arguments to stdout
+        usage "$rc"          # usage() is expected to be provided by the caller
+    fi
+
+    echo "$parsed"
+}
+
+check.is_getopt_enhanced () {
+    # The leading exclamation does this:
+    #   - allow a command to fail with !'s side effect on errexit
+    #   - use return value from ${PIPESTATUS[0]}, because ! hosed $?
+    ! getopt --test > /dev/null
+    [[ ${PIPESTATUS[0]} -eq 4 ]] && return 0
+    errxit 'getopt (enhanced) not available in this environment'
+}

@@ -19,3 +19,35 @@ cleanup.shared_memory () {
         fi
     done < <(ipcs -m | grep "^0x" | awk '{print $1, $2, $3, $6}' | grep " 0$" | grep "$USER")
 }
+
+# https://riptutorial.com/bash/example/2398/accumulate-a-list-of-trap-work-to-run-at-exit-
+# Usage:
+#   cleanup.add rm -f /tmp/foo
+#   cleanup.add echo "I am exiting"
+#   tempfile=$(mktemp)
+#   cleanup.add rm -f "$tempfile"
+# Based on http://www.linuxjournal.com/content/use-bash-trap-statement-cleanup-temporary-files
+
+# the -g, and empty array assignment, are required
+declare -ag __cleanup_on_exit_items; __cleanup_on_exit_items=()
+
+function cleanup._on_exit () {
+    local errcode; errcode=$?
+    set +o nounset
+    set +o errexit
+
+    for i in "${__cleanup_on_exit_items[@]}"
+    do
+        eval "$i"
+    done
+
+    exit "$errcode"
+}
+
+function cleanup.add () {
+    local -i n; n="${#__cleanup_on_exit_items[@]}"
+    __cleanup_on_exit_items[$n]="$*"
+    [[ $n -eq 0 ]] && trap cleanup._on_exit EXIT
+}
+
+:

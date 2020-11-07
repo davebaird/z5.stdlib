@@ -64,9 +64,10 @@ path.their.rootdir () {
     path._rootdir "$1" 2
 }
 
-pathtools.dir_is_empty () {
+path.is.empty.dir () {(
+    set +e
     [[ -n $(find "$1" -maxdepth 0 -type d -empty 2> /dev/null) ]]
-}
+)}
 
 path.backup () {
     local path; path="$1"
@@ -78,8 +79,20 @@ path.backup () {
 }
 
 # mkdir -p is too loose, mkdir EXISTING_DIR is an error
-path.mkdir.ifmissing () {
+path.mkdir.if.missing () {
     local dir; dir="$1"
     [[ -d $dir ]] && return 0
     mkdir "$dir"
 }
+
+path.is.absolute () {(
+    set +e
+    [[ $1 =~ ^/ ]]
+)}
+
+path.is.relative () {(
+    set +e
+    ! path.is.absolute "$@"
+)}
+
+:

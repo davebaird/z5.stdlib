@@ -30,13 +30,15 @@ test.i_can_root () {(
 # cat /etc/os-release
 # cat /etc/lsb-release
 # uname -a
-test.is_debian () {
+test.is_debian () {(
+    set +e
     [[ $(get.os) == debian ]]
-}
+)}
 
-test.is_ubuntu () {
+test.is_ubuntu () {(
+    set +e
     [[ $(get.os) == ubuntu ]]
-}
+)}
 
 get.os () {
     source /etc/os-release
@@ -67,3 +69,5 @@ check.homedir () {
         [[ $HOME == /home/$user ]] || errxit "Wrong home for $user: $HOME"
     fi
 }
+
+:

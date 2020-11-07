@@ -1,11 +1,12 @@
 #!/bin/bash
 
 if [[ -n ${1:-} && $1 == strict ]]; then
-    # saner programming env: these switches turn some bugs into errors
+    # http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -o errexit
     set -o nounset
     set -o pipefail
     set -o noclobber
+    IFS=$'\n\t'
 fi
 
 # https://unix.stackexchange.com/a/246703/154825
@@ -74,4 +75,4 @@ if [[ $DEBUG_STDLIB -eq 1 ]]; then
     import stacktrace
 fi
 
-
+:

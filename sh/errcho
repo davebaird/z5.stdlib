@@ -28,7 +28,7 @@ errxit() {
 
     # shellcheck disable=SC2046
     set $(caller 0)
-    line=$1; subroutine=$2; filename=$3
+    line=$1; subroutine=${2:-}; filename=${3:-}
 
     rerrcho "ERROR at line $line in ${subroutine}() of $filename: $message [$rc]"
 
@@ -59,12 +59,12 @@ errcho () {
 
 errchoRED=1; errchoGREEN=2; errchoYELLOW=3; errchoBLUE=4; errchoMAGENTA=5; errchoCYAN=6; # WHITE=7;
 
-rerrcho () { _colour_errcho $errchoRED     "$1"; }
-gerrcho () { _colour_errcho $errchoGREEN   "$1"; }
-yerrcho () { _colour_errcho $errchoYELLOW  "$1"; }
-berrcho () { _colour_errcho $errchoBLUE    "$1"; }
-merrcho () { _colour_errcho $errchoMAGENTA "$1"; }
-cerrcho () { _colour_errcho $errchoCYAN    "$1"; }
+rerrcho () { _colour_errcho $errchoRED     "$@"; }
+gerrcho () { _colour_errcho $errchoGREEN   "$@"; }
+yerrcho () { _colour_errcho $errchoYELLOW  "$@"; }
+berrcho () { _colour_errcho $errchoBLUE    "$@"; }
+merrcho () { _colour_errcho $errchoMAGENTA "$@"; }
+cerrcho () { _colour_errcho $errchoCYAN    "$@"; }
 
 _colour_errcho () {
     local -i colour; colour="$1"

@@ -14,7 +14,7 @@ install.yq () {
 install.snap () {
     if which snap > /dev/null
     then
-        install._snap_fix_path # necessary if re-running the install script in the same session
+        install._snap_fix_path # necessary if re-running in the same session
         return 0
     fi
 
@@ -49,3 +49,22 @@ install.apt.pkgs () {
     sudo apt-get update
     sudo apt-get install --yes --quiet --no-install-recommends "$@"
 }
+
+install.docopts () {(
+    which docopts > /dev/null && return 0
+
+    git clone https://github.com/docopt/docopts.git
+
+    cd docopts || errexit "Couldn't cd docopts" $?
+
+    ./get_docopts.sh
+
+    sudo mv docopts docopts.sh /usr/local/bin
+    chmod 0755 /usr/local/bin/docopts /usr/local/bin/docopts.sh
+
+    cd .. || errexit "Couldn't cd back" $?
+
+    rm -rf docopts
+)}
+
+:

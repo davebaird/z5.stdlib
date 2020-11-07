@@ -26,7 +26,7 @@ sshtools.configure_identity_files () {
 
     local homedir; homedir=$(usertools.homedir "$user")
 
-    pathtools.dir_is_empty "$homedir/.ssh/$keysdir" && errxit "No keys in $homedir/.ssh/$keysdir"
+    path.is.empty.dir "$homedir/.ssh/$keysdir" && errxit "No keys in $homedir/.ssh/$keysdir"
 
     rm -f "$homedir/.ssh/config" # TODO: edit this file instead of nuking it
 
@@ -39,22 +39,23 @@ sshtools.configure_identity_files () {
 }
 
 sshtools.mount_remote () {
-    local remote_dir local_dir id_file; remote_dir="$1"; local_dir="$2"
-    id_file="${3:-~/.ssh/id_rsa}"
+    local server_connect remote_dir local_dir
+    server_connect="$1"; remote_dir="$2"; local_dir="$3"
 
-    [[ -z $remote_dir ]] && { errcho "ERROR: remote dir not supplied"; return 1; }
-    [[ -z $local_dir ]]  && { errcho "ERROR: local dir not supplied"; return 1; }
-    # shellcheck disable=SC2015
-    [[ -f $id_file ]] && [[ -r $id_file ]] || \
-        { errcho "ERROR: ID file '$id_file' not found or not readable"; return 1; }
+    [[ -z $server_connect ]] && { errcho "ERROR: server_connect not supplied"; return 1; }
+    [[ -z $remote_dir ]]     && { errcho "ERROR: remote dir not supplied"; return 1; }
+    [[ -z $local_dir ]]      && { errcho "ERROR: local dir not supplied"; return 1; }
+    # # shellcheck disable=SC2015
+    # [[ -f $id_file ]] && [[ -r $id_file ]] || \
+    #     { errcho "ERROR: ID file '$id_file' not found or not readable"; return 1; }
 
     install.apt.pkgs sshfs
-    # the grep is to skip the sudo call for non-sudoers - presumably the file has already been fixed
+    # the grep is to skip the sudo call for non-sudoers - we assume the file has already been fixed
     grep '#user_allow_other' /etc/fuse.conf > /dev/null && \
         sudo perl -pi -e 's/#user_allow_other/user_allow_other/' /etc/fuse.conf
 
     mkdir -p "$local_dir"
 
-    sshfs -o allow_other,default_permissions,IdentityFile="$id_file" \
-        "$remote_dir" "$local_dir"
+    # ,IdentityFile="$id_file"
+    sshfs -o allow_other,default_permissions "${server_connect}:${remote_dir}" "$local_dir"
 }

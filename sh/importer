@@ -9,6 +9,15 @@ if [[ -n ${1:-} && $1 == strict ]]; then
     IFS=$'\n\t'
 fi
 
+# Used in cleanup._on_exit
+nostrict () {
+    set +o errexit
+    set +o nounset
+    set +o pipefail
+    set +o noclobber
+    IFS=$' \n\t'
+}
+
 # https://unix.stackexchange.com/a/246703/154825
 if [[ -z "${Imported+set}" ]]; then
     declare -A Imported

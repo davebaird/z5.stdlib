@@ -15,15 +15,27 @@ dtools.ip () {
 }
 
 dtools.stop () {
+    local -i verbose; verbose=0
+    if [[ $1 == --verbose ]]; then
+        verbose=1
+        shift
+    fi
+
     local dname; dname="$1"
+
+
 
     if dtools.container.running "$dname"
     then
+        [[ $verbose -eq 1 ]] && errcho "Stopping $dname"
         docker stop "$dname"
+    else
+        [[ $verbose -eq 1 ]] && errcho "Not stopping: $dname is not running"
     fi
 
     if dtools.container.exists  "$dname"
     then
+        [[ $verbose -eq 1 ]] && errcho "Removing stopped container $dname"
         docker rm --force "$dname"
     fi
 

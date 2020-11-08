@@ -33,8 +33,8 @@ declare -ag __cleanup_on_exit_items; __cleanup_on_exit_items=()
 
 function cleanup._on_exit () {
     local errcode; errcode=$?
-    set +o nounset
-    set +o errexit
+    nostrict
+    berrcho "===== Running cleanup for $0 ====="
 
     for i in "${__cleanup_on_exit_items[@]}"
     do
@@ -46,8 +46,11 @@ function cleanup._on_exit () {
 
 function cleanup.add () {
     local -i n; n="${#__cleanup_on_exit_items[@]}"
+    local IFS=$' \n\t'
+    # gerrcho "Adding cleanup: " "$@"
     __cleanup_on_exit_items[$n]="$*"
     [[ $n -eq 0 ]] && trap cleanup._on_exit EXIT
+    :
 }
 
 :

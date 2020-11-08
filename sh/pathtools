@@ -29,16 +29,13 @@ path.rootdir () {
     local scriptfile
     if [[ $0 == '-bash' ]]; then
         # called directly from commandline
-        # yerrcho "Called from CLI"
         scriptfile=./DUMMY
     else
-        # yerrcho "Called from script"
+        local IFS=' ' # this remains set for the remainder of this function, but I think that's ok
         # shellcheck disable=SC2046,2086
         set $(caller $depth)
         scriptfile=$3
     fi
-
-    #yerrcho "Searching for $markerfile above $scriptfile using depth $depth"
 
     local dir; dir="$(dirname "$(readlink --canonicalize "$scriptfile")")"
 
@@ -68,6 +65,14 @@ path.is.empty.dir () {(
     set +e
     [[ -n $(find "$1" -maxdepth 0 -type d -empty 2> /dev/null) ]]
 )}
+
+# # Not just sugar. In cleanup.add, can't pass in things like '&&'
+# ## or just say rmdir --ignore-fail-on-non-empty
+# path.rmdir.if.empty () {
+#     local dir; dir="$1"
+#     path.is.empty.dir "$dir" && rmdir --verbose "$dir"
+# }
+
 
 path.backup () {
     local path; path="$1"

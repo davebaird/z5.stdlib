@@ -7,6 +7,7 @@ import usertools
 YamlFile="$1"
 
 [[ -z $YamlFile ]] && rerrxit "Need a cloud init YAML file on import line"
+[[ -f $YamlFile ]] || rerrxit "Cloud init YAML file [$YamlFile] not found"
 
 main () {
     install.yq
@@ -52,14 +53,14 @@ cloud_init._user () {
     local -i i; i="$1"
     local name gecos sudo plain_text_passwd groups
 
-    name=$(yq              read "$YamlFile" "users[$i].name")
-    gecos=$(yq             read "$YamlFile" "users[$i].gecos")
-    sudo=$(yq              read "$YamlFile" "users[$i].sudo")
+    name=$(             yq read "$YamlFile" "users[$i].name")
+    gecos=$(            yq read "$YamlFile" "users[$i].gecos")
+    sudo=$(             yq read "$YamlFile" "users[$i].sudo")
     plain_text_passwd=$(yq read "$YamlFile" "users[$i].plain_text_passwd")
-    groups=$(yq            read "$YamlFile" "users[$i].groups")
+    groups=$(           yq read "$YamlFile" "users[$i].groups")
 
     # shellcheck disable=SC2001
-    for grp in $(echo "$groups" | sed "s/,/ /g")
+    for grp in $(echo "$groups" | sed "s/,/\n/g")
     do
         groupadd "$grp" > /dev/null 2>&1 || :
     done
@@ -75,7 +76,7 @@ cloud_init._user () {
             --user-group --create-home "${name}"
     fi
 
-    usertools.sudoer "user_$name" "$sudo"
+    usertools.sudoer "user_$name" "$sudo" # make sure to run this even if $sudo is empty - it'll clear any existing file
 
     cloud_init._user_authorized_keys "$i" "$name"
 }

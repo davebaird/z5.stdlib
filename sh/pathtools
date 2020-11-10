@@ -66,6 +66,11 @@ path.is.empty.dir () {(
     [[ -n $(find "$1" -maxdepth 0 -type d -empty 2> /dev/null) ]]
 )}
 
+path.is.not.empty.dir () {(
+    set +e
+    ! path.is.empty.dir "$1"
+)}
+
 # # Not just sugar. In cleanup.add, can't pass in things like '&&'
 # ## or just say rmdir --ignore-fail-on-non-empty
 # path.rmdir.if.empty () {

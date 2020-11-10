@@ -27,8 +27,7 @@ stop.pid () {
         return 0
     fi
 
-    local cmd; cmd=$(ps --no-headers -o cmd --pid "$pid" | perl -pe 's/ +/ /g')
-    errcho "Stopping PID $pid - command was: $cmd"
+    errcho "Stopping PID $pid - command was: $(pid.command "$pid")"
 
     # shellcheck disable=SC2046,SC2086
     kill -term $pid $(list.descendants $pid) || :
@@ -49,6 +48,9 @@ stop.pid () {
     fi
 }
 
+pid.command () {
+    ps --no-headers -o cmd --pid "$1" | perl -pe 's/ +/ /g'
+}
 
 list.descendants () {
     local children; children=$(ps -o pid= --ppid "$1")
@@ -62,4 +64,16 @@ list.descendants () {
 
 list.descendants.comma_separated () {
     list.descendants "$1" | tr '\n' ',' | sed 's/,\+/,/g' | sed 's/\s\+//g' | sed 's/,$//'
+}
+
+pidfile.set () {
+    local dir path pid; path="$1"; pid="$2"
+    dir="$(dirname "$path")"
+    mkdir -p "$dir"
+    rm -f "$path"
+    echo "$pid" > "$path"
+}
+
+pidfile.get () {
+    cat < "$1"
 }

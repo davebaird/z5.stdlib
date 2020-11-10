@@ -68,7 +68,7 @@ dtools.tail.log () {
     local count
 
     while true; do
-        docker logs -f "$dname" > "$logfile" 2>&1 &
+        docker logs -f "$dname" >> "$logfile" 2>&1 &
         pid=$!
 
         # shellcheck disable=2009
@@ -79,7 +79,7 @@ dtools.tail.log () {
         if [[ $count -eq 0 ]]; then
             if wait $pid    # checks if process executed successfully or not
             then
-                errcho "docker logs $dname ran and exited - that's unexpected"
+                errcho "ERROR: docker logs $dname ran and exited"
                 return 1
             else            # process terminated abnormally
                 debug "docker $dname not ready - can't start logging yet (returned $?)"

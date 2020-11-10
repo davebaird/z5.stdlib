@@ -36,6 +36,8 @@ errxit() {
 }
 
 errcho () {
+    local IFS=$' \t\n'
+
     if [[ -z $1 ]]; then
         echo >&2
         return 0

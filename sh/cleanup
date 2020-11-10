@@ -32,7 +32,13 @@ cleanup.shared_memory () {
 declare -ag __cleanup_on_exit_items; __cleanup_on_exit_items=()
 
 function cleanup._on_exit () {
-    local errcode; errcode=$?
+    # In general, a cleanup function (called via 'trap') will leave $? unmodified,
+    # and we don't need to call exit at the end. But since we are executing
+    # arbitrary code, we make sure to preserve rc in case someone else modifies
+    # it by accident in an exit item.
+    local rc=$? # do NOT separate declaration from assignment - $? becomes the rc from 'local rc;'!!!
+    # errcho "Starting cleanup with rc $rc"
+
     nostrict
     berrcho "===== Running cleanup for $0 ====="
 
@@ -41,7 +47,7 @@ function cleanup._on_exit () {
         eval "$i"
     done
 
-    exit "$errcode"
+    exit "$rc"
 }
 
 function cleanup.add () {

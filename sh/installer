@@ -45,7 +45,13 @@ test.installed.apt.pkgs () {(
 
 install.apt.pkgs () {
     test.installed.apt.pkgs "$@" && return 0
-    # check.i_can_root "Must be root to ${FUNCNAME[0]} $*"
+
+    if ! which sudo > /dev/null
+    then
+        check.i_can_root "Requires root - need to install sudo before proceeding"
+        apt-get install --yes --quiet --no-install-recommends sudo
+    fi
+
     sudo apt-get update
     sudo apt-get install --yes --quiet --no-install-recommends "$@"
 }

@@ -32,7 +32,10 @@ sshtools.configure_identity_files () {
 
     for key in "$homedir/.ssh/$keysdir"/*
     do
-        echo "IdentityFile $key" | sudo -u "$user" tee -a "$homedir/.ssh/config" > /dev/null
+        # Note: using ~ and not $homedir is important. Lockserver tunnel container
+        # mounts userN/.ssh onto user/.ssh and reads this file, at which point,
+        # $homedir would be wrong
+        echo "IdentityFile ${key/$homedir/"~"}" | sudo -u "$user" tee -a "$homedir/.ssh/config" > /dev/null
     done
 
     chmod 0600 "$homedir/.ssh/config"

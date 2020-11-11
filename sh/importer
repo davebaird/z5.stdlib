@@ -6,7 +6,7 @@ if [[ -n ${1:-} && $1 == strict ]]; then
     set -o nounset
     set -o pipefail
     set -o noclobber
-    IFS=$'\n\t'
+    # IFS=$'\n\t'
 fi
 
 # Used in cleanup._on_exit

@@ -1,0 +1,58 @@
+#!/bin/bash
+
+# From: https://gist.github.com/coderofsalvation/8268365
+# Note: would clash with try-catch bc both have a throw() function
+
+# Note: some quoting issues fixed, so test before using
+
+# simple event / exception handling in bash
+
+declare -A LISTENERS
+
+throw () {
+    EVENT=$1; shift;
+
+    for listener in ${LISTENERS[$EVENT]}
+    do
+        eval "$listener $*"
+    done
+}
+
+addListener () {
+    if ! test "${LISTENERS[$1]+isset}"; then
+        LISTENERS["$1"]="";
+    fi
+
+    LISTENERS["$1"]+="$2 " # we can get away with this since functionnames never contain spaces
+}
+
+# convert exitcodes to events
+trap "throw EXIT"    EXIT
+trap "throw SIGINT"  SIGINT
+trap "throw SIGTERM" SIGTERM
+
+#
+# Usage:
+#
+#   onFoo(){
+#     echo "onFoo() called width arg $1!"
+#   }
+#
+#   onExit(){
+#     echo "onExit called!"
+#   }
+#
+#   foo(){
+#     throw EVENT_FOO_OCCURED xyz
+#   }
+#
+#   addListener EVENT_FOO_OCCURED onFoo
+#   addListener EXIT onExit
+#   foo
+#
+# OUTPUT:
+#
+#   onFoo() called width arg xyz!
+#   onExit called!
+#
+

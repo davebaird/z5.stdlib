@@ -1,20 +1,60 @@
 #!/bin/bash
+import errcho
 
-# Pass assoc array into function: https://stackoverflow.com/a/8881121/2334574
-# Convert to json:                https://stackoverflow.com/a/44792751/2334574
-# Use it thusly:                  aa2j "$(declare -p AArray)"
-aa2j () { # associative array 2 json
-    local arrstr; arrstr="$1"
+# For global assoc arrays
+aa.has () {(
+    set +o errexit
+    set +o nounset
+    local attr aarrayname; attr="$1"; aarrayname="$2"
+    local -n aa_has_set_AArray="$aarrayname" || errxit "ERROR: Need bash 4.3 or newer"
+    # berrcho "Got value: $value"
+    aa.has.set "$attr" "$aarrayname" && [[ -n ${aa_has_set_AArray[$attr]} ]]
+)}
 
-    eval "declare -A arr=${arrstr#*=}"
+# For global assoc arrays
+aa.has.set () {(
+    set +o errexit
+    set +o nounset
+    local attr aarrayname; attr="$1"; aarrayname="$2"
+    local -n aa_has_set_AArray="$aarrayname" || errxit "ERROR: Need bash 4.3 or newer"
+    # eval "value=\${${aarrayname}[$attr]}"
+    [[ -n ${aa_has_set_AArray[$attr]+isset} ]]
+)}
 
-    # shellcheck disable=SC2154
-    for key in "${!arr[@]}"; do
-        printf '%s\0%s\0' "$key" "${arr[$key]}"
-    done |
-        jq -Rs '
-        split("\u0000")
-        | . as $a
-        | reduce range(0; length/2) as $i
-            ({}; . + {($a[2*$i]): ($a[2*$i + 1]|fromjson? // .)})'
+# For local assoc arrays
+# Usage: laa.has.set "$attr" "$(declare -p aarray)"
+laa.has.set () {(
+    set +o errexit
+    set +o nounset
+    local attr array_as_str; attr="$1"; array_as_str="$2"
+
+    local -A aa_has_set_aarray
+    eval "aa_has_set_aarray=${array_as_str#*=}"
+
+    # local -n aa_has_set_AArray="$aarrayname" || errxit "ERROR: Need bash 4.3 or newer"
+    # eval "value=\${${aarrayname}[$attr]}"
+    [[ -n ${aa_has_set_aarray[$attr]+isset} ]]
+)}
+
+# For local assoc arrays
+# Usage: laa.has "$attr" "$(declare -p aarray)"
+laa.has () {(
+    set +o errexit
+    set +o nounset
+    local attr array_as_str; attr="$1"; array_as_str="$2"
+
+    local -A aa_has_set_aarray
+    eval "aa_has_set_aarray=${array_as_str#*=}"
+
+    laa.has.set "$attr" "$(declare -p aa_has_set_aarray)" && [[ -n ${aa_has_set_aarray[$attr]} ]]
+)}
+
+# marginally safe
+rmrf_safe () {
+    local dir; dir="$1"
+
+    [[ $dir == / ]] && errxit "Attempt to rm -rf /"
+
+    rm -rf "${dir:?}" # if $dir is empty this will throw an error
 }
+

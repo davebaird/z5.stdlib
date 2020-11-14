@@ -1,0 +1,33 @@
+#!/bin/bash
+import installer
+
+install.jo
+
+# Pass assoc array into function: https://stackoverflow.com/a/8881121/2334574
+# Convert to json:                https://stackoverflow.com/a/44792751/2334574
+# Use it thusly:                  aa2j "$(declare -p AArray)"
+aa2j () { # associative array 2 json
+    local arrstr; arrstr="$1"
+
+    declare -A arr
+    eval "arr=${arrstr#*=}"
+
+    # shellcheck disable=SC2154
+    for key in "${!arr[@]}"; do
+        printf '%s\0%s\0' "$key" "${arr[$key]}"
+    done |
+        jq -Rs '
+        split("\u0000")
+        | . as $a
+        | reduce range(0; length/2) as $i
+            ({}; . + {($a[2*$i]): ($a[2*$i + 1]|fromjson? // .)})'
+}
+
+# a2j "$(declare -p array)"
+a2j () {
+    local arrstr; arrstr="$1"
+    local -a arr; eval "arr=${arrstr#*=}"
+
+    # print each value on its own line
+    printf "%s\n" "${arr[@]}" | jo -a
+}

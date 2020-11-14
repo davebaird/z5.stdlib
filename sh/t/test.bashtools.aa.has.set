@@ -1,0 +1,89 @@
+#!/bin/bash
+mydir="$(dirname "$0")"
+# shellcheck source=../importer
+source "$mydir"/../importer strict || exit 1
+import bashtools
+import errcho
+
+main () {
+    declare -gA AArray
+
+    AArray[hasvalue]=gbar
+    AArray[isemptystr]=''
+    AArray[isempty]=        # same thing as isemptystr
+    AArray[iszero]=0
+
+    test_global_assoc_array
+
+    test_local_assoc_array
+}
+
+test_local_assoc_array () {
+    local -A aarray
+    aarray[hasvalue]=gbar
+    aarray[isemptystr]=''
+    aarray[isempty]=        # same thing as isemptystr
+    aarray[iszero]=0
+
+    # ----- iszero
+    laa.has.set iszero "$(declare -p aarray)" && echo "   OK: laa.has.set iszero     aarray TRUE"
+    laa.has.set iszero "$(declare -p aarray)" || echo "ERROR: laa.has.set iszero     aarray FALSE (expected TRUE)"
+
+    laa.has iszero "$(declare -p aarray)" && echo "   OK: laa.has     iszero     aarray TRUE"
+    laa.has iszero "$(declare -p aarray)" || echo "   OK: laa.has     iszero     aarray FALSE (expected TRUE)"
+
+    # ----- notexist
+    laa.has.set notexist "$(declare -p aarray)" && echo "ERROR: laa.has.set notexist   aarray TRUE (expected FALSE)"
+    laa.has.set notexist "$(declare -p aarray)" || echo "   OK: laa.has.set notexist   aarray FALSE"
+
+    laa.has notexist "$(declare -p aarray)" && echo "ERROR: laa.has     notexist   aarray TRUE (expected FALSE)"
+    laa.has notexist "$(declare -p aarray)" || echo "   OK: laa.has     notexist   aarray FALSE"
+
+    # ----- hasvalue
+    laa.has.set hasvalue "$(declare -p aarray)" && echo "   OK: laa.has.set hasvalue   aarray TRUE"
+    laa.has.set hasvalue "$(declare -p aarray)" || echo "ERROR: laa.has.set hasvalue   aarray FALSE (expected TRUE)"
+
+    laa.has hasvalue "$(declare -p aarray)" && echo "   OK: laa.has     hasvalue   aarray TRUE"
+    laa.has hasvalue "$(declare -p aarray)" || echo "ERROR: laa.has     hasvalue   aarray FALSE (expected TRUE)"
+
+    # ----- isemptystr
+    laa.has.set isemptystr "$(declare -p aarray)" && echo "   OK: laa.has.set isemptystr aarray TRUE"
+    laa.has.set isemptystr "$(declare -p aarray)" || echo "ERROR: laa.has.set isemptystr aarray FALSE (expected TRUE)"
+
+    laa.has isemptystr "$(declare -p aarray)" && echo "ERROR: laa.has     isemptystr aarray TRUE (expected FALSE)"
+    laa.has isemptystr "$(declare -p aarray)" || echo "   OK: laa.has     isemptystr aarray FALSE"
+}
+
+test_global_assoc_array () {
+    # ----- iszero
+    aa.has.set iszero AArray && echo "   OK: aa.has.set  iszero     AArray TRUE"
+    aa.has.set iszero AArray || echo "ERROR: aa.has.set  iszero     AArray FALSE (expected TRUE)"
+
+    aa.has iszero AArray && echo "   OK: aa.has      iszero     AArray TRUE"
+    aa.has iszero AArray || echo "   OK: aa.has      iszero     AArray FALSE (expected TRUE)"
+
+    # ----- notexist
+    aa.has.set notexist AArray && echo "ERROR: aa.has.set  notexist   AArray TRUE (expected FALSE)"
+    aa.has.set notexist AArray || echo "   OK: aa.has.set  notexist   AArray FALSE"
+
+    aa.has notexist AArray && echo "ERROR: aa.has      notexist   AArray TRUE (expected FALSE)"
+    aa.has notexist AArray || echo "   OK: aa.has      notexist   AArray FALSE"
+
+    # ----- hasvalue
+    aa.has.set hasvalue AArray && echo "   OK: aa.has.set  hasvalue   AArray TRUE"
+    aa.has.set hasvalue AArray || echo "ERROR: aa.has.set  hasvalue   AArray FALSE (expected TRUE)"
+
+    aa.has hasvalue AArray && echo "   OK: aa.has      hasvalue   AArray TRUE"
+    aa.has hasvalue AArray || echo "ERROR: aa.has      hasvalue   AArray FALSE (expected TRUE)"
+
+    # ----- isemptystr
+    aa.has.set isemptystr AArray && echo "   OK: aa.has.set  isemptystr AArray TRUE"
+    aa.has.set isemptystr AArray || echo "ERROR: aa.has.set  isemptystr AArray FALSE (expected TRUE)"
+
+    aa.has isemptystr AArray && echo "ERROR: aa.has      isemptystr AArray TRUE (expected FALSE)"
+    aa.has isemptystr AArray || echo "   OK: aa.has      isemptystr AArray FALSE"
+}
+
+
+main "$@"
+

@@ -1,5 +1,6 @@
 # poet.conf.get
-FROM ubuntu:18.04
+# FROM ubuntu:18.04
+FROM debian:10.6-slim
 
 RUN apt-get update \
  && apt-get -y --no-install-recommends install libpoet-perl \

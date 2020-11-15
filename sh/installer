@@ -82,4 +82,16 @@ install.docopts () {(
     rm -rf docopts
 )}
 
+install.dt_iso8601 () {
+    # DateTime::Format::ISO8601
+    which cpanm > /dev/null || install.cpanm
+    cpanm --install --notest DateTime::Format::ISO8601
+}
+
+install.cpanm () {
+    which cpanm > /dev/null && return 0
+    test.i_can_root || errxit "Must be root to ${FUNCNAME[0]}"
+    apt-get install cpanminus
+}
+
 :

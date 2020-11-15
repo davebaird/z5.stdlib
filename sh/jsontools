@@ -24,7 +24,7 @@ aa2j () { # associative array 2 json
 }
 
 # a2j "$(declare -p array)"
-a2j () {
+a2j () { # array 2 json
     local arrstr; arrstr="$1"
     local -a arr; eval "arr=${arrstr#*=}"
 

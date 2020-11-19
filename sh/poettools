@@ -5,7 +5,8 @@ import pathtools
 PoetRootDir=
 
 poet._import () {
-    poet.switchroot "$1"
+    local rootdir; rootdir="${1:-"$(path.rootdir.pwd .poet_root)"}"
+    poet.switchroot "$rootdir"
     poet._build
 }
 

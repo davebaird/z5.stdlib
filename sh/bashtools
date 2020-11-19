@@ -1,6 +1,27 @@
 #!/bin/bash
 import errcho
 
+# https://stackoverflow.com/a/17841619/2334574
+join_by () {
+    local d=$1; shift;
+    local f=$1; shift;
+    printf %s "$f" "${@/#/$d}";
+}
+
+# https://askubuntu.com/questions/523861/shorten-lines-adding-ellipsis
+ellipsize_middle () {
+    local len str; len="$1"; str="$2"
+    printf '%s' "$str" | \
+    awk -v len="$len" '{ if (length($0) > len) print substr($0, 1, len-3) "..." substr($0, length($0) - len, length($0)); else print; }'
+}
+
+# https://askubuntu.com/questions/523861/shorten-lines-adding-ellipsis
+ellipsize () {
+    local len str; len="$1"; str="$2"
+    printf '%s' "$str" | \
+    awk -v len="$len" '{ if (length($0) > len) print substr($0, 1, len-3) "..."; else print; }'
+}
+
 # For global assoc arrays
 aa.has () {(
     set +o errexit

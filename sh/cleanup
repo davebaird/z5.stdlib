@@ -28,19 +28,23 @@ cleanup.shared_memory () {
 #   cleanup.add rm -f "$tempfile"
 # Based on http://www.linuxjournal.com/content/use-bash-trap-statement-cleanup-temporary-files
 
+# ! IMPORTANT - don't use logical operators in the cleanup string, they will be
+# ! executed in real time. Wrap them in a subroutine and call the subroutine in
+# ! the cleanup.add or cleanup.error.add
+
 # the -g, and empty array assignment, are required
 declare -ag __cleanup_on_exit_items; __cleanup_on_exit_items=()
+declare -ag __cleanup_on_error_items; __cleanup_on_error_items=()
 
-function cleanup._on_exit () {
+cleanup._on_exit () {
     # In general, a cleanup function (called via 'trap') will leave $? unmodified,
     # and we don't need to call exit at the end. But since we are executing
     # arbitrary code, we make sure to preserve rc in case someone else modifies
     # it by accident in an exit item.
     local rc=$? # do NOT separate declaration from assignment - $? becomes the rc from 'local rc;'!!!
-    # errcho "Starting cleanup with rc $rc"
 
     nostrict
-    berrcho "===== Running cleanup for $0 ====="
+    berrcho "===== Running EXIT cleanup for $0 ====="
 
     for i in "${__cleanup_on_exit_items[@]}"
     do
@@ -50,7 +54,21 @@ function cleanup._on_exit () {
     exit "$rc"
 }
 
-function cleanup.add () {
+cleanup._on_error () {
+    local rc=$?
+
+    nostrict
+    berrcho "===== Running ERROR ($rc) cleanup for $0 ====="
+
+    for i in "${__cleanup_on_error_items[@]}"
+    do
+        eval "$i"
+    done
+
+    exit "$rc"
+}
+
+cleanup.add () {
     local -i n; n="${#__cleanup_on_exit_items[@]}"
     local IFS=$' \n\t'
     # gerrcho "Adding cleanup: " "$@"
@@ -58,5 +76,15 @@ function cleanup.add () {
     [[ $n -eq 0 ]] && trap cleanup._on_exit EXIT
     :
 }
+
+cleanup.error.add () {
+    local -i n; n="${#__cleanup_on_error_items[@]}"
+    local IFS=$' \n\t'
+    # gerrcho "Adding cleanup: " "$@"
+    __cleanup_on_error_items[$n]="$*"
+    [[ $n -eq 0 ]] && trap cleanup._on_error ERR
+    :
+}
+
 
 :

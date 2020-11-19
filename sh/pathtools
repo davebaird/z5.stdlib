@@ -39,6 +39,18 @@ path.rootdir () {
 
     local dir; dir="$(dirname "$(readlink --canonicalize "$scriptfile")")"
 
+    _search_upwards_for_rootdir "$dir" "$markerfile"
+}
+
+path.rootdir.pwd () {
+    local markerfile; markerfile="$1" # e.g. .poet_root
+    local dir; dir="$PWD"
+    _search_upwards_for_rootdir "$dir" "$markerfile"
+}
+
+_search_upwards_for_rootdir () {
+    local dir markerfile; dir="$1"; markerfile="$2"
+
     local startdir; startdir="$dir"
 
     while [[ $dir != / ]] ; do

@@ -54,19 +54,19 @@ cleanup._on_exit () {
     exit "$rc"
 }
 
-cleanup._on_error () {
-    local rc=$?
+# cleanup._on_error () {
+#     local rc=$?
 
-    nostrict
-    berrcho "===== Running ERROR ($rc) cleanup for $0 ====="
+#     nostrict
+#     berrcho "===== Running ERROR ($rc) cleanup for $0 ====="
 
-    for i in "${__cleanup_on_error_items[@]}"
-    do
-        eval "$i"
-    done
+#     for i in "${__cleanup_on_error_items[@]}"
+#     do
+#         eval "$i"
+#     done
 
-    exit "$rc"
-}
+#     exit "$rc"
+# }
 
 cleanup.add () {
     local -i n; n="${#__cleanup_on_exit_items[@]}"
@@ -77,14 +77,14 @@ cleanup.add () {
     :
 }
 
-cleanup.error.add () {
-    local -i n; n="${#__cleanup_on_error_items[@]}"
-    local IFS=$' \n\t'
-    # gerrcho "Adding cleanup: " "$@"
-    __cleanup_on_error_items[$n]="$*"
-    [[ $n -eq 0 ]] && trap cleanup._on_error ERR
-    :
-}
+# cleanup.error.add () {
+#     local -i n; n="${#__cleanup_on_error_items[@]}"
+#     local IFS=$' \n\t'
+#     # gerrcho "Adding cleanup: " "$@"
+#     __cleanup_on_error_items[$n]="$*"
+#     [[ $n -eq 0 ]] && trap cleanup._on_error ERR
+#     :
+# }
 
 
 :

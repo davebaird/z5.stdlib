@@ -1,5 +1,15 @@
 #!/bin/bash
 
+#  Useful reading:
+#   https://stackoverflow.com/questions/11369522/bash-utility-script-library
+#   https://google.github.io/styleguide/shellguide.html
+
+# Other interesting/similar projects:
+#   https://github.com/kvz/bash3boilerplate
+#   https://github.com/codeforester/base
+#   https://github.com/srcshelton/stdlib.sh
+
+
 if [[ -n ${1:-} && $1 == *strict ]]; then
     # http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -o errexit

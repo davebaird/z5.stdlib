@@ -1,0 +1,130 @@
+#!/bin/bash
+source ../importer strict || exit 1
+import bashtools
+import errcho
+import stacktrace
+
+#   alarm="$(set.alarm 10 my_rescue_func)"
+#   code_that_might_take_too_long
+#   cancel.alarm "$alarm"
+
+main () {
+    declare -ig slowbreak fastbreak
+
+    # echo "My name is $$"
+
+    test_slow_func
+    echo
+
+    test_fast_func
+    echo
+
+    test_slow_code
+    echo
+
+    test_fast_code
+    echo
+}
+
+rescue () {
+    rerrcho "Rescue FUNCTION fired"
+    slowbreak=1
+}
+
+test_slow_func () {
+    echo "Slow func... (expect rescue to fire, then report that eternal while was broken)"
+
+    slowbreak=0
+
+    # trap rescue ALRM
+    # local alarm
+    # alarm="$(set.alarm 2 rescue)"
+    set.alarm 2 rescue
+    local alarm; alarm=$!
+
+    while :
+    do
+        echo "Sleeping 1..."
+        sleep 1
+        (( slowbreak == 1 )) && break
+    done
+
+    echo "...eternal while() broken"
+
+    cancel.alarm "$alarm" # it's already dead
+
+    echo "Canceled alarm: will pause to check rescue doesn't fire"
+    sleep 3
+
+    trap '' ALRM
+}
+
+
+test_slow_code () {
+    echo "Slow code... (expect rescue to fire, then report that eternal while was broken)"
+
+    slowbreak=0
+
+    local h; h=hello
+
+    # trap 'slowbreak=1; rerrcho "Rescue CODE fired: $h"' ALRM
+    set.alarm 2 'slowbreak=1; rerrcho "Rescue CODE fired: $h"'
+    local alarm; alarm=$!
+
+    while :
+    do
+        echo "Sleeping 1..."
+        sleep 1
+        (( slowbreak == 1 )) && break
+    done
+
+    echo "...eternal while() broken"
+
+    cancel.alarm "$alarm" #
+
+    echo "Canceled alarm: will pause to check rescue doesn't fire"
+    sleep 3
+
+    trap '' ALRM
+}
+
+test_fast_code () {
+    echo "Fast CODE... (expect rescue to NOT fire)"
+
+    local h; h=hello
+    # trap 'rerrcho "Rescue CODE fired: $h"' ALRM
+    set.alarm 2 'rerrcho "Rescue CODE fired: $h"'
+    local alarm; alarm=$!
+
+    echo "Sleeping 1..."
+    sleep 1
+
+    echo "Finished short sleep"
+
+    cancel.alarm "$alarm"
+
+    echo "Canceled alarm: will pause to check rescue doesn't fire"
+    sleep 3
+
+    trap '' ALRM
+}
+
+test_fast_func () {
+    echo "Fast FUNC... (expect rescue to NOT fire)"
+    # trap rescue ALRM
+
+    set.alarm 2 rescue
+    local alarm; alarm=$!
+
+    echo "Sleeping 1..."
+
+    echo "Finished short sleep"
+
+    cancel.alarm "$alarm"
+
+    echo "Canceled alarm: will pause to check rescue doesn't fire"
+
+    trap '' ALRM
+}
+
+main "$@"

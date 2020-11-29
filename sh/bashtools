@@ -79,3 +79,41 @@ rmrf_safe () {
     rm -rf "${dir:?}" # if $dir is empty this will throw an error
 }
 
+# Some useful stuff: https://www.linuxjournal.com/content/sigalrm-timers-and-stdin-analysis
+#
+#   set.alarm 10 my_rescue_func
+#   local alarm; alarm=$!
+#   code_that_might_take_too_long
+#   cancel.alarm "$alarm"
+set.alarm () {
+    local sleep func_or_code; sleep="$1"; func_or_code="$2"
+
+    # shellcheck disable=SC2064
+    trap "$func_or_code" SIGALRM
+
+    (
+        # merrcho "Inside set.alarm subprocess $BASHPID - setting alarm to send to $$ in $1 seconds"
+        # merrcho "- command will be: $func_or_code"
+
+        # sleep "$sleep" - this breaks in some mysterious circumstances - sleep never ends
+        for ((i=sleep; i>=0; i--))
+        do
+            # merrcho "set.alarm subprocess $BASHPID still sleeping..."
+            sleep 1
+        done
+
+        merrcho "set.alarm subprocess $BASHPID done sleeping: SENDING ALRM TO $$ NOW"
+
+        # if the parent is still around, go ahead and send the signal
+        if ps $$ > /dev/null
+        then
+            kill -ALRM $$ > /dev/null
+        fi
+    ) &
+    # printf '%s' $!
+}
+
+cancel.alarm () {
+    # kill the sleeping bg process, if it's still around, before it sends the signal
+    kill "$1" > /dev/null 2>&1 || :
+}

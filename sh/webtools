@@ -1,0 +1,73 @@
+#!/bin/bash
+import cleanup
+import dockertools
+import bashtools
+
+webtools.redirected_urlONLY_FOLLOWS_HTTP_REDIRECTS () {
+    local -a args; args=(
+        --user-agent 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.6) Gecko/20070802 SeaMonkey/1.1.4'
+        --silent                        # silent...
+        --show-error                    # ... but do report errors
+        --location                      # follow redirects...
+        --max-redirs 20                 # ... but not forever
+        --output /dev/null              # discard output
+        --write-out '%{url_effective}'  # print final url to STDOUT
+    )
+    curl "${args[@]}" -- "$@"
+}
+
+# https://github.com/Zenika/alpine-chrome
+# https://developers.google.com/web/updates/2017/04/headless-chrome
+# https://peter.sh/experiments/chromium-command-line-switches/
+webtools.redirected_url () {
+    cleanup.add dtools.stop "zenika-chrome-location-href.$$"
+    # The entrypoint is: chromium-browser --headless --disable-gpu --disable-software-rasterizer --disable-dev-shm-usage
+    printf 'location.href\nquit\n' | \
+        docker run -i --rm --user "$(id -u "$USER")" --name zenika-chrome-location-href.$$ --volume "$(pwd)":/usr/src/app \
+        zenika/alpine-chrome --no-sandbox --repl "$@" 2> /dev/null \
+        | tr -d '>>> ' | jq --raw-output '.result.value'
+}
+
+_timeout_handler () {
+    dtools.stop "zenika-chrome-dump-dom.$$"
+}
+
+webtools.dump_dom () {
+    local url t; url="$1"; t="${2:-60}"
+
+    yerrcho "chrome --dump_dom $url"
+
+    # # send stderr to void unless flag asks for stderr
+    if [[ ${Z5_WEBTOOLS_SHOW_CHROME_STDERR:-0} -eq 0 ]]; then
+        exec 9>&2 2> /dev/null
+    fi
+
+    cleanup.add dtools.stop "zenika-chrome-dump-dom.$$"
+
+    set.alarm "$t" "merrcho 'FIRING ALARM'; dtools.stop zenika-chrome-dump-dom.$$"
+    local alarm; alarm=$!
+
+    # merrcho "In process $$, have set alarm: $alarm"
+
+    docker container run -i --rm --name zenika-chrome-dump-dom.$$ \
+        zenika/alpine-chrome --no-sandbox --dump-dom "$url" #2> /dev/null
+
+    # merrcho "Cancelling alarm: $alarm"
+    cancel.alarm "$alarm"
+
+    # undo stderr redirect
+    if [[ ${Z5_WEBTOOLS_SHOW_CHROME_STDERR:-0} -eq 0 ]]; then
+        exec 2>&9
+    fi
+}
+
+is.url () {(
+    set +e
+    [[ $1 == http* ]] && return 0
+    return 1
+)}
+
+is.not.url () {(
+    set +e
+    ! is.url "$1"
+)}

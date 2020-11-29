@@ -43,5 +43,5 @@ a2j () { # array 2 json
 jsonval () {
     local tmp
     tmp="$(jo -a "$1")"        # get single-valued array, with value appropriately quoted (or not) and escaped
-    printf '%s' "${tmp:1:-1}" # remove array brackets from either end
+    printf '%s' "${tmp:1:-1}"  # remove array brackets from either end
 }

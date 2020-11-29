@@ -73,7 +73,11 @@ path.their.rootdir () {
     path._rootdir "$1" 2
 }
 
-path.is.empty.dir () {(
+# Returns 0 if dir does not exist, or exists and is empty. This is necessary
+# because we have 3 situations (dir doesn't exist, dir does exist and is/is not empty)
+# but this is a binary result. Not an ideal interface. path.is.empty.dir.exists()
+# is better.
+path.is.empty.dir () {( # is empty, or does not exist
     set +e
     [[ -n $(find "$1" -maxdepth 0 -type d -empty 2> /dev/null) ]]
 )}
@@ -81,6 +85,15 @@ path.is.empty.dir () {(
 path.is.not.empty.dir () {(
     set +e
     ! path.is.empty.dir "$1"
+)}
+
+path.is.empty.dir.exists () {
+    [[ -n $(find "$1" -maxdepth 0 -type d -empty 2> /dev/null) ]]
+}
+
+path.is.not.empty.dir.exists () {(
+    set +e
+    ! path.is.empty.dir.exists "$1"
 )}
 
 # # Not just sugar. In cleanup.add, can't pass in things like '&&'
@@ -116,5 +129,9 @@ path.is.relative () {(
     set +e
     ! path.is.absolute "$@"
 )}
+
+path.relative () {
+    realpath --relative-to="${PWD}" "$1"
+}
 
 :

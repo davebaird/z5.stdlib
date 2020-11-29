@@ -10,19 +10,19 @@ stacktrace() {
     set +o xtrace
     local code="${1:-1}"
 
-    merrcho "Error in ${BASH_SOURCE[1]}:${BASH_LINENO[0]}: '${BASH_COMMAND}' exited with status $err"
+    rerrcho "Error in ${BASH_SOURCE[1]}:${BASH_LINENO[0]}: '${BASH_COMMAND}' exited with status $err"
 
     # Print out the stack trace described by $function_stack
     if [ ${#FUNCNAME[@]} -gt 2 ]
     then
-        merrcho "Call tree:"
+        rerrcho "Call tree:"
         for ((i=1; i<${#FUNCNAME[@]}-1; i++))
         do
-            merrcho " $i: ${BASH_SOURCE[$i+1]}:${BASH_LINENO[$i]} ${FUNCNAME[$i]}(...)"
+            rerrcho " $i: ${BASH_SOURCE[$i+1]}:${BASH_LINENO[$i]} ${FUNCNAME[$i]}(...)"
         done
     fi
 
-    merrcho "Exiting with status ${code}"
+    rerrcho "Exiting with status ${code}"
     exit "${code}"
 }
 

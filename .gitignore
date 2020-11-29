@@ -1,2 +1,4 @@
 sh/t/test_hosts
 scratch
+.vscode
+.vstags

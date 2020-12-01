@@ -139,13 +139,14 @@ git3- () {
 
 test.is_git_repo () {(
     local dir; dir="${1:-$PWD}"
-    cd "$dir" || return 2
+    cd "$dir" || return 1
     git rev-parse 2> /dev/null
 )}
 
 gitpull- () {
     for d in "$PWD"/*; do
-        if [[ -d "$d" ]]; then
+        if [[ -d "$d" ]] && test.is_git_repo "$d"
+        then
         (
             cd "$d" || return 1
             gerrcho "Updating $d"

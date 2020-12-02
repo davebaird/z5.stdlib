@@ -73,6 +73,11 @@ path.their.rootdir () {
     path._rootdir "$1" 2
 }
 
+path.parent.exists () {
+    local dir; dir="$1"
+    readlink --canonicalize "$dir"
+}
+
 # Returns 0 if dir does not exist, or exists and is empty. This is necessary
 # because we have 3 situations (dir doesn't exist, dir does exist and is/is not empty)
 # but this is a binary result. Not an ideal interface. path.is.empty.dir.exists()

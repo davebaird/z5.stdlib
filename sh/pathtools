@@ -88,7 +88,9 @@ path.is.not.empty.dir () {(
 )}
 
 path.is.empty.dir.exists () {
-    [[ -n $(find "$1" -maxdepth 0 -type d -empty 2> /dev/null) ]]
+    # [[ -d "$1" ]] || errcho "Does not exist: $1"
+    # [[ -d "$1" ]] || errcho "Not a dir: $1"
+    [[ -n $(find "$1" -maxdepth 0 -type d -empty) ]]
 }
 
 path.is.not.empty.dir.exists () {(

@@ -1,0 +1,75 @@
+#!/bin/bash
+import errcho
+import webtools
+import jsontools
+
+url2doi () {
+    local p; p="$(url.path "$1")"
+    printf '%s' "${p:1}"
+}
+
+doi2doi () {
+    local d; d="$1"
+
+    if [[ $d == /* ]]
+    then
+        rerrcho "DOI must not start with '/'"
+        return 1
+    fi
+
+    is.url "$d" && url2doi "$d"
+    is.not.url "$d" && printf '%s' "$d"
+}
+
+doi.meta () {
+    local doi pretty; doi="$(doi2doi "$1")"; pretty="${2:-}"
+
+    local meta
+    meta="$(curl https://api.crossref.org/v1/works/"$doi" 2> /dev/null)" || return 1
+    is.json "$meta" || return 1
+    [[ "$(jq --raw-output '.status' <<< "$meta")" = ok ]] || return 1
+
+    if [[ -z $pretty ]]
+    then
+        printf '%s' "$meta"
+    else
+        jq '.' <<< "$meta"
+    fi
+}
+
+doi.title () {
+    doi.denullify2str "$(jq --raw-output '.message.title[]' <<< "$1")"
+}
+
+doi.journal () {
+    doi.denullify2str "$(jq --raw-output '.message."container-title"[0]' <<< "$1")"
+}
+
+doi.URL () {
+    doi.denullify2str "$(jq --raw-output '.message.URL' <<< "$1")"
+}
+
+doi.abstract () {
+    doi.denullify2str "$(jq --raw-output '.message.abstract' <<< "$1")"
+}
+
+doi.denullify2str () {
+    local json; json="$1"
+    [[ $json == null ]] && json=
+    printf '%s' "$json"
+}
+
+doi.denullify2arr () {
+    local json; json="$1"
+    [[ $json == null ]] && json='[]'
+    printf '%s' "$json"
+}
+
+# returns a json array in a string, which can be stored in a bash associative array key
+doi.keywords () {
+    doi.denullify2arr "$(jq '.message.subject' <<< "$1")"
+}
+
+doi.lc.keywords () {
+    doi.keywords "$1" | jq '[.[] | ascii_downcase]'
+}

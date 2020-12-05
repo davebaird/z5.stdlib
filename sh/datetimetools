@@ -1,0 +1,14 @@
+#!/bin/bash
+import errcho
+
+dt.now () {
+    perl -MDateTime -e 'print DateTime->now'
+}
+
+dt.YYYY-MM-DD.2iso8601 () {
+    local dt_str; dt_str="$1"
+
+    perl -MDateTime::Format::Strptime -pe \
+        '$_=DateTime::Format::Strptime->new(pattern => "%Y-%m-%d")->parse_datetime($_)' \
+        <<< "$dt_str"
+}

@@ -45,3 +45,7 @@ jsonval () {
     tmp="$(jo -a "$1")"        # get single-valued array, with value appropriately quoted (or not) and escaped
     printf '%s' "${tmp:1:-1}"  # remove array brackets from either end
 }
+
+is.json () {
+    jq --exit-status . > /dev/null 2>&1 <<< "$1"
+}

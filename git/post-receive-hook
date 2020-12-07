@@ -23,7 +23,7 @@ IFS=$'\t\n'
 # cd my-repo
 # git remote add live dave@urr:/srv/git/my-repo.git
 
-from="$1"; to="$2"; branch="$3"
+IFS=' ' read -r from to branch
 
 if [[ $branch != master ]]
 then

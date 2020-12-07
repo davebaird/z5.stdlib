@@ -32,7 +32,7 @@ then
 fi
 
 # Copy files to deploy directory
-deploy_to_dir=/path/to/installation
+deploy_to_dir=/usr/local/src/z5.stdlib  # /path/to/installation
 GIT_WORK_TREE="$deploy_to_dir" git checkout -f master
 printf "DEPLOY: master (%s) copied to '%s'" "$to" "$deploy_to_dir"
 

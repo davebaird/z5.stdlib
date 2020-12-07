@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 # https://krisjordan.com/blog/2013/11/02/push-to-deploy-with-git
 source /usr/local/src/z5.stdlib/sh/importer vstrict || exit 1
 import errcho

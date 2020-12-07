@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o noclobber
+IFS=$'\t\n'
+
 # https://krisjordan.com/blog/2013/11/02/push-to-deploy-with-git
 
 # On the production server, set up a bare repository for the target repo:

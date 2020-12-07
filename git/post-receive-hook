@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 # https://krisjordan.com/blog/2013/11/02/push-to-deploy-with-git
-source /usr/local/src/z5.stdlib/sh/importer vstrict || exit 1
-import errcho
 
 # On the production server, set up a bare repository for the target repo:
 #   cd /srv/git
@@ -21,7 +19,11 @@ import errcho
 
 from="$1"; to="$2"; branch="$3"
 
-[[ $branch == master ]] || errxit "Received branch ${branch}, not deploying."
+if [[ $branch != master ]]
+then
+    echo "Received branch ${branch}, not deploying." >&2
+    exit 1
+fi
 
 # Copy files to deploy directory
 deploy_to_dir=/path/to/installation

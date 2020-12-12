@@ -1,0 +1,38 @@
+#!/bin/bash
+source /usr/local/src/z5.stdlib/sh/importer vstrict || exit 1
+import dockertools
+
+exit 17
+
+args=(
+    --name zenika-chrome-$$
+
+    -id --rm
+
+    --user "$(id -u "$USER")"
+
+    --volume "$(pwd)":/usr/src/app
+
+    --entrypoint ""
+
+    -p 9222:9222
+)
+
+# https://github.com/Zenika/alpine-chrome
+# Default entrypoint runs it: --headless --disable-gpu --disable-software-rasterizer --disable-dev-shm-usage
+# But we have disabled the entrypoint.
+
+set -x
+docker run "${args[@]}" zenika/alpine-chrome chromium-browser --disable-software-rasterizer --disable-dev-shm-usage "$@"
+set +x
+
+dtools.waitfor "zenika-chrome-$$"
+
+merrcho "Launched zenika: $$"
+
+# # https://stackoverflow.com/questions/59833276/write-to-stdin-of-running-docker-container
+# while IFS= read -r line
+# do
+#     printf '%s\n' "$line" | socat EXEC:"docker attach zenika-chrome-$$",pty STDIO
+# done
+

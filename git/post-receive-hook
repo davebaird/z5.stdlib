@@ -14,6 +14,7 @@ IFS=$'\t\n'
 # Install this file as 'post-receive' in the hooks folder of the .git folder
 # of the bare repository. Make it executable. Edit deploy_to_dir to point to
 # the final deployment destination.
+#   scp post-receive dave@urr:/srv/git/my-repo.git/hooks/post-receive
 
 # On the dev machine, dotfiles gitconfig sets up a git command alias:
 # git plive == git push live master
@@ -32,10 +33,12 @@ then
 fi
 
 # Copy files to deploy directory
-deploy_to_dir=/usr/local/src/z5.stdlib  # /path/to/installation
+deploy_to_dir=/usr/local/src/docker.poet-mason  # /path/to/installation
+mkdir -p "$deploy_to_dir"
 GIT_WORK_TREE="$deploy_to_dir" git checkout -f master
 printf "DEPLOY: master (%s) copied to '%s'" "$to" "$deploy_to_dir"
 
 # 4.TODO: Deployment Tasks
 # i.e.: Run Puppet Apply, Restart Daemons, etc
-
+# cd "$deploy_to_dir"
+# docker build -t poet-mason .

@@ -12,10 +12,35 @@ webtools.redirected_url () {
     printf 'location.href\nquit\n' | \
         docker run -i --rm --user "$(id -u "$USER")" --name zenika-chrome-location-href.$$ --volume "$(pwd)":/usr/src/app \
         zenika/alpine-chrome --no-sandbox --repl "$@" 2> /dev/null \
-        | tr -d '>>> ' | jq --raw-output '.result.value'
+        | sed 's/>>> //' | jq --raw-output '.result.value'
+}
+
+webtools.ua () {
+    printf 'navigator.userAgent\nquit\n' | \
+        docker run -i --rm --user "$(id -u "$USER")" --name zenika-chrome-location-href.$$ --volume "$(pwd)":/usr/src/app \
+        zenika/alpine-chrome --no-sandbox --repl "$@" 2> /dev/null \
+        | sed 's/>>> //' | jq --raw-output '.result.value'
 }
 
 webtools.dump_dom () {
+    local url t; url="$1"; t="${2:-60}"
+
+    yerrcho "chrome --dump_dom $url"
+
+    # # # send stderr to void unless flag asks for stderr
+    # if [[ ${Z5_WEBTOOLS_SHOW_CHROME_STDERR:-0} -eq 0 ]]; then
+    #     exec 9>&2 2> /dev/null
+    # fi
+
+    "$(dirname "${BASH_SOURCE[0]}")"/../perl/get.dom "$url"
+
+    # # undo stderr redirect
+    # if [[ ${Z5_WEBTOOLS_SHOW_CHROME_STDERR:-0} -eq 0 ]]; then
+    #     exec 2>&9
+    # fi
+}
+
+webtools.dump_dom2 () {
     local url t; url="$1"; t="${2:-60}"
 
     yerrcho "chrome --dump_dom $url"
@@ -32,8 +57,11 @@ webtools.dump_dom () {
 
     # merrcho "In process $$, have set alarm: $alarm"
 
+    # Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/86.0.4240.111 Safari/537.36
+    local ua; ua='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36'
+
     docker container run -i --rm --name zenika-chrome-dump-dom.$$ \
-        zenika/alpine-chrome --no-sandbox --dump-dom "$url" #2> /dev/null
+        zenika/alpine-chrome --no-sandbox --dump-dom --user-agent="$ua" "$url" #2> /dev/null
 
     # merrcho "Cancelling alarm: $alarm"
     cancel.alarm "$alarm"

@@ -73,3 +73,12 @@ doi.keywords () {
 doi.lc.keywords () {
     doi.keywords "$1" | jq '[.[] | ascii_downcase]'
 }
+
+# https://citation.crosscite.org/docs.html
+doi.formatted.citation () {
+    local doi_url; doi_url="$1"
+    local style; style="${2:-apa}"
+    local locale; locale="${3:-en-GB}"
+
+    curl -LH "Accept: text/x-bibliography; style=$style; locale=$locale" "$doi_url"
+}

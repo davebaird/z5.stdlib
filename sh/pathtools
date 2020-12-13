@@ -2,6 +2,39 @@
 
 import errcho
 
+# https://unix.stackexchange.com/a/40973/154825
+PATH.add () {
+    local dir; dir="$1"
+
+    case ":$PATH:" in
+        *":$dir:"*) :;; # already there
+        *) PATH="$dir:$PATH";;
+    esac
+}
+
+# https://unix.stackexchange.com/a/40973/154825
+PATH.dedup () {
+    if [ -n "$PATH" ]
+    then
+        old_PATH=$PATH:; PATH=
+
+        while [ -n "$old_PATH" ]
+        do
+            x=${old_PATH%%:*}       # the first remaining entry
+
+            case $PATH: in
+                *:"$x":*) ;;          # already there
+                *) PATH=$PATH:$x;;    # not there yet
+            esac
+
+            old_PATH=${old_PATH#*:}
+        done
+
+        PATH=${PATH#:}
+        unset old_PATH x
+    fi
+}
+
 # latest modified file in dir tree under pwd or $1
 path.last_modified () {
     find -L "${1:-.}" -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" "

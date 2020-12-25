@@ -13,6 +13,7 @@ elsif ($ARGV[0] eq 'HASH') {
 }
 elsif ($ARGV[0] eq 'BOOLEAN') {
     get_boolean();
+}
 else {
     get();
 }

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# I can't remember why all this copying was necessary, seems weird and unnecessary...
+
 cleanup() {
     rm -f /usr/local/src/poet/bin/poet.conf.get.pl
 }

@@ -3,7 +3,7 @@
 FROM debian:10.6-slim
 
 RUN apt-get update \
- && apt-get -y --no-install-recommends install libpoet-perl \
+ && apt-get -y --no-install-recommends install libpoet-perl libjson-xs-perl \
  && apt-get -y autoclean \
  && apt-get -y autoremove \
  && rm -rf /var/lib/apt/lists/* \

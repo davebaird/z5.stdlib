@@ -68,7 +68,7 @@ install.apt.pkgs () {
 install.docopts () {(
     which docopts > /dev/null && return 0
 
-    git clone https://github.com/docopt/docopts.git
+    git clone http://github.com/docopt/docopts.git
 
     cd docopts || errexit "Couldn't cd docopts" $?
 

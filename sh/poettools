@@ -14,14 +14,14 @@ poet._import () {
 __ptools_mydir="$(dirname "$BASH_SOURCE")"
 
 poet.conf.get () {
-    local keyspec; keyspec="$1"
+    # local keyspec; keyspec="$1"
 
-    if [[ -z $keyspec ]]; then
-        errcho "No key supplied"
-        return 1
-    fi
+    # if [[ -z $keyspec ]]; then
+    #     errcho "No key supplied"
+    #     return 1
+    # fi
 
-    "$__ptools_mydir/../docker/d.start.poet.conf.get" "$PoetRootDir" "$keyspec"
+    "$__ptools_mydir/../docker/d.start.poet.conf.get" "$PoetRootDir" "$@"
 }
 
 poet.switchroot () {

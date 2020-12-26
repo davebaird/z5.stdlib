@@ -6,8 +6,8 @@ import usertools
 
 YamlFile="$1"
 
-[[ -z $YamlFile ]] && rerrxit "Need a cloud init YAML file on import line"
-[[ -f $YamlFile ]] || rerrxit "Cloud init YAML file [$YamlFile] not found"
+[[ -z $YamlFile ]] && errxit "Need a cloud init YAML file on import line"
+[[ -f $YamlFile ]] || errxit "Cloud init YAML file [$YamlFile] not found"
 
 main () {
     install.yq

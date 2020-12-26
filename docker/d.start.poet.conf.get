@@ -4,14 +4,14 @@ import errcho
 
 # $1 is the path supplied to the 'import poettools' line
 main () {
-    local poet_root; poet_root="$1"
-    local keyspec; keyspec="$2"
+    local poet_root; poet_root="$1"; shift
+    # local keyspec; keyspec="$2"
 
     setup_args "$poet_root"
 
     # rerrcho "Launching poet.conf.get container --volume $poet_root:/usr/local/src/poet"
 
-    docker run "${DArgs[@]}" poet.conf.get "$keyspec"
+    docker run "${DArgs[@]}" poet.conf.get "$@"
 }
 
 setup_args () {

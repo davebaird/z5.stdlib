@@ -30,15 +30,35 @@ test.i_can_root () {(
 # cat /etc/os-release
 # cat /etc/lsb-release
 # uname -a
-test.is_debian () {(
+test.is_debian () (
     set +e
-    [[ $(get.os) == debian ]]
-)}
+    [[ $(get.os) = debian ]]
+)
 
-test.is_ubuntu () {(
+test.is_ubuntu () (
     set +e
-    [[ $(get.os) == ubuntu ]]
-)}
+    [[ $(get.os) = ubuntu ]]
+)
+
+test.is_i386 () {
+    # same thing
+    test.is_x86
+}
+
+test.is_x86 () (
+    set +e
+    [[ $(uname -m) = XXX ]] # TODO
+)
+
+test.is_x86_64 () (
+    set +e
+    [[ $(uname -m) = x86_64 ]]
+)
+
+test.is_amd64 () {
+    # same thing
+    test.is_x86_64
+}
 
 get.os () {
     source /etc/os-release

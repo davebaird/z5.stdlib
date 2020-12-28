@@ -1,6 +1,19 @@
 #!/bin/bash
 import errcho
 
+__debug_cleanup=0
+
+cleanup._import () {
+    local debug_setting; debug_setting="${1:-0}"
+
+    [[ $debug_setting == DEBUG ]] && __debug_cleanup=1
+    [[ $debug_setting -eq 1 ]]    && __debug_cleanup=1
+
+    :
+}
+
+
+
 # Modified from script found here: https://blog.dhampir.no/content/fixing-shmget-failed-no-space-left-on-device
 cleanup.shared_memory () {
     # shellcheck disable=SC2162
@@ -36,6 +49,13 @@ cleanup.shared_memory () {
 declare -ag __cleanup_on_exit_items; __cleanup_on_exit_items=()
 declare -ag __cleanup_on_error_items; __cleanup_on_error_items=()
 
+__in_cleanup_rc=
+
+# functions running during cleanup can call this to retrieve the rc
+cleanup.rc () {
+    printf '%s' "$__in_cleanup_rc"
+}
+
 cleanup._on_exit () {
     # In general, a cleanup function (called via 'trap') will leave $? unmodified,
     # and we don't need to call exit at the end. But since we are executing
@@ -43,11 +63,14 @@ cleanup._on_exit () {
     # it by accident in an exit item.
     local rc=$? # do NOT separate declaration from assignment - $? becomes the rc from 'local rc;'!!!
 
+    __in_cleanup_rc="$rc"
+
     nostrict
     berrcho "===== Running EXIT cleanup for $0 ====="
 
     for i in "${__cleanup_on_exit_items[@]}"
     do
+        ((__debug_cleanup == 1)) && berrcho "CLEANUP: $i"
         eval "$i"
     done
 
@@ -86,5 +109,6 @@ cleanup.add () {
 #     :
 # }
 
+cleanup._import "$@"
 
 :

@@ -95,7 +95,7 @@ dtools.tail.log () {
 
 # https://docs.docker.com/engine/install/debian/
 # https://docs.docker.com/engine/install/ubuntu/
-dtools.docker.install () {
+dtools.docker.install.cli () {
     local os; os=$(get.os)
 
     apt-get remove docker docker-engine docker.io containerd runc || :
@@ -104,11 +104,17 @@ dtools.docker.install () {
 
     curl -fsSL "https://download.docker.com/linux/$os/gpg" | apt-key add -
 
-    add-apt-repository --yes \
+    apt-add-repository --yes \
         "deb [arch=amd64] https://download.docker.com/linux/$os $(lsb_release -cs) stable"
 
     install.apt.pkgs apt-transport-https ca-certificates curl gnupg-agent \
-                        software-properties-common docker-ce docker-ce-cli containerd.io
+                        software-properties-common docker-ce docker-ce-cli
+}
+
+dtools.docker.install () {
+    dtools.docker.install.cli
+
+    install.apt.pkgs containerd.io
 
     groupadd docker > /dev/null 2>&1 || :
 

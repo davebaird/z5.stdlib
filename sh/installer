@@ -6,36 +6,86 @@ install.yq () {
     which yq > /dev/null && return 0
     test.i_can_root || errxit "Must be root to ${FUNCNAME[0]}"
 
-    install.snap
+    test.is_amd64 || errxit "${FUNCNAME[0]} expected amd64 architecture: check uname -m and modify download URL"
 
-    snap install yq
+    # v4 changes API and breaks my usage ATM
+    wget https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64 -O /usr/bin/yq
+    chmod ugo+x /usr/bin/yq
 }
+
+install.yq4 () {
+    which yq4 > /dev/null && return 0
+    test.i_can_root || errxit "Must be root to ${FUNCNAME[0]}"
+
+    test.is_amd64 || errxit "${FUNCNAME[0]} expected amd64 architecture: check uname -m and modify download URL"
+
+    install.apt.pkgs wget
+
+    wget https://github.com/mikefarah/yq/releases/download/v4.2.0/yq_linux_amd64 -O /usr/bin/yq4
+    chmod ugo+x /usr/bin/yq4
+}
+
+# install.yq () {
+#     which yq > /dev/null && return 0
+#     test.i_can_root || errxit "Must be root to ${FUNCNAME[0]}"
+
+#     install.snap
+
+#     snap install yq
+# }
 
 install.jo () {
     which jo > /dev/null && return 0
     test.i_can_root || errxit "Must be root to ${FUNCNAME[0]}"
 
-    install.snap
+    local jo; jo='jo-1.4'
 
-    sudo snap install jo
+    # can probably simplify this with build-essential or something
+    install.apt.pkgs wget binutils make csh g++ sed gawk autoconf automake autotools-dev
+
+    wget https://github.com/jpmens/jo/releases/download/1.4/${jo}.tar.gz
+
+    tar xvzf ${jo}.tar.gz
+
+    (
+        cd ${jo} || { rerrcho "Couldn't cd ${jo}: $!"; return 1; }
+        autoreconf -i
+        ./configure
+        make check
+        make install
+    )
+
+    rm ${jo}.tar.gz
+    rm -rf ${jo}
 }
 
-install.snap () {
-    if which snap > /dev/null
-    then
-        install._snap_fix_path # necessary if re-running in the same session
-        return 0
-    fi
+# install.jo () {
+#     which jo > /dev/null && return 0
+#     test.i_can_root || errxit "Must be root to ${FUNCNAME[0]}"
 
-    test.i_can_root || errxit "Must be root to ${FUNCNAME[0]}"
-    test.is_debian  || errxit "Don't know how to install snap on this platform"
+#     install.snap
 
-    install.apt.pkgs snapd
+#     sudo snap install jo
+# }
 
-    snap install core
+# install.snap () {
+#     errxit "snap is evil"
 
-    install._snap_fix_path
-}
+#     if which snap > /dev/null
+#     then
+#         install._snap_fix_path # necessary if re-running in the same session
+#         return 0
+#     fi
+
+#     test.i_can_root || errxit "Must be root to ${FUNCNAME[0]}"
+#     test.is_debian  || errxit "Don't know how to install snap on this platform"
+
+#     install.apt.pkgs snapd
+
+#     snap install core
+
+#     install._snap_fix_path
+# }
 
 # don't be tempted to put this awkwardness in a sub-shell to save messing around
 # with shopt - the changes to $PATH would not get propagated back to us

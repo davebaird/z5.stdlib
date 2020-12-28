@@ -1,0 +1,13 @@
+#!/bin/bash
+source /usr/local/src/z5.stdlib/sh/importer vstrict || exit 1
+import cleanup DEBUG
+
+do_cleanup () {
+    local rc; rc="$(cleanup.rc)"
+
+    echo "RC: $rc"
+}
+
+cleanup.add do_cleanup
+
+exit 12

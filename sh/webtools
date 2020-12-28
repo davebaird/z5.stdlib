@@ -1,4 +1,5 @@
 #!/bin/bash
+import errcho
 import cleanup
 import dockertools
 import bashtools
@@ -6,13 +7,20 @@ import bashtools
 # https://github.com/Zenika/alpine-chrome
 # https://developers.google.com/web/updates/2017/04/headless-chrome
 # https://peter.sh/experiments/chromium-command-line-switches/
-webtools.redirected_url () {
+webtools._redirected_url () {
     cleanup.add dtools.stop "zenika-chrome-location-href.$$"
+
     # The entrypoint is: chromium-browser --headless --disable-gpu --disable-software-rasterizer --disable-dev-shm-usage
     printf 'location.href\nquit\n' | \
-        docker run -i --rm --user "$(id -u "$USER")" --name zenika-chrome-location-href.$$ --volume "$(pwd)":/usr/src/app \
-        zenika/alpine-chrome --no-sandbox --repl "$@" 2> /dev/null \
+        docker run -i --rm --user "$(id -u)" --name zenika-chrome-location-href.$$ --volume "$(pwd)":/usr/src/app \
+        zenika/alpine-chrome --no-sandbox --repl "$@" \
         | sed 's/>>> //' | jq --raw-output '.result.value'
+
+        # 2> /dev/null
+}
+
+webtools.redirected_url () {
+    sg docker -c "webtools._redirected_url $*"
 }
 
 webtools.ua () {
@@ -22,6 +30,7 @@ webtools.ua () {
         | sed 's/>>> //' | jq --raw-output '.result.value'
 }
 
+# This requires Chrome or chromium to be installed
 webtools.dump_dom () {
     local url t; url="$1"; t="${2:-60}"
 
@@ -40,6 +49,7 @@ webtools.dump_dom () {
     # fi
 }
 
+# This doesn't wait long enough for the DOM to be ready on some sites e.g. CORDIS
 webtools.dump_dom2 () {
     local url t; url="$1"; t="${2:-60}"
 

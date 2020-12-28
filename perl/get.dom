@@ -7,6 +7,10 @@ no warnings qw(experimental::signatures);
 use sigtrap qw/handler signal_handler normal-signals/;
 sub signal_handler { die $? } # exiting via 'die' ensures the END block is called
 
+# This script is used by webtools.dump_dom
+
+# Requires Chrome/chromium to be installed
+
 # use Carp;
 # use Data::Dumper;
 

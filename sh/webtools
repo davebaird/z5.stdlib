@@ -13,10 +13,8 @@ webtools.redirected_url () {
     # The entrypoint is: chromium-browser --headless --disable-gpu --disable-software-rasterizer --disable-dev-shm-usage
     printf 'location.href\nquit\n' | \
         docker run -i --rm --user "$(id -u)" --name zenika-chrome-location-href.$$ --volume "$(pwd)":/usr/src/app \
-        zenika/alpine-chrome --no-sandbox --repl "$@" \
+        zenika/alpine-chrome --no-sandbox --repl "$@" 2> /dev/null \
         | sed 's/>>> //' | jq --raw-output '.result.value'
-
-        # 2> /dev/null
 }
 
 

@@ -7,7 +7,7 @@ import bashtools
 # https://github.com/Zenika/alpine-chrome
 # https://developers.google.com/web/updates/2017/04/headless-chrome
 # https://peter.sh/experiments/chromium-command-line-switches/
-webtools._redirected_url () {
+webtools.redirected_url () {
     cleanup.add dtools.stop "zenika-chrome-location-href.$$"
 
     # The entrypoint is: chromium-browser --headless --disable-gpu --disable-software-rasterizer --disable-dev-shm-usage
@@ -20,15 +20,15 @@ webtools._redirected_url () {
 }
 
 
-webtools.redirected_url () {
-    sg docker -c "webtools._redirected_url $*"
-}
+# webtools.redirected_url () {
+#     sg docker -c "webtools._redirected_url $*"
+# }
 
-webtools.redirected_url.native () {
-    local -a args; args=(--headless --disable-gpu --disable-software-rasterizer --disable-dev-shm-usage --no-sandbox)
-    printf 'location.href\nquit\n' | /snap/bin/chromium "${args[@]}" --repl "$@" \
-         | sed 's/>>> //' | jq --raw-output '.result.value'
-}
+# webtools.redirected_url.native () {
+#     local -a args; args=(--headless --disable-gpu --disable-software-rasterizer --disable-dev-shm-usage --no-sandbox)
+#     printf 'location.href\nquit\n' | /snap/bin/chromium "${args[@]}" --repl "$@" \
+#          | sed 's/>>> //' | jq --raw-output '.result.value'
+# }
 
 webtools.ua () {
     printf 'navigator.userAgent\nquit\n' | \

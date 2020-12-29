@@ -19,8 +19,15 @@ webtools._redirected_url () {
         # 2> /dev/null
 }
 
+
 webtools.redirected_url () {
     sg docker -c "webtools._redirected_url $*"
+}
+
+webtools.redirected_url.native () {
+    local -a args; args=(--headless --disable-gpu --disable-software-rasterizer --disable-dev-shm-usage --no-sandbox)
+    printf 'location.href\nquit\n' | /snap/bin/chromium "${args[@]}" --repl "$@" \
+         | sed 's/>>> //' | jq --raw-output '.result.value'
 }
 
 webtools.ua () {

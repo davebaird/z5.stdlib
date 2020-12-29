@@ -6,13 +6,15 @@ __debug_cleanup=0
 cleanup._import () {
     local debug_setting; debug_setting="${1:-0}"
 
+    ((__debug_cleanup = 1)) && return
+
     [[ $debug_setting == DEBUG ]] && __debug_cleanup=1
     [[ $debug_setting -eq 1 ]]    && __debug_cleanup=1
 
     :
 }
 
-
+cleanup._import "$@"
 
 # Modified from script found here: https://blog.dhampir.no/content/fixing-shmget-failed-no-space-left-on-device
 cleanup.shared_memory () {
@@ -109,6 +111,6 @@ cleanup.add () {
 #     :
 # }
 
-cleanup._import "$@"
+
 
 :

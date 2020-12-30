@@ -21,10 +21,15 @@ check.i_can_root () {
     test.i_can_root || errxit "$msg"
 }
 
-test.i_can_root () {(
+test.i_can_root () (
     set +e
     [[ $EUID -eq 0 ]]
-)}
+)
+
+test.i_can_sudo_root () (
+    set +e
+    sudo echo ok > /dev/null
+)
 
 # server info
 # cat /etc/os-release

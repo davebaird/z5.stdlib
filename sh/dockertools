@@ -65,7 +65,8 @@ dtools.tail.log () {
     local pid
     local count
 
-    while true; do
+    while true
+    do
         docker logs -f "$dname" >> "$logfile" 2>&1 &
         pid=$!
 
@@ -74,7 +75,8 @@ dtools.tail.log () {
 
         # if process is already terminated, then there can be two cases:
         #   the process executed and stopped successfully, or it terminated abnormally
-        if [[ $count -eq 0 ]]; then
+        if ((count == 0))
+        then
             if wait $pid    # checks if process executed successfully or not
             then
                 errcho "ERROR: docker logs $dname ran and exited"

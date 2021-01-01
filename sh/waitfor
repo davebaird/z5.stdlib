@@ -66,3 +66,7 @@ waitfor.umount () {
 
     errcho
 }
+
+waitfor.host.port () {
+    "$Z5STDLIB_HOME"/bin/wait-for-it --quiet --host="$1" --port="$2" --timeout="${3:-5}"
+}

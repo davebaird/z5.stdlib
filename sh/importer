@@ -48,6 +48,9 @@ fi
 # don't put this inside functions, it'll get it wrong (see link)
 _z5stdlibshdir="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 
+Z5STDLIB_HOME="$(readlink --canonicalize-existing "$_z5stdlibshdir"/..)"
+export Z5STDLIB_HOME
+
 declare -xA Z5_STDLIB_SEARCHDIRS
 
 Z5_STDLIB_SEARCHDIRS["$_z5stdlibshdir"]=1

@@ -26,7 +26,7 @@ get_all_public_fcn_list () {
     for f in $(printf '%s\n' "${__safe[@]}" "${__marginal[@]}" | sort --dictionary-order)
     do
         # https://github.com/davebaird/z5.stdlib/blob/master/sh/azuretools
-        printf ' - https://github.com/davebaird/z5.stdlib/blob/master/sh/%s\n' "$f"
+        printf ' - [%s](https://github.com/davebaird/z5.stdlib/blob/master/sh/%s)\n' "$f" "$f"
         # Filter stderr: https://stackoverflow.com/a/15936384/2334574
         get_fcn_list "$Z5STDLIB_HOME/sh/$f" 2> >(grep -v 'import: command not found' >&2) | while read -r func
         do

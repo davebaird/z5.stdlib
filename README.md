@@ -16,11 +16,11 @@ Usage:
     ...
 
 
- - https://github.com/davebaird/z5.stdlib/blob/master/sh/azuretools
+ - [azuretools](https://github.com/davebaird/z5.stdlib/blob/master/sh/azuretools)
    - azure.tr
    - azuretools.is_azure
    - azuretools.set_up_swap
- - https://github.com/davebaird/z5.stdlib/blob/master/sh/bashtools
+ - [bashtools](https://github.com/davebaird/z5.stdlib/blob/master/sh/bashtools)
    - aa.has
    - aa.has.set
    - cancel.alarm
@@ -32,7 +32,7 @@ Usage:
    - laa.has.set
    - rmrf_safe
    - set.alarm
- - https://github.com/davebaird/z5.stdlib/blob/master/sh/checks
+ - [checks](https://github.com/davebaird/z5.stdlib/blob/master/sh/checks)
    - check.homedir
    - check.i_am_root
    - check.i_can_root
@@ -46,23 +46,23 @@ Usage:
    - test.is_ubuntu
    - test.is_x86
    - test.is_x86_64
- - https://github.com/davebaird/z5.stdlib/blob/master/sh/cleanup
+ - [cleanup](https://github.com/davebaird/z5.stdlib/blob/master/sh/cleanup)
    - cleanup.add
    - cleanup.rc
    - cleanup.shared_memory
- - https://github.com/davebaird/z5.stdlib/blob/master/sh/cloud_init
+ - [cloud_init](https://github.com/davebaird/z5.stdlib/blob/master/sh/cloud_init)
    - cloud_init.run
    - cloud_init.users
    - cloud_init.write_files
- - https://github.com/davebaird/z5.stdlib/blob/master/sh/datetimetools
+ - [datetimetools](https://github.com/davebaird/z5.stdlib/blob/master/sh/datetimetools)
    - dt.YYYY-MM-DD.2iso8601
    - dt.now
- - https://github.com/davebaird/z5.stdlib/blob/master/sh/docker.cli.tools
+ - [docker.cli.tools](https://github.com/davebaird/z5.stdlib/blob/master/sh/docker.cli.tools)
    - dbuild
    - dcleanup
    - dstopall
    - dvolumes
- - https://github.com/davebaird/z5.stdlib/blob/master/sh/dockertools
+ - [dockertools](https://github.com/davebaird/z5.stdlib/blob/master/sh/dockertools)
    - dtools.container.exists
    - dtools.container.running
    - dtools.docker.install
@@ -71,7 +71,7 @@ Usage:
    - dtools.stop
    - dtools.tail.log
    - dtools.waitfor
- - https://github.com/davebaird/z5.stdlib/blob/master/sh/doitools
+ - [doitools](https://github.com/davebaird/z5.stdlib/blob/master/sh/doitools)
    - doi.URL
    - doi.abstract
    - doi.formatted.citation
@@ -82,7 +82,7 @@ Usage:
    - doi.title
    - doi2doi
    - url2doi
- - https://github.com/davebaird/z5.stdlib/blob/master/sh/errcho
+ - [errcho](https://github.com/davebaird/z5.stdlib/blob/master/sh/errcho)
    - becho
    - berrcho
    - cecho
@@ -100,7 +100,7 @@ Usage:
    - rerrcho
    - yecho
    - yerrcho
- - https://github.com/davebaird/z5.stdlib/blob/master/sh/installer
+ - [installer](https://github.com/davebaird/z5.stdlib/blob/master/sh/installer)
    - install.apt.pkgs
    - install.chromium
    - install.cpanm
@@ -112,27 +112,27 @@ Usage:
    - install.yq
    - install.yq4
    - test.installed.apt.pkgs
- - https://github.com/davebaird/z5.stdlib/blob/master/sh/iptools
+ - [iptools](https://github.com/davebaird/z5.stdlib/blob/master/sh/iptools)
    - iptools.etchosts.add
    - iptools.etchosts.rm
    - iptools.get_ip_dns
    - iptools.get_ip_etc_hosts
    - iptools.get_ip_prefer_etc_hosts
    - iptools.myip
- - https://github.com/davebaird/z5.stdlib/blob/master/sh/jsontools
+ - [jsontools](https://github.com/davebaird/z5.stdlib/blob/master/sh/jsontools)
    - a2j
    - aa2j
    - is.json
    - json.denullify2arr
    - json.denullify2str
    - jsonval
- - https://github.com/davebaird/z5.stdlib/blob/master/sh/listeners
+ - [listeners](https://github.com/davebaird/z5.stdlib/blob/master/sh/listeners)
    - addListener
    - throw
- - https://github.com/davebaird/z5.stdlib/blob/master/sh/optstools
+ - [optstools](https://github.com/davebaird/z5.stdlib/blob/master/sh/optstools)
    - check.is_getopt_enhanced
    - parseopts
- - https://github.com/davebaird/z5.stdlib/blob/master/sh/pathtools
+ - [pathtools](https://github.com/davebaird/z5.stdlib/blob/master/sh/pathtools)
    - PATH.add
    - PATH.dedup
    - path.backup
@@ -151,48 +151,48 @@ Usage:
    - path.rootdir
    - path.rootdir.pwd
    - path.their.rootdir
- - https://github.com/davebaird/z5.stdlib/blob/master/sh/pidtools
+ - [pidtools](https://github.com/davebaird/z5.stdlib/blob/master/sh/pidtools)
    - list.descendants
    - list.descendants.comma_separated
    - pid.command
    - pidfile.get
    - pidfile.set
    - stop.pid
- - https://github.com/davebaird/z5.stdlib/blob/master/sh/pkgtools
+ - [pkgtools](https://github.com/davebaird/z5.stdlib/blob/master/sh/pkgtools)
    - cpanfile2pkglist
    - cpanfileshowdeps
    - generate.pkglists
    - pkglist2deblist
- - https://github.com/davebaird/z5.stdlib/blob/master/sh/portstools
+ - [portstools](https://github.com/davebaird/z5.stdlib/blob/master/sh/portstools)
    - ports.commands
- - https://github.com/davebaird/z5.stdlib/blob/master/sh/sshtools
+ - [sshtools](https://github.com/davebaird/z5.stdlib/blob/master/sh/sshtools)
    - sshtools.configure_identity_files
    - sshtools.generate_keypair
    - sshtools.mount_remote
- - https://github.com/davebaird/z5.stdlib/blob/master/sh/stacktrace
+ - [stacktrace](https://github.com/davebaird/z5.stdlib/blob/master/sh/stacktrace)
    - stacktrace
- - https://github.com/davebaird/z5.stdlib/blob/master/sh/Sudo
+ - [Sudo](https://github.com/davebaird/z5.stdlib/blob/master/sh/Sudo)
    - Sudo
    - Sudo_u
- - https://github.com/davebaird/z5.stdlib/blob/master/sh/try-catch
+ - [try-catch](https://github.com/davebaird/z5.stdlib/blob/master/sh/try-catch)
    - catch
    - ignoreErrors
    - throw
    - throwErrors
    - try
- - https://github.com/davebaird/z5.stdlib/blob/master/sh/usertools
+ - [usertools](https://github.com/davebaird/z5.stdlib/blob/master/sh/usertools)
    - usertools.homedir
    - usertools.sudoer
- - https://github.com/davebaird/z5.stdlib/blob/master/sh/vboxtools
+ - [vboxtools](https://github.com/davebaird/z5.stdlib/blob/master/sh/vboxtools)
    - vboxtools.fix_hostonly_networking
    - vboxtools.is_vbox
- - https://github.com/davebaird/z5.stdlib/blob/master/sh/waitfor
+ - [waitfor](https://github.com/davebaird/z5.stdlib/blob/master/sh/waitfor)
    - waitfor.docker
    - waitfor.file
    - waitfor.host.port
    - waitfor.socket
    - waitfor.umount
- - https://github.com/davebaird/z5.stdlib/blob/master/sh/webtools
+ - [webtools](https://github.com/davebaird/z5.stdlib/blob/master/sh/webtools)
    - is.not.url
    - is.url
    - url.path

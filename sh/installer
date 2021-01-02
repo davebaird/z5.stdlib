@@ -102,10 +102,10 @@ install._snap_fix_path () {
     [[ $nounset -eq 1 ]] && set -o nounset
 }
 
-test.installed.apt.pkgs () {(
+test.installed.apt.pkgs () (
     set +e
     dpkg --status "$@" > /dev/null 2>&1
-)}
+)
 
 install.apt.pkgs () {
     test.installed.apt.pkgs "$@" && return 0
@@ -120,7 +120,7 @@ install.apt.pkgs () {
     sudo apt-get install --yes --quiet --no-install-recommends "$@"
 }
 
-install.docopts () {(
+install.docopts () (
     which docopts > /dev/null && return 0
 
     git clone http://github.com/docopt/docopts.git
@@ -135,17 +135,19 @@ install.docopts () {(
     cd .. || errexit "Couldn't cd back" $?
 
     rm -rf docopts
-)}
+)
 
 install.dt_iso8601 () {
-    # DateTime::Format::ISO8601
-    which cpanm > /dev/null || install.cpanm
-    cpanm --install --notest DateTime::Format::ISO8601
+    install.perlmodules DateTime::Format::ISO8601
 }
 
 install.urifind () {
-    which cpanm > /dev/null || install.cpanm
-    cpanm --install --notest URI::Find
+    install.perlmodules URI::Find
+}
+
+install.perlmodules () {
+    install.cpanm
+    cpanm --install --notest "$@"
 }
 
 install.cpanm () {

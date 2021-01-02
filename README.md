@@ -107,6 +107,7 @@ Usage:
    - install.docopts
    - install.dt_iso8601
    - install.jo
+   - install.perlmodules
    - install.snap
    - install.urifind
    - install.yq

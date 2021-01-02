@@ -13,7 +13,8 @@ aa2j () { # associative array 2 json
     eval "arr=${arrstr#*=}"
 
     # shellcheck disable=SC2154
-    for key in "${!arr[@]}"; do
+    for key in "${!arr[@]}"
+    do
         printf '%s\0%s\0' "$key" "${arr[$key]}"
     done |
         jq -Rs '
@@ -23,13 +24,14 @@ aa2j () { # associative array 2 json
             ({}; . + {($a[2*$i]): ($a[2*$i + 1]|fromjson? // .)})'
 }
 
-# a2j "$(declare -p array)"
+# Usage: a2j "$(declare -p arrayname)"
 a2j () { # array 2 json
     local arrstr; arrstr="$1"
 
     # if no entries have been added to the bash array, the 'declare -p' output
     # will have no '='. If we don't handle that case here, we get '[ null ]'
-    if ! [[ $arrstr == *=* ]]; then
+    if ! [[ $arrstr = *=* ]]
+    then
         echo "[]"
         return 0
     fi

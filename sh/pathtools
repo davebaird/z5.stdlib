@@ -43,6 +43,10 @@ path.last_modified.epoch () {
     date --reference="$(path.last_modified "$1")" +%s
 }
 
+path.last_modified.iso8601 () {
+    date --reference="$(path.last_modified "$1")" --iso-8601=seconds
+}
+
 path.rootdir () {
     local markerfile; markerfile="$1"
     local depth; depth=${2:-0}

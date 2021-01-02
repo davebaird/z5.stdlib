@@ -16,7 +16,7 @@ azure.tr () {
     # Even better - https://www.perl.com/pub/2004/08/09/commandline.html/
     # text=$(printf '%s' "$text" | perl -0777 -e '$_=<>; s/\n+/ /g; s/\s+/ /g; s/(?:^\s|\s$)//mg; print')
     # text=$(<<< "$1" perl -0777 -e '$_=<>; s/\n+/ /g; s/\s+/ /g; s/(?:^\s|\s$)//mg; print')
-    text=$(<<< "$1" perl -0777 -pe 's/\n+/ /g; s/\s+/ /g; s/(?:^\s|\s$)//mg')
+    text=$(<<< "$1" perl -0777 -pe 's/\n+/ /g; s/\s+/ /g; s/(?:^\s|\s$)//g')
 
     local url
     url="https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&from=${FROM_LC}&to=${TO_LC}"
@@ -59,9 +59,10 @@ azure.tr () {
     # }
 
 
-azuretools.is_azure () {
+azuretools.is_azure () (
+    set +e
     [[ $(dmidecode -s system-manufacturer) == "Microsoft Corporation" ]]
-}
+)
 
 # configure swap (Azure)
 # https://support.microsoft.com/en-us/help/4010058/how-to-add-a-swap-file-in-linux-azure-virtual-machines

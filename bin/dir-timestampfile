@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+source ${Z5_STDLIB}/sh/importer vstrict || exit 1
+import pathtools
+
+srcdir="$1"
+destdir="${2:-"$srcdir"/touchfiles}"
+touchfileroot="${3:-dirtouched}"
+
+mkdir -p "$destdir"
+
+ts="$(path.last_modified.iso8601 "$srcdir")"
+newest_file="$(path.last_modified "$srcdir")"
+
+# touch --reference="$(path.last_modified "$srcdir")" "$destdir/$touchfileroot.$ts"
+rm -f "$destdir/$touchfileroot."*
+printf '%s: %s\n' "$newest_file" "$ts" > "$destdir/$touchfileroot.$ts"
+touch --reference="$newest_file" "$destdir/$touchfileroot.$ts"

@@ -12,7 +12,7 @@ Usage:
     ...
 
 import | functions
---------------
+-------|----------
 azuretools | azure.tr
 azuretools | azuretools.is_azure
 azuretools | azuretools.set_up_swap

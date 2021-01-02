@@ -38,36 +38,24 @@ doi.meta () {
 }
 
 doi.title () {
-    doi.denullify2str "$(jq --raw-output '.message.title[]' <<< "$1")"
+    json.denullify2str "$(jq --raw-output '.message.title[]' <<< "$1")"
 }
 
 doi.journal () {
-    doi.denullify2str "$(jq --raw-output '.message."container-title"[0]' <<< "$1")"
+    json.denullify2str "$(jq --raw-output '.message."container-title"[0]' <<< "$1")"
 }
 
 doi.URL () {
-    doi.denullify2str "$(jq --raw-output '.message.URL' <<< "$1")"
+    json.denullify2str "$(jq --raw-output '.message.URL' <<< "$1")"
 }
 
 doi.abstract () {
-    doi.denullify2str "$(jq --raw-output '.message.abstract' <<< "$1")"
-}
-
-doi.denullify2str () {
-    local json; json="$1"
-    [[ $json == null ]] && json=
-    printf '%s' "$json"
-}
-
-doi.denullify2arr () {
-    local json; json="$1"
-    [[ $json == null ]] && json='[]'
-    printf '%s' "$json"
+    json.denullify2str "$(jq --raw-output '.message.abstract' <<< "$1")"
 }
 
 # returns a json array in a string, which can be stored in a bash associative array key
 doi.keywords () {
-    doi.denullify2arr "$(jq '.message.subject' <<< "$1")"
+    json.denullify2arr "$(jq '.message.subject' <<< "$1")"
 }
 
 doi.lc.keywords () {

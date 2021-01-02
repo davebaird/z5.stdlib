@@ -70,8 +70,6 @@ Usage:
  - doitools
    - doi.URL
    - doi.abstract
-   - doi.denullify2arr
-   - doi.denullify2str
    - doi.formatted.citation
    - doi.journal
    - doi.keywords
@@ -121,6 +119,8 @@ Usage:
    - a2j
    - aa2j
    - is.json
+   - json.denullify2arr
+   - json.denullify2str
    - jsonval
  - listeners
    - addListener

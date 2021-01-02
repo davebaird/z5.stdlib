@@ -1,5 +1,5 @@
 
 
 
-README.md: README.md.src
+readme: # README.md.src
 	bin/z5stdlib-funclist > README.md

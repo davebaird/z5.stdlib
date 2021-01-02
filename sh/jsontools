@@ -49,3 +49,15 @@ jsonval () {
 is.json () {
     jq --exit-status . > /dev/null 2>&1 <<< "$1"
 }
+
+json.denullify2str () {
+    local json; json="$1"
+    [[ $json == null ]] && json=
+    printf '%s' "$json"
+}
+
+json.denullify2arr () {
+    local json; json="$1"
+    [[ $json == null ]] && json='[]'
+    printf '%s' "$json"
+}

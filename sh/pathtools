@@ -39,6 +39,10 @@ path.last_modified () {
     find -L "${1:-.}" -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" "
 }
 
+path.last_modified.epoch () {
+    date --reference="$(path.last_modified "$1")" +%s
+}
+
 path.rootdir () {
     local markerfile; markerfile="$1"
     local depth; depth=${2:-0}

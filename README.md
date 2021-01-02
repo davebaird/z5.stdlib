@@ -1,5 +1,9 @@
 # z5.stdlib
 
+## Mostly sugar
+
+... but a touch of spice.
+
 Usage:
 
     #!/bin/bash
@@ -139,6 +143,7 @@ Usage:
    - path.is.not.empty.dir.exists
    - path.is.relative
    - path.last_modified
+   - path.last_modified.epoch
    - path.mkdir.if.missing
    - path.parent.exists
    - path.relative

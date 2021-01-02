@@ -22,7 +22,7 @@ __dangerous=(
     poettools
 )
 
-get_all_public_fcn_list () {
+get_all_public_func_list () {
     for f in $(printf '%s\n' "${__safe[@]}" "${__marginal[@]}" | sort --dictionary-order)
     do
         # https://github.com/davebaird/z5.stdlib/blob/master/sh/azuretools

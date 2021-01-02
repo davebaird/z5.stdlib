@@ -37,15 +37,15 @@ dtools.stop () {
 
 }
 
-dtools.container.running () {
-    docker top "$1" > /dev/null 2>&1 && return 0
-    return 1
-}
+dtools.container.running () (
+    set +e
+    docker top "$1" > /dev/null 2>&1
+)
 
-dtools.container.exists () {
-    docker container inspect "$1" > /dev/null 2>&1 && return 0
-    return 1
-}
+dtools.container.exists () (
+    set +e
+    docker container inspect "$1" > /dev/null 2>&1
+)
 
 # Wait for the container to be up, running, and functional, by checking it can
 # generate log output. Then cleanup the log process.
@@ -98,9 +98,9 @@ dtools.tail.log () {
 dtools.docker.install.cli () {
     local os; os=$(get.os)
 
-    apt-get remove docker docker-engine docker.io containerd runc || :
+    apt-get remove docker docker-engine docker.io containerd runc > /dev/null 2>&1 || :
 
-    install.apt.pkgs gnupg2
+    install.apt.pkgs software-properties-common curl gnupg2
 
     curl -fsSL "https://download.docker.com/linux/$os/gpg" | apt-key add -
 
@@ -112,8 +112,6 @@ dtools.docker.install.cli () {
 }
 
 dtools.docker.install () {
-    install.apt.pkgs software-properties-common curl
-
     dtools.docker.install.cli
 
     install.apt.pkgs containerd.io
@@ -122,13 +120,4 @@ dtools.docker.install () {
 
     systemctl enable docker > /dev/null 2>&1
 }
-
-# don't use the shortcut (oneliner), the script returns 1 if not root, but somehow doesn't
-# trigger en exit under set -e, unless stacktrace is loaded, and other hidden
-# weird shit as well
-# Edit - probably works fine if add ':' as last line in file
-# if test.i_can_root
-# then
-#     dtools.docker.install
-# fi
 

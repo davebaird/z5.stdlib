@@ -31,7 +31,7 @@ get_all_public_fcn_list () {
         do
             [[ $func = _* ]]   && continue
             [[ $func = *._* ]] && continue
-            printf '  - %s\n' "$func"
+            printf '   - %s\n' "$func"
         done
     done
 }

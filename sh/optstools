@@ -1,6 +1,8 @@
 #!/bin/bash
 import errcho
 
+# Note: better to use docopts
+
 # Don´t use this by saying:
 #   eval set -- "$(parseopts "$Options" "$LongOpts" "$@")"
 # Instead, assign to an intermediate variable, to ensure usage() exits properly

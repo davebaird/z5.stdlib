@@ -4,8 +4,6 @@ import pidtools
 import checks
 import installer
 
-install.apt.pkgs software-properties-common curl
-
 dtools.ip () {
     local dname; dname="$1"
     dtools.waitfor "$dname"
@@ -114,6 +112,8 @@ dtools.docker.install.cli () {
 }
 
 dtools.docker.install () {
+    install.apt.pkgs software-properties-common curl
+
     dtools.docker.install.cli
 
     install.apt.pkgs containerd.io
@@ -126,8 +126,9 @@ dtools.docker.install () {
 # don't use the shortcut (oneliner), the script returns 1 if not root, but somehow doesn't
 # trigger en exit under set -e, unless stacktrace is loaded, and other hidden
 # weird shit as well
-if test.i_can_root
-then
-    dtools.docker.install
-fi
+# Edit - probably works fine if add ':' as last line in file
+# if test.i_can_root
+# then
+#     dtools.docker.install
+# fi
 

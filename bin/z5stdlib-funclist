@@ -1,0 +1,9 @@
+#!/bin/bash
+# assuming this is run from the Makefile
+source sh/importer vstrict || exit 1
+import z5stdlibtools
+
+funcs="$(get_all_public_fcn_list)"
+md="$(<"$Z5STDLIB_HOME"/README.md.src)"
+md="${md//<<FUNCLIST>>/$funcs}"
+printf '%s' "$md"

@@ -4,12 +4,12 @@ import installer
 import pathtools
 import usertools
 
-YamlFile="$1"
+cloud_init.run () {
+    YamlFile="$1"
 
-[[ -z $YamlFile ]] && errxit "Need a cloud init YAML file on import line"
-[[ -f $YamlFile ]] || errxit "Cloud init YAML file [$YamlFile] not found"
+    [[ -z $YamlFile ]] && errxit "Need a cloud init YAML file on import line"
+    [[ -f $YamlFile ]] || errxit "Cloud init YAML file [$YamlFile] not found"
 
-main () {
     install.yq
     cloud_init.users
     cloud_init.write_files
@@ -110,4 +110,4 @@ cloud_init._user_authorized_keys () {
     chmod 0600 "/home/$name/.ssh/authorized_keys"
 }
 
-main
+

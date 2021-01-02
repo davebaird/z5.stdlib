@@ -117,3 +117,29 @@ cancel.alarm () {
     # kill the sleeping bg process, if it's still around, before it sends the signal
     kill "$1" > /dev/null 2>&1 || :
 }
+
+# shellcheck disable=SC2016
+_get_fcn_list () {
+    env -i bash --noprofile --norc -c '
+    source "'"$1"'"
+    typeset -f |
+    grep '\''^[^{} ].* () $'\'' |
+    awk "{print \$1}" |
+    while read -r fcn_name; do
+        type "$fcn_name" | head -n 1 | grep -q "is a function$" || continue
+        echo "$fcn_name"
+    done
+'
+}
+
+# https://superuser.com/a/1111244
+get_fcn_list () {
+    local scriptpath; scriptpath="$1"
+
+    for fcn_name in $(_get_fcn_list "$scriptpath")
+    do
+        echo "$fcn_name"
+    done
+}
+
+

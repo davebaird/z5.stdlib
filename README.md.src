@@ -1,0 +1,15 @@
+# z5.stdlib
+
+Usage:
+
+    #!/bin/bash
+    source [/path/to/z5.stdlib]/sh/importer vstrict || exit 1
+    import errcho
+    import stacktrace
+    import bashtools
+    import pathtools
+
+    ...
+
+import      functions
+<<FUNCLIST>>

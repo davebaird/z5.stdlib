@@ -1,5 +1,4 @@
 #!/bin/bash
-
 import errcho
 
 # https://unix.stackexchange.com/a/40973/154825

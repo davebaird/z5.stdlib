@@ -1,0 +1,36 @@
+#!/bin/bash
+import errcho
+import bashtools
+
+declare -ag __safe
+__safe=(
+    azuretools checks bashtools cleanup cloud_init datetimetools docker.cli.tools
+    dockertools doitools errcho installer iptools listeners optstools pathtools
+    pidtools pkgtools portstools sshtools try-catch usertools vboxtools waitfor
+    webtools
+)
+
+declare -ag __marginal
+__marginal=(
+    jsontools # will install.jo
+    stacktrace # sets up traps
+    Sudo # installs sudo
+)
+
+declare -ag __dangerous
+__dangerous=(
+    poettools
+)
+
+get_all_public_fcn_list () {
+    for f in $(printf '%s\n' "${__safe[@]}" "${__marginal[@]}" | sort --dictionary-order)
+    do
+        # Filter stderr: https://stackoverflow.com/a/15936384/2334574
+        get_fcn_list "$Z5STDLIB_HOME/sh/$f" 2> >(grep -v 'import: command not found' >&2) | while read -r func
+        do
+            [[ $func = _* ]]   && continue
+            [[ $func = *._* ]] && continue
+            printf '%s\t%s\n' "$f" "$func"
+        done
+    done
+}

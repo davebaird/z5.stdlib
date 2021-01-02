@@ -10,18 +10,8 @@ poet._import () {
     poet._build
 }
 
-# shellcheck disable=SC2128
-__ptools_mydir="$(dirname "$BASH_SOURCE")"
-
 poet.conf.get () {
-    # local keyspec; keyspec="$1"
-
-    # if [[ -z $keyspec ]]; then
-    #     errcho "No key supplied"
-    #     return 1
-    # fi
-
-    "$__ptools_mydir/../docker/d.start.poet.conf.get" "$PoetRootDir" "$@"
+    "$Z5STDLIB_HOME/docker/d.start.poet.conf.get" "$PoetRootDir" "$@"
 }
 
 poet.switchroot () {
@@ -39,7 +29,7 @@ poet.switchroot () {
 }
 
 poet._build () {(
-    cd "$__ptools_mydir/../docker/poet.conf.get" || return 1
+    cd "$Z5STDLIB_HOME/docker/poet.conf.get" || return 1
     # TODO when debugging is done, put this on docker hub and pull the image instead
     docker build -t poet.conf.get . > /dev/null
 )}

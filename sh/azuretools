@@ -66,12 +66,10 @@ azuretools.is_azure () {
 # configure swap (Azure)
 # https://support.microsoft.com/en-us/help/4010058/how-to-add-a-swap-file-in-linux-azure-virtual-machines
 azuretools.set_up_swap () {
+    test.i_can_root || { errcho "Must be root to set up swap"; return 1; }
     sed -i 's|ResourceDisk.Format=n|ResourceDisk.Format=y|' /etc/waagent.conf
     sed -i 's|ResourceDisk.EnableSwap=n|ResourceDisk.EnableSwap=y|' /etc/waagent.conf
     sed -i 's|ResourceDisk.SwapSizeMB=0|ResourceDisk.SwapSizeMB=2048|' /etc/waagent.conf
     service walinuxagent restart
 }
 
-test.i_can_root && azuretools.is_azure && azuretools.set_up_swap
-
-:

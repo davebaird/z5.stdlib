@@ -16,6 +16,7 @@ if [[ -n ${1:-} && $1 == *strict ]]; then
     set -o nounset
     set -o pipefail
     set -o noclobber
+    shopt -u dotglob # this is the default - causes * to ignore dorfiles
     # IFS=$'\t\n'
 fi
 

@@ -7,12 +7,8 @@ xtools.is_active () {
 
 # turn off the X subsystem that might be active for some reason
 xtools.turn_off_x () {
+    yerrcho "WARNING: de-activating X"
     systemctl set-default multi-user.target
     systemctl stop lightdm.service
 }
 
-if xtools.is_active
-then
-    yerrcho "WARNING: de-activating X - this should never be necessary, but it seems to be"
-    xtools.turn_off_x
-fi

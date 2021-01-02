@@ -15,8 +15,3 @@ vboxtools.fix_hostonly_networking () {
 vboxtools.is_vbox () {
     [[ $(dmidecode -s system-manufacturer) == "innotek GmbH" ]]
 }
-
-if vboxtools.is_vbox
-then
-    vboxtools.fix_hostonly_networking
-fi

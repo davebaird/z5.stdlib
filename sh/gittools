@@ -5,7 +5,7 @@ import checks
 import installer
 import usertools
 
-# might want to set this to 'full'
+# might occasionally want to set this to 'full'
 GIT_INSTALL_REPO_CLONE_DEPTH=1
 
 git.install () {
@@ -28,8 +28,6 @@ github.keyscan () {
     grep github.com "$homedir/.ssh/known_hosts" > /dev/null 2>&1 || \
         ssh-keyscan github.com | sudo -u "$user" tee -a "$homedir/.ssh/known_hosts" > /dev/null
 }
-
-git.install "$@"
 
 git.user.config () {
     local user; user="${1:-$USER}"

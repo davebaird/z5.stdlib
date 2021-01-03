@@ -21,14 +21,16 @@ cleanup._shared_memory () {
     local user; user="$1"
 
     # shellcheck disable=SC2162
-    while read key id owner nattch; do
+    while read key id owner nattch
+    do
         if [[ -z $key ]] || [[ -z $id ]] || [[ -z $owner ]]; then
             echo "Ignoring invalid line from ipcs: [${key} ${id} ${owner} ${nattch}]" >&2
             continue
         fi
 
         local output
-        if output=$(ipcrm shm "$id" 2>&1); then
+        if output=$(ipcrm shm "$id" 2>&1)
+        then
             echo "Cleanup shared memory: removed [${key} ${id} ${owner} ${nattch}]" >&2
         else
             echo "Failed to delete line from ipcs: [${key} ${id} ${owner} ${nattch}]" >&2
@@ -44,6 +46,10 @@ cleanup.shared_memory () {
         sudo bash -c "$func; cleanup._shared_memory root"
     fi
 
+    cleanup.my_shared_memory
+}
+
+cleanup.my_shared_memory () {
     cleanup._shared_memory "$USER"
 }
 

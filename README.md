@@ -48,6 +48,7 @@ Usage:
    - test.is_x86_64
  - [cleanup](https://github.com/davebaird/z5.stdlib/blob/master/sh/cleanup)
    - cleanup.add
+   - cleanup.my_shared_memory
    - cleanup.rc
    - cleanup.shared_memory
  - [cloud_init](https://github.com/davebaird/z5.stdlib/blob/master/sh/cloud_init)
@@ -124,6 +125,7 @@ Usage:
    - a2j
    - aa2j
    - is.json
+   - j2a
    - json.denullify2arr
    - json.denullify2str
    - jsonval

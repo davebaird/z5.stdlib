@@ -41,7 +41,7 @@ install.jo () {
     local jo; jo='jo-1.4'
 
     # can probably simplify this with build-essential or something
-    install.apt.pkgs wget binutils make csh g++ sed gawk autoconf automake autotools-dev
+    install.apt.pkgs wget binutils make csh g++ sed gawk autoconf automake autotools-dev pandoc pkg-config
 
     wget https://github.com/jpmens/jo/releases/download/1.4/${jo}.tar.gz
 

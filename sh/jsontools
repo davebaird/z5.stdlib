@@ -1,7 +1,7 @@
 #!/bin/bash
 import installer
 
-install.jo
+# install.jo
 
 # Pass assoc array into function: https://stackoverflow.com/a/8881121/2334574
 # Convert to json:                https://stackoverflow.com/a/44792751/2334574
@@ -40,6 +40,11 @@ a2j () { # array 2 json
 
     # print each value on its own line
     printf "%s\n" "${arr[@]}" | jo -a
+}
+
+# Usage: j2a myarray "$json"
+j2a () {
+    readarray -t "$1" < <(printf '%s' "$2" | jq --raw-output --compact-output '.[]')
 }
 
 jsonval () {

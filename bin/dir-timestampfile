@@ -9,9 +9,11 @@ touchfileroot="${3:-dirtouched}"
 mkdir -p "$destdir"
 
 ts="$(path.last_modified.iso8601 "$srcdir")"
-newest_file="$(path.last_modified "$srcdir")"
 
 # touch --reference="$(path.last_modified "$srcdir")" "$destdir/$touchfileroot.$ts"
 rm -f "$destdir/$touchfileroot."*
+
+# this must come after the rm, in case we're examining the same dir
+newest_file="$(path.last_modified "$srcdir")"
 printf '%s: %s\n' "$newest_file" "$ts" > "$destdir/$touchfileroot.$ts"
 touch --reference="$newest_file" "$destdir/$touchfileroot.$ts"

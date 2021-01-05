@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+source ${Z5_STDLIB}/sh/importer vstrict || exit 1
+import pathtools
+
+path.last_modified "$1"

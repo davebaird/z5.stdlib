@@ -1,7 +1,7 @@
 #!/bin/bash
 import errcho
 
-vboxtools.fix_hostonly_networking () {
+vbox.fix_hostonly_networking () {
     [[ -f /etc/network/interfaces.d/vbox-host-only ]] && return 0
 
     {
@@ -12,6 +12,7 @@ vboxtools.fix_hostonly_networking () {
     ifup enp0s8 > /dev/null 2>&1 || errxit "ifup enp0s8 failed" $?
 }
 
-vboxtools.is_vbox () {
+test.is_vbox () (
+    set +x
     [[ $(dmidecode -s system-manufacturer) == "innotek GmbH" ]]
-}
+)

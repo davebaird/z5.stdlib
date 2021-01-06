@@ -121,3 +121,14 @@ dtools.docker.install () {
     systemctl enable docker > /dev/null 2>&1
 }
 
+# 2021-01-05T22:13:39.12345+00:00
+dtools.LastTagTime.iso8601 () {
+    # 2021-01-05 22:12:29.766192404 +0100 CET
+    local lttime; lttime="$(docker image inspect --format '{{.Metadata.LastTagTime}}' "$1")"
+
+    lttime="$(printf '%s' "$lttime" | sed 's/\s/T/')"
+    lttime="$(printf '%s' "$lttime" | sed 's/\s//')"
+    lttime="$(printf '%s' "$lttime" | sed 's/\s[[:upper:]]\+//')"
+
+    printf '%s\n' "$lttime"
+}

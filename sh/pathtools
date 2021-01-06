@@ -35,12 +35,18 @@ PATH.dedup () {
 }
 
 # latest modified file in dir tree under pwd or $1
+#   Also have a look at this for a different approach - https://www.gnu.org/software/findutils/manual/html_node/find_html/Updating-A-Timestamp-File.html
 path.last_modified () {
     find -L "${1:-.}" -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" "
 }
 
 path.last_modified.epoch () {
-    date --reference="$(path.last_modified "$1")" +%s
+    date --reference="$(path.last_modified "${1:-.}")" +%s
+}
+
+# Usage: path.last_modified.touchfile <touchfilename> <dir>
+path.last_modified.touchfile () {
+    touch --reference="$(path.last_modified "${2:-.}")" "${1:-touchfile}"
 }
 
 path.last_modified.iso8601 () {

@@ -11,7 +11,7 @@ poet._import () {
 }
 
 poet.conf.get () {
-    "$Z5STDLIB_HOME/docker/d.start.poet.conf.get" "$PoetRootDir" "$@"
+    "$Z5_STDLIB/docker/d.start.poet.conf.get" "$PoetRootDir" "$@"
 }
 
 poet.switchroot () {
@@ -29,7 +29,7 @@ poet.switchroot () {
 }
 
 poet._build () {(
-    cd "$Z5STDLIB_HOME/docker/poet.conf.get" || return 1
+    cd "$Z5_STDLIB/docker/poet.conf.get" || return 1
     # TODO when debugging is done, put this on docker hub and pull the image instead
     docker build -t poet.conf.get . > /dev/null
 )}

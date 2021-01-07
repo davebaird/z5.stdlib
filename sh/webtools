@@ -41,7 +41,7 @@ webtools.dump_dom () {
     #     exec 9>&2 2> /dev/null
     # fi
 
-    "$Z5STDLIB_HOME"/perl/get.dom "$url"
+    "$Z5_STDLIB"/perl/get.dom "$url"
 
     # # undo stderr redirect
     # if [[ ${Z5_WEBTOOLS_SHOW_CHROME_STDERR:-0} -eq 0 ]]; then

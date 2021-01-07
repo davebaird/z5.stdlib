@@ -10,18 +10,16 @@
 #   https://github.com/srcshelton/stdlib.sh
 
 
-if [[ -n ${1:-} && $1 == *strict ]]; then
+if [[ -n ${1:-} && $1 == *strict ]]
+then
     # http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -o errexit
     set -o nounset
     set -o pipefail
     set -o noclobber
-    shopt -u dotglob # this is the default - causes * to ignore dorfiles
+    shopt -u dotglob # this is the default - causes * to ignore dotfiles
     # IFS=$'\t\n'
-fi
-
-if [[ -n ${1:-} && $1 == vstrict ]]; then
-    IFS=$'\t\n'
+    [[ $1 == vstrict ]] && IFS=$'\t\n'
 fi
 
 # Used in cleanup._on_exit
@@ -30,19 +28,21 @@ nostrict () {
     set +o nounset
     set +o pipefail
     set +o noclobber
-    IFS=$' \n\t'
+    IFS=$' \t\n'
 }
 
 
 # https://unix.stackexchange.com/a/246703/154825
-if [[ -z "${Imported+set}" ]]; then
+if [[ -z "${Imported+set}" ]]
+then
     declare -A Imported
     Imported[0]="i am set"
 fi
 
 # set DEBUG_STDLIB unless it was already exported by caller
 test_debug=${DEBUG_STDLIB:-}
-if [[ -z $test_debug ]]; then
+if [[ -z $test_debug ]]
+then
     export DEBUG_STDLIB=
 fi
 
@@ -50,8 +50,12 @@ fi
 # don't put this inside functions, it'll get it wrong (see link)
 _z5stdlibshdir="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 
-Z5STDLIB_HOME="$(readlink --canonicalize-existing "$_z5stdlibshdir"/..)"
-export Z5STDLIB_HOME
+# Useful to have this set in startup dotfiles, but if not, we set it here, it's used in various places
+if [[ -z $Z5_STDLIB ]]
+then
+    Z5_STDLIB="$(readlink --canonicalize-existing "$_z5stdlibshdir"/..)"
+    export Z5_STDLIB
+fi
 
 declare -xA Z5_STDLIB_SEARCHDIRS
 

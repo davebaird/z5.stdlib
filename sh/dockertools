@@ -34,7 +34,6 @@ dtools.stop () {
         ((verbose == 1)) && errcho "Removing stopped container $dname"
         docker rm --force "$dname"
     fi
-
 }
 
 dtools.container.running () (
@@ -84,7 +83,7 @@ dtools.tail.log () {
                 sleep 0.1
             fi
         else                # process is still running
-            errcho "docker logs $dname is running"
+            # errcho "docker logs $dname is running"
             break
         fi
     done

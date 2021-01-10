@@ -6,7 +6,7 @@ __debug_cleanup=0
 cleanup._import () {
     local debug_setting; debug_setting="${1:-0}"
 
-    ((__debug_cleanup = 1)) && return
+    ((__debug_cleanup == 1)) && return
 
     [[ $debug_setting == DEBUG ]] && __debug_cleanup=1
     [[ $debug_setting -eq 1 ]]    && __debug_cleanup=1
@@ -86,7 +86,7 @@ cleanup._on_exit () {
     __in_cleanup_rc="$rc"
 
     nostrict
-    berrcho "===== Running EXIT cleanup for $0 ====="
+    ((__debug_cleanup == 1)) && berrcho "===== Running EXIT cleanup for $0 ====="
 
     for i in "${__cleanup_on_exit_items[@]}"
     do

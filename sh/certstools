@@ -1,0 +1,21 @@
+#!/bin/bash
+import errcho
+
+# https://stackoverflow.com/a/12478732/2334574
+
+certs.pki.list () {
+    certutil -d sql:"$HOME"/.pki/nssdb -L # add '-h all' to see all built-in certs
+}
+
+# Usage: certs.pki.add "$file" "C,,"
+certs.pki.add () {
+    # -i input file
+    # -n set nickname
+    # -A add to trust store
+    # -d directory of trust store
+    # -t trust attributes
+    #   3 attributes, comma-separated, for: SSL,email,signing
+    #   In each position, can place 0, 1, or many attribute codes
+    #   Of interest: C for trusted CA (this is what mkcert uses), P for trusted peer
+    certutil -d sql:"$HOME"/.pki/nssdb -A -t "${2:-P,,}" -n "$1" -i "$1"
+}

@@ -4,31 +4,85 @@ import cleanup
 import dockertools
 import bashtools
 
+# webtools.redirected_url () {
+#     cleanup.add dtools.stop "zenika-chrome-location-href.$$"
+
+#     check.is.url "$1"
+
+#     local -a vols
+#     vols=(
+#         --volume "$(pwd)":/usr/src/app
+#         # --volume "$HOME"/.pki:/home/chrome/.pki
+#         # --volume /etc/ssl/certs:/etc/ssl/certs
+#         --volume user"$K2USERNUM"_root_pki:/home/chrome/.pki
+#     )
+
+#     local chrome
+#     chrome="docker run -i --rm --user $(id -u) --name zenika-chrome-location-href.$$ ${vols[*]} zenika/alpine-chrome"
+
+#     # The entrypoint is: chromium-browser --headless --disable-gpu --disable-software-rasterizer --disable-dev-shm-usage
+
+#     #  + document.documentElement.outerHTML
+#     printf 'location.href\nquit\n' | \
+#         docker run -i --rm --user "$(id -u)" --name zenika-chrome-location-href.$$ "${vols[@]}" zenika/alpine-chrome \
+#         --proxy-server="${PROXY_SERVER:-}" --no-sandbox --repl "$1" 2> /dev/null \
+#         | sed 's/>>> //' | jq --raw-output '.result.value'
+# }
+
+
+webtools.redirected_url () {
+    webtools.runjs "$1" location.href
+}
+
+webtools.ua () {
+    webtools.runjs "$1" navigator.userAgent
+}
+
 # https://github.com/Zenika/alpine-chrome
 # https://developers.google.com/web/updates/2017/04/headless-chrome
 # https://peter.sh/experiments/chromium-command-line-switches/
-webtools.redirected_url () {
+webtools.runjs () {
     cleanup.add dtools.stop "zenika-chrome-location-href.$$"
 
+    gerrcho "Running js: $2"
+
+    check.is.url "$1"
+
+    local -a vols
+    vols=(
+        --volume "$(pwd)":/usr/src/app
+        # --volume "$HOME"/.pki:/home/chrome/.pki
+        # --volume /etc/ssl/certs:/etc/ssl/certs
+        --volume user"$K2USERNUM"_root_pki:/home/chrome/.pki
+    )
+
+    local chrome
+    chrome="docker run -i --rm --user $(id -u) --name zenika-chrome-location-href.$$ ${vols[*]} zenika/alpine-chrome"
+
     # The entrypoint is: chromium-browser --headless --disable-gpu --disable-software-rasterizer --disable-dev-shm-usage
+
+    #  + document.documentElement.outerHTML
+    printf '%s\nquit\n' "$2" | \
+        docker run -i --rm --user "$(id -u)" --name zenika-chrome-location-href.$$ "${vols[@]}" zenika/alpine-chrome \
+        --proxy-server="${PROXY_SERVER:-}" --no-sandbox --repl "$1" 2> /dev/null \
+        | sed 's/>>> //' | jq --raw-output '.result.value'
+}
+
+webtools.redirected_url.native () {
+    local -a args; args=(--headless --disable-gpu --disable-software-rasterizer --disable-dev-shm-usage)
+
     printf 'location.href\nquit\n' | \
-        docker run -i --rm --user "$(id -u)" --name zenika-chrome-location-href.$$ --volume "$(pwd)":/usr/src/app \
-        zenika/alpine-chrome --proxy-server="${PROXY_SERVER:-}" --no-sandbox --repl "$@" 2> /dev/null \
+        /snap/bin/chromium "${args[@]}" \
+        --proxy-server="${PROXY_SERVER:-}" --no-sandbox --repl "$1" 2> /dev/null \
         | sed 's/>>> //' | jq --raw-output '.result.value'
 }
 
-# webtools.redirected_url.native () {
-#     local -a args; args=(--headless --disable-gpu --disable-software-rasterizer --disable-dev-shm-usage --no-sandbox)
-#     printf 'location.href\nquit\n' | /snap/bin/chromium "${args[@]}" --repl "$@" \
-#          | sed 's/>>> //' | jq --raw-output '.result.value'
+# webtools.ua () {
+#     printf 'navigator.userAgent\nquit\n' | \
+#         docker run -i --rm --user "$(id -u "$USER")" --name zenika-chrome-location-href.$$ --volume "$(pwd)":/usr/src/app \
+#         zenika/alpine-chrome --no-sandbox --repl "$@" 2> /dev/null \
+#         | sed 's/>>> //' | jq --raw-output '.result.value'
 # }
-
-webtools.ua () {
-    printf 'navigator.userAgent\nquit\n' | \
-        docker run -i --rm --user "$(id -u "$USER")" --name zenika-chrome-location-href.$$ --volume "$(pwd)":/usr/src/app \
-        zenika/alpine-chrome --no-sandbox --repl "$@" 2> /dev/null \
-        | sed 's/>>> //' | jq --raw-output '.result.value'
-}
 
 # This requires Chrome or chromium to be installed
 webtools.dump_dom () {
@@ -82,16 +136,20 @@ webtools.dump_dom2 () {
     fi
 }
 
-is.url () {(
+check.is.url () {
+    is.url "$1" || errxit "Not a URL: $1"
+}
+
+is.url () (
     set +e
     [[ $1 == http* ]] && return 0
     return 1
-)}
+)
 
-is.not.url () {(
+is.not.url () (
     set +e
     ! is.url "$1"
-)}
+)
 
 url.path () {
     perl -MURI -e "print URI->new('$1')->path"

@@ -144,10 +144,20 @@ path.is.empty.dir.exists () {
     [[ -n $(find "$1" -maxdepth 0 -type d -empty) ]]
 }
 
-path.is.not.empty.dir.exists () {(
+path.is.not.empty.dir.exists () (
     set +e
     ! path.is.empty.dir.exists "$1"
-)}
+)
+
+
+test.dir_exists_xw () (
+    set +x
+    [[ -e $1 ]] && [[ -d $1 ]] && [[ -x $1 ]] && [[ -w $1 ]]
+)
+
+check.dir_exists_xw () {
+    test.dir_exists_xw "$1" || errxit "Directory [$1] not writable: $?"
+}
 
 # # Not just sugar. In cleanup.add, can't pass in things like '&&'
 # ## or just say rmdir --ignore-fail-on-non-empty

@@ -1,0 +1,15 @@
+#!/bin/bash
+# shellcheck source=/usr/local/src/z5.stdlib/sh/importer
+source "$Z5_STDLIB"/sh/importer vstrict || exit 1
+import stacktrace
+
+# Usage: z5.wrap libname funcname args
+
+lib="$1"; func="$2"; shift; shift
+
+import "$lib"
+
+# gerrcho "$0: imported $lib"
+# gerrcho "$0: about to run $func $*"
+
+"$func" "$@"

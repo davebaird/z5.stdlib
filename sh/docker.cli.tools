@@ -1,5 +1,6 @@
 #!/bin/bash
 import errcho
+import dockertools
 
 dbuild () {
     if [[ -r "Dockerfile" ]] && [[ -f "Dockerfile" ]]; then
@@ -26,8 +27,8 @@ dcleanup () {
 
 dstopall () {
     local containers
-	mapfile -t containers < <(docker ps -q 2>/dev/null)
-    docker stop "${containers[@]}"
+	mapfile -t containers < <(docker ps -aq 2>/dev/null)
+    for c in "${containers[@]}"; do dtools.stop "$c"; done
 }
 
 dvolumes () {

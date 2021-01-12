@@ -44,20 +44,16 @@ webtools.ua () {
 webtools.runjs () {
     cleanup.add dtools.stop "zenika-chrome-location-href.$$"
 
-    gerrcho "Running js: $2"
+    # gerrcho "Running js: $2"
 
     check.is.url "$1"
 
     local -a vols
     vols=(
         --volume "$(pwd)":/usr/src/app
-        # --volume "$HOME"/.pki:/home/chrome/.pki
-        # --volume /etc/ssl/certs:/etc/ssl/certs
-        --volume user"$K2USERNUM"_root_pki:/home/chrome/.pki
     )
 
-    local chrome
-    chrome="docker run -i --rm --user $(id -u) --name zenika-chrome-location-href.$$ ${vols[*]} zenika/alpine-chrome"
+    [[ -n $Z5_STDLIB_WEBTOOLS_PKI_DIR ]] && vols+=(--volume "$Z5_STDLIB_WEBTOOLS_PKI_DIR":/home/chrome/.pki)
 
     # The entrypoint is: chromium-browser --headless --disable-gpu --disable-software-rasterizer --disable-dev-shm-usage
 

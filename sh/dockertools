@@ -46,6 +46,19 @@ dtools.container.exists () (
     docker container inspect "$1" > /dev/null 2>&1
 )
 
+dtools.volume.ls () {
+    if [[ $1 = */* ]]
+    then
+        docker run --rm -i --volume "${1%/*}":/tmp/myvolume busybox ls -al /tmp/myvolume/"${1#*/}"
+    else
+        docker run --rm -i --volume "${1}":/tmp/myvolume busybox ls -al /tmp/myvolume
+    fi
+}
+
+dtools.volume.find () {
+    docker run --rm -i --volume "$1":/tmp/myvolume busybox find /tmp/myvolume
+}
+
 # Wait for the container to be up, running, and functional, by checking it can
 # generate log output. Then cleanup the log process.
 dtools.waitfor () {

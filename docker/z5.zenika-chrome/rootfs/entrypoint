@@ -1,0 +1,17 @@
+#!/bin/sh
+
+if [ -d /home/chrome/.ca ]
+then
+    [ -d /home/chrome/.ca/nssdb ]            || { echo "Missing CA dir: nssdb"; exit 10; }
+    [ -f /home/chrome/.ca/nssdb/pkcs11.txt ] || { echo "Missing CA file: nssdb/pkcs11.txt"; exit 11; }
+    # set -x
+    # ls -al /home/chrome/.ca >&2
+    # ls -al /home/chrome/.ca/nssdb >&2
+    mkdir -p /home/chrome/.pki/nssdb || exit 12
+    cp -f /home/chrome/.ca/nssdb/* /home/chrome/.pki/nssdb || exit 13
+    sed -i 's#sql:.\+.pki/nssdb#sql:/home/chrome/.pki/nssdb#' /home/chrome/.pki/nssdb/pkcs11.txt || exit 14
+    # cat /home/chrome/.pki/nssdb/pkcs11.txt >&2
+    # set +x
+fi
+
+chromium-browser --headless --disable-gpu --disable-software-rasterizer --disable-dev-shm-usage "$@"

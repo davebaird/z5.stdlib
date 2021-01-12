@@ -4,6 +4,8 @@ import cleanup
 import dockertools
 import bashtools
 
+docker build -t z5.zenika-chrome "$Z5_STDLIB"/docker/z5.zenika-chrome > /dev/null 2>&1
+
 # webtools.redirected_url () {
 #     cleanup.add dtools.stop "zenika-chrome-location-href.$$"
 
@@ -42,8 +44,6 @@ webtools.ua () {
 # https://developers.google.com/web/updates/2017/04/headless-chrome
 # https://peter.sh/experiments/chromium-command-line-switches/
 webtools.runjs () {
-    cleanup.add dtools.stop "zenika-chrome-location-href.$$"
-
     # gerrcho "Running js: $2"
 
     check.is.url "$1"
@@ -53,15 +53,22 @@ webtools.runjs () {
         --volume "$(pwd)":/usr/src/app
     )
 
-    [[ -n $Z5_STDLIB_WEBTOOLS_PKI_DIR ]] && vols+=(--volume "$Z5_STDLIB_WEBTOOLS_PKI_DIR":/home/chrome/.pki)
+    # To use a custom CA, we mount a volume (Z5_STDLIB_WEBTOOLS_PKI_DIR) containing
+    # the .pki files and (in the entrypoint) fix the path in pkcs11.txt
+    # Z5_STDLIB_WEBTOOLS_PKI_DIR can be a path on the host, or a named volume.
+    [[ -n $Z5_STDLIB_WEBTOOLS_PKI_DIR ]] && vols+=(--volume "$Z5_STDLIB_WEBTOOLS_PKI_DIR":/home/chrome/.ca:ro)
 
-    # The entrypoint is: chromium-browser --headless --disable-gpu --disable-software-rasterizer --disable-dev-shm-usage
+    local zenika; zenika=z5.zenika-chrome.$$
+    cleanup.add dtools.stop "$zenika"
 
     #  + document.documentElement.outerHTML
+    # set -x
     printf '%s\nquit\n' "$2" | \
-        docker run -i --rm --user "$(id -u)" --name zenika-chrome-location-href.$$ "${vols[@]}" zenika/alpine-chrome \
-        --proxy-server="${PROXY_SERVER:-}" --no-sandbox --repl "$1" 2> /dev/null \
+        docker run -i --rm --user "$(id -u)" --name "$zenika" "${vols[@]}" z5.zenika-chrome \
+        --no-sandbox --repl --proxy-server="${PROXY_SERVER:-}" "$1" 2> /dev/null \
         | sed 's/>>> //' | jq --raw-output '.result.value'
+    # set +x
+    #
 }
 
 webtools.redirected_url.native () {

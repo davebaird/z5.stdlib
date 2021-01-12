@@ -17,6 +17,7 @@ cleanup._import () {
 cleanup._import "$@"
 
 # Modified from script found here: https://blog.dhampir.no/content/fixing-shmget-failed-no-space-left-on-device
+# This has some basic info: https://linoxide.com/how-tos/command-to-show-shared-memory-settings/
 cleanup._shared_memory () {
     local user; user="$1"
 

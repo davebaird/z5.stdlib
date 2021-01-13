@@ -51,7 +51,7 @@ fi
 _z5stdlibshdir="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 
 # Useful to have this set in startup dotfiles, but if not, we set it here, it's used in various places
-if [[ -z $Z5_STDLIB ]]
+if [[ -z ${Z5_STDLIB:-} ]]
 then
     Z5_STDLIB="$(readlink --canonicalize-existing "$_z5stdlibshdir"/..)"
     export Z5_STDLIB

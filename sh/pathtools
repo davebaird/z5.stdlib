@@ -120,8 +120,8 @@ path.their.rootdir () {
 }
 
 path.parent.exists () {
-    local dir; dir="$1"
-    readlink --canonicalize "$dir"
+    local path; path="$1"
+    readlink --canonicalize "$path"
 }
 
 # Returns 0 if dir does not exist, or exists and is empty. This is necessary

@@ -3,6 +3,7 @@ import errcho
 import pidtools
 import checks
 import installer
+import pathtools
 
 dtools.ip () {
     local dname; dname="$1"
@@ -75,10 +76,20 @@ dtools.tail.log () {
     local pid
     local count
 
+    path.parent.exists "$logfile" || errxit "ERROR: $logfile parent folder does not exist"
+
     while true
     do
         docker logs -f "$dname" >> "$logfile" 2>&1 &
         pid=$!
+
+        # Sometimes, when called by dtools.waitfor, this next command kicks up an error but
+        # the script continues running. Until I can figure it out, it seems to happen
+        # intermittently I'm guessing when the container we just started is not ready.
+        # For something. I mean, that's what dtools.waitfor is checking, and it uses this function as a
+        # hack to do its testing, but I guess since it is a hack, these things are to be expected.
+        # Anyway, this note just to reassure a future me when I forget all about it and
+        # am trying to debug these unexpected, intermittent messages.
 
         # shellcheck disable=2009
         count=$(ps -A | grep --count $pid)   # check whether process is still running

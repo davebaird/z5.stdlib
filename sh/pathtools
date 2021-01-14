@@ -150,13 +150,29 @@ path.is.not.empty.dir.exists () (
 )
 
 
-test.dir_exists_xw () (
-    set +x
-    [[ -e $1 ]] && [[ -d $1 ]] && [[ -x $1 ]] && [[ -w $1 ]]
+# test.dir_exists_xw () (
+#     set +e
+#     [[ -e $1 ]] && [[ -d $1 ]] && [[ -x $1 ]] && [[ -w $1 ]]
+# )
+
+test.dirs_exist_xw () (
+    set +e
+    for dir in "$@"
+    do
+        [[ -e $dir ]] && [[ -d $dir ]] && [[ -x $dir ]] && [[ -w $dir ]] && continue
+        return $?
+    done
 )
 
-check.dir_exists_xw () {
-    test.dir_exists_xw "$1" || errxit "Directory [$1] not writable: $?"
+# check.dir_exists_xw () {
+#     check.dirs_exist_xw "$1"
+# }
+
+check.dirs_exist_xw () {
+    for dir in "$@"
+    do
+        test.dirs_exist_xw "$dir" || errxit "Directory [$dir] not xwritable: $?"
+    done
 }
 
 # # Not just sugar. In cleanup.add, can't pass in things like '&&'

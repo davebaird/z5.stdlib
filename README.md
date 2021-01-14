@@ -17,9 +17,9 @@ Usage:
 
 
  - [azuretools](https://github.com/davebaird/z5.stdlib/blob/master/sh/azuretools)
+   - azure.set_up_swap
    - azure.tr
-   - azuretools.is_azure
-   - azuretools.set_up_swap
+   - test.is_azure
  - [bashtools](https://github.com/davebaird/z5.stdlib/blob/master/sh/bashtools)
    - aa.has
    - aa.has.set
@@ -33,6 +33,7 @@ Usage:
    - rmrf_safe
    - set.alarm
  - [checks](https://github.com/davebaird/z5.stdlib/blob/master/sh/checks)
+   - check.env
    - check.homedir
    - check.i_am_root
    - check.i_can_root
@@ -64,6 +65,7 @@ Usage:
    - dstopall
    - dvolumes
  - [dockertools](https://github.com/davebaird/z5.stdlib/blob/master/sh/dockertools)
+   - dtools.LastTagTime.iso8601
    - dtools.container.exists
    - dtools.container.running
    - dtools.docker.install
@@ -71,6 +73,8 @@ Usage:
    - dtools.ip
    - dtools.stop
    - dtools.tail.log
+   - dtools.volume.find
+   - dtools.volume.ls
    - dtools.waitfor
  - [doitools](https://github.com/davebaird/z5.stdlib/blob/master/sh/doitools)
    - doi.URL
@@ -138,6 +142,7 @@ Usage:
  - [pathtools](https://github.com/davebaird/z5.stdlib/blob/master/sh/pathtools)
    - PATH.add
    - PATH.dedup
+   - check.dirs_exist_xw
    - path.backup
    - path.is.absolute
    - path.is.empty.dir
@@ -148,12 +153,14 @@ Usage:
    - path.last_modified
    - path.last_modified.epoch
    - path.last_modified.iso8601
+   - path.last_modified.touchfile
    - path.mkdir.if.missing
    - path.parent.exists
    - path.relative
    - path.rootdir
    - path.rootdir.pwd
    - path.their.rootdir
+   - test.dirs_exist_xw
  - [pidtools](https://github.com/davebaird/z5.stdlib/blob/master/sh/pidtools)
    - list.descendants
    - list.descendants.comma_separated
@@ -187,8 +194,8 @@ Usage:
    - usertools.homedir
    - usertools.sudoer
  - [vboxtools](https://github.com/davebaird/z5.stdlib/blob/master/sh/vboxtools)
-   - vboxtools.fix_hostonly_networking
-   - vboxtools.is_vbox
+   - test.is_vbox
+   - vbox.fix_hostonly_networking
  - [waitfor](https://github.com/davebaird/z5.stdlib/blob/master/sh/waitfor)
    - waitfor.docker
    - waitfor.file
@@ -196,10 +203,13 @@ Usage:
    - waitfor.socket
    - waitfor.umount
  - [webtools](https://github.com/davebaird/z5.stdlib/blob/master/sh/webtools)
+   - check.is.url
    - is.not.url
    - is.url
    - url.path
    - webtools.dump_dom
    - webtools.dump_dom2
    - webtools.redirected_url
+   - webtools.redirected_url.native
+   - webtools.runjs
    - webtools.ua

@@ -65,10 +65,10 @@ webtools.runjs () {
     # set -x
     printf '%s\nquit\n' "$2" | \
         docker run -i --rm --user "$(id -u)" --name "$zenika" "${vols[@]}" z5.zenika-chrome \
-        --no-sandbox --repl --proxy-server="${PROXY_SERVER:-}" "$1" 2> /dev/null \
+        --no-sandbox --repl --proxy-server="${PROXY_SERVER:-}" "$1"  \
         | sed 's/>>> //' | jq --raw-output '.result.value'
     # set +x
-    #
+    # 2> /dev/null
 }
 
 webtools.redirected_url.native () {

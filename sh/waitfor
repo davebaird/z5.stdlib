@@ -20,7 +20,8 @@ __waitfor_type () {
     do
         (( c++ )) || :
         sleep 0.1
-        if [[ $c -gt $cmax ]]; then
+        if [[ $c -gt $cmax ]]
+        then
             errcho "TIMEOUT: $type '$file' not created after $c/10 seconds"
             return 1
         fi

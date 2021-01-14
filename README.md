@@ -142,6 +142,7 @@ Usage:
  - [pathtools](https://github.com/davebaird/z5.stdlib/blob/master/sh/pathtools)
    - PATH.add
    - PATH.dedup
+   - check.dirs_exist_xr
    - check.dirs_exist_xw
    - path.backup
    - path.is.absolute
@@ -160,6 +161,7 @@ Usage:
    - path.rootdir
    - path.rootdir.pwd
    - path.their.rootdir
+   - test.dirs_exist_xr
    - test.dirs_exist_xw
  - [pidtools](https://github.com/davebaird/z5.stdlib/blob/master/sh/pidtools)
    - list.descendants

@@ -56,7 +56,7 @@ webtools.runjs () {
     # To use a custom CA, we mount a volume (Z5_STDLIB_WEBTOOLS_PKI_DIR) containing
     # the .pki files and (in the entrypoint) fix the path in pkcs11.txt
     # Z5_STDLIB_WEBTOOLS_PKI_DIR can be a path on the host, or a named volume.
-    [[ -n $Z5_STDLIB_WEBTOOLS_PKI_DIR ]] && vols+=(--volume "$Z5_STDLIB_WEBTOOLS_PKI_DIR":/home/chrome/.ca:ro)
+    [[ -n ${Z5_STDLIB_WEBTOOLS_PKI_DIR:-} ]] && vols+=(--volume "$Z5_STDLIB_WEBTOOLS_PKI_DIR":/home/chrome/.ca:ro)
 
     local zenika; zenika=z5.zenika-chrome.$$
     cleanup.add dtools.stop "$zenika"

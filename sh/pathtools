@@ -164,6 +164,15 @@ test.dirs_exist_xw () (
     done
 )
 
+test.dirs_exist_xr () (
+    set +e
+    for dir in "$@"
+    do
+        [[ -e $dir ]] && [[ -d $dir ]] && [[ -x $dir ]] && [[ -r $dir ]] && continue
+        return $?
+    done
+)
+
 # check.dir_exists_xw () {
 #     check.dirs_exist_xw "$1"
 # }
@@ -174,6 +183,15 @@ check.dirs_exist_xw () {
         test.dirs_exist_xw "$dir" || errxit "Directory [$dir] not xwritable: $?"
     done
 }
+
+check.dirs_exist_xr () {
+    for dir in "$@"
+    do
+        test.dirs_exist_xr "$dir" || errxit "Directory [$dir] not xreadable: $?"
+    done
+}
+
+
 
 # # Not just sugar. In cleanup.add, can't pass in things like '&&'
 # ## or just say rmdir --ignore-fail-on-non-empty

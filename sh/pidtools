@@ -5,25 +5,19 @@ import errcho
 stop.pid () {
     local opt_quiet=0
 
-    if [[ $# -eq 2 ]]; then
-        if [[ $1 == "--quiet" ]]; then
-            opt_quiet=1
-        else
-            errcho "Unknown option: $1"
-            return 1
-        fi
+    if (($# == 2))
+    then
+        [[ $1 == "--quiet" ]] || { errcho "Unknown option: $1"; return 1; }
+        opt_quiet=1
         shift
     fi
 
-    local pid="$1"
+    local pid; pid="$1"
+    [[ -z $pid ]] && { errcho "WARNING: ${FUNCNAME[0]} expects a PID"; return 0; }
 
-    if [[ -z $pid ]]; then
-        errcho "WARNING: ${FUNCNAME[0]} expects a PID"
-        return 0
-    fi
-
-    if ! [[ -d /proc/$pid ]]; then
-        [[ $opt_quiet -ne 1 ]] && errcho "WARNING: no /proc/$pid to stop"
+    if ! [[ -d /proc/$pid ]]
+    then
+        ((opt_quiet != 1)) && errcho "WARNING: no /proc/$pid to stop"
         return 0
     fi
 
@@ -34,15 +28,17 @@ stop.pid () {
 
     # give it up to 5 seconds to gracefully shut down
     local i=0
-    while [[ -d /proc/$pid ]]; do
+    while [[ -d /proc/$pid ]]
+    do
         sleep 0.1
         ((i=i+1))
 
-        [[ $i -eq 50 ]] && break
+        ((i == 50)) && break
     done
 
     # make sure of the job
-    if [[ -d /proc/$pid ]]; then
+    if [[ -d /proc/$pid ]]
+    then
         # shellcheck disable=SC2046,SC2086
         kill -9 $pid $(list.descendants $pid) || :
     fi
@@ -55,11 +51,12 @@ pid.command () {
 list.descendants () {
     local children; children=$(ps -o pid= --ppid "$1")
 
-    for pid in $children; do
+    for pid in $children
+    do
         list.descendants "$pid"
     done
 
-    echo "$children"
+    printf '%s\n' "$children"
 }
 
 list.descendants.comma_separated () {

@@ -26,7 +26,7 @@ Usage:
    - cancel.alarm
    - ellipsize
    - ellipsize_middle
-   - get_fcn_list
+   - get_func_list
    - join_by
    - laa.has
    - laa.has.set

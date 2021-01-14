@@ -76,7 +76,7 @@ rmrf_safe () {
 
     [[ $dir == / ]] && errxit "Attempt to rm -rf /"
 
-    rm -rf "${dir:?}" # if $dir is empty this will throw an error
+    rm -rf "${dir:?}" # if $dir (the variable name) is empty this will throw an error instead of trying to erase your hard drive
 }
 
 # Some useful stuff: https://www.linuxjournal.com/content/sigalrm-timers-and-stdin-analysis
@@ -119,7 +119,7 @@ cancel.alarm () {
 }
 
 # shellcheck disable=SC2016
-_get_fcn_list () {
+_get_func_list () {
     env -i bash --noprofile --norc -c '
     source "'"$1"'"
     typeset -f |
@@ -133,10 +133,10 @@ _get_fcn_list () {
 }
 
 # https://superuser.com/a/1111244
-get_fcn_list () {
+get_func_list () {
     local scriptpath; scriptpath="$1"
 
-    for fcn_name in $(_get_fcn_list "$scriptpath")
+    for fcn_name in $(_get_func_list "$scriptpath")
     do
         echo "$fcn_name"
     done

@@ -19,7 +19,7 @@ then
     # set +x
     chown --recursive chrome:chrome /home/chrome/.pki
 else
-    echo "z5.zenika-chrome $0: WARNING: no /home/chrome/.ca" >&2
+    echo "z5.zenika-chrome $0: WARNING: no /home/chrome/.ca (OK if no-proxy)" >&2
 fi
 
 cargs="--headless --disable-gpu --disable-software-rasterizer --disable-dev-shm-usage"

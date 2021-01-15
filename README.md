@@ -49,6 +49,7 @@ Usage:
    - test.is_x86_64
  - [cleanup](https://github.com/davebaird/z5.stdlib/blob/master/sh/cleanup)
    - cleanup.add
+   - cleanup.last
    - cleanup.my_shared_memory
    - cleanup.rc
    - cleanup.shared_memory

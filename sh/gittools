@@ -29,14 +29,12 @@ github.keyscan () {
         ssh-keyscan github.com | sudo -u "$user" tee -a "$homedir/.ssh/known_hosts" > /dev/null
 }
 
-git.user.config () {
+git.user.config () (
     local user; user="${1:-$USER}"
-    (
-        cd /home
-        sudo --login -u "$user" git config --global user.name "$user"
-        sudo --login -u "$user" git config --global user.email "$user@$(hostname)"
-    )
-}
+    cd /home || { printf '%s\n' "Couldn't cd /home: $?"; return 1; }
+    sudo --login -u "$user" git config --global user.name "$user"
+    sudo --login -u "$user" git config --global user.email "$user@$(hostname)"
+)
 
 git.install_repo () {
     local account; account="$1"
@@ -47,10 +45,11 @@ git.install_repo () {
 
     install --owner="$user" --group="$group" --mode=0755 --directory "$installdir"
 
-    if [[ -n $(ls -A "$installdir") ]]; then
+    if [[ -n $(ls -A "$installdir") ]]
+    then
         rerrcho "Files found in $installdir - DISCARDING ANY LOCAL MODS and updating contents"
         (
-            cd "$installdir" || errxit "couldn't cd $installdir" "$?"
+            cd "$installdir" || { printf '%s\n' "couldn't cd $installdir: $?"; return 1; }
             sudo -u "$user" git reset --hard
             sudo -u "$user" git pull
         )

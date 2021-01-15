@@ -1,20 +1,109 @@
 #!/bin/bash
 import errcho
 
-__debug_cleanup=0
+# =============================
+declare -g __debug_cleanup; __debug_cleanup=0
+declare -g __cleanup_trap_is_set; __cleanup_trap_is_set=0
+
+# the -g, and empty array assignment, are required
+declare -ag __cleanup_on_exit_items; __cleanup_on_exit_items=()
+# declare -ag __cleanup_on_error_items; __cleanup_on_error_items=()
+
+declare -g __cleanup_on_exit_last; __cleanup_on_exit_last=
+
+__in_cleanup_rc=
+# =============================
 
 cleanup._import () {
     local debug_setting; debug_setting="${1:-0}"
+
+    ((__cleanup_trap_is_set == 0)) && { trap cleanup._on_exit EXIT; __cleanup_trap_is_set=1; }
 
     ((__debug_cleanup == 1)) && return
 
     [[ $debug_setting == DEBUG ]] && __debug_cleanup=1
     [[ $debug_setting -eq 1 ]]    && __debug_cleanup=1
-
     :
 }
 
 cleanup._import "$@"
+
+# https://riptutorial.com/bash/example/2398/accumulate-a-list-of-trap-work-to-run-at-exit-
+# Usage:
+#   cleanup.add rm -f /tmp/foo
+#   cleanup.add echo "I am exiting"
+#   tempfile=$(mktemp)
+#   cleanup.add rm -f "$tempfile"
+# Based on http://www.linuxjournal.com/content/use-bash-trap-statement-cleanup-temporary-files
+
+# ! IMPORTANT - don't use logical operators in the cleanup string, they will be
+# ! executed in real time. Wrap them in a subroutine and call the subroutine in
+# ! the cleanup.add or cleanup.error.add
+
+# functions running during cleanup can call this to retrieve the rc
+cleanup.rc () {
+    printf '%s' "$__in_cleanup_rc"
+}
+
+cleanup._on_exit () {
+    # In general, a cleanup function (called via 'trap') will leave $? unmodified,
+    # and we don't need to call exit at the end. But since we are executing
+    # arbitrary code, we make sure to preserve rc in case someone else modifies
+    # it by accident in an exit item.
+    local rc=$? # do NOT separate declaration from assignment - $? becomes the rc from 'local rc;'!!!
+
+    __in_cleanup_rc="$rc"
+
+    [[ -n $__cleanup_on_exit_last ]] && __cleanup_on_exit_items+=("$__cleanup_on_exit_last")
+
+    nostrict
+    ((__debug_cleanup == 1)) && berrcho "===== Running EXIT cleanup for $0 ====="
+
+    for i in "${__cleanup_on_exit_items[@]}"
+    do
+        ((__debug_cleanup == 1)) && berrcho "CLEANUP: $i"
+        eval "$i"
+    done
+
+    exit "$rc"
+}
+
+# cleanup._on_error () {
+#     local rc=$?
+
+#     nostrict
+#     berrcho "===== Running ERROR ($rc) cleanup for $0 ====="
+
+#     for i in "${__cleanup_on_error_items[@]}"
+#     do
+#         eval "$i"
+#     done
+
+#     exit "$rc"
+# }
+
+cleanup.add () {
+    local -i n; n="${#__cleanup_on_exit_items[@]}"
+    local IFS=$' \n\t'
+    # gerrcho "Adding cleanup: " "$@"
+    __cleanup_on_exit_items[$n]="$*"
+    # [[ $n -eq 0 ]] && trap cleanup._on_exit EXIT
+    :
+}
+
+cleanup.last () {
+    [[ -n $__cleanup_on_exit_last ]] && errxit "ERROR: cleanup.last can only be called once"
+    __cleanup_on_exit_last="$*"
+}
+
+# cleanup.error.add () {
+#     local -i n; n="${#__cleanup_on_error_items[@]}"
+#     local IFS=$' \n\t'
+#     # gerrcho "Adding cleanup: " "$@"
+#     __cleanup_on_error_items[$n]="$*"
+#     [[ $n -eq 0 ]] && trap cleanup._on_error ERR
+#     :
+# }
 
 # Modified from script found here: https://blog.dhampir.no/content/fixing-shmget-failed-no-space-left-on-device
 # This has some basic info: https://linoxide.com/how-tos/command-to-show-shared-memory-settings/
@@ -53,83 +142,6 @@ cleanup.shared_memory () {
 cleanup.my_shared_memory () {
     cleanup._shared_memory "$USER"
 }
-
-# https://riptutorial.com/bash/example/2398/accumulate-a-list-of-trap-work-to-run-at-exit-
-# Usage:
-#   cleanup.add rm -f /tmp/foo
-#   cleanup.add echo "I am exiting"
-#   tempfile=$(mktemp)
-#   cleanup.add rm -f "$tempfile"
-# Based on http://www.linuxjournal.com/content/use-bash-trap-statement-cleanup-temporary-files
-
-# ! IMPORTANT - don't use logical operators in the cleanup string, they will be
-# ! executed in real time. Wrap them in a subroutine and call the subroutine in
-# ! the cleanup.add or cleanup.error.add
-
-# the -g, and empty array assignment, are required
-declare -ag __cleanup_on_exit_items; __cleanup_on_exit_items=()
-declare -ag __cleanup_on_error_items; __cleanup_on_error_items=()
-
-__in_cleanup_rc=
-
-# functions running during cleanup can call this to retrieve the rc
-cleanup.rc () {
-    printf '%s' "$__in_cleanup_rc"
-}
-
-cleanup._on_exit () {
-    # In general, a cleanup function (called via 'trap') will leave $? unmodified,
-    # and we don't need to call exit at the end. But since we are executing
-    # arbitrary code, we make sure to preserve rc in case someone else modifies
-    # it by accident in an exit item.
-    local rc=$? # do NOT separate declaration from assignment - $? becomes the rc from 'local rc;'!!!
-
-    __in_cleanup_rc="$rc"
-
-    nostrict
-    ((__debug_cleanup == 1)) && berrcho "===== Running EXIT cleanup for $0 ====="
-
-    for i in "${__cleanup_on_exit_items[@]}"
-    do
-        ((__debug_cleanup == 1)) && berrcho "CLEANUP: $i"
-        eval "$i"
-    done
-
-    exit "$rc"
-}
-
-# cleanup._on_error () {
-#     local rc=$?
-
-#     nostrict
-#     berrcho "===== Running ERROR ($rc) cleanup for $0 ====="
-
-#     for i in "${__cleanup_on_error_items[@]}"
-#     do
-#         eval "$i"
-#     done
-
-#     exit "$rc"
-# }
-
-cleanup.add () {
-    local -i n; n="${#__cleanup_on_exit_items[@]}"
-    local IFS=$' \n\t'
-    # gerrcho "Adding cleanup: " "$@"
-    __cleanup_on_exit_items[$n]="$*"
-    [[ $n -eq 0 ]] && trap cleanup._on_exit EXIT
-    :
-}
-
-# cleanup.error.add () {
-#     local -i n; n="${#__cleanup_on_error_items[@]}"
-#     local IFS=$' \n\t'
-#     # gerrcho "Adding cleanup: " "$@"
-#     __cleanup_on_error_items[$n]="$*"
-#     [[ $n -eq 0 ]] && trap cleanup._on_error ERR
-#     :
-# }
-
 
 
 :

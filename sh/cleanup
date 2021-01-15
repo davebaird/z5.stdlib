@@ -1,6 +1,9 @@
 #!/bin/bash
 import errcho
 
+rerrcho "BUG: z5.stdlib import() is broken, because it only imports any lib once, \
+without checking for the presence of import parameters e.g. cleanup DEBUG"
+
 # =============================
 declare -g __debug_cleanup; __debug_cleanup=0
 declare -g __cleanup_trap_is_set; __cleanup_trap_is_set=0
@@ -13,6 +16,7 @@ declare -g __cleanup_on_exit_last; __cleanup_on_exit_last=
 
 __in_cleanup_rc=
 # =============================
+
 
 cleanup._import () {
     local debug_setting; debug_setting="${1:-0}"

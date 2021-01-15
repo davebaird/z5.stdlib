@@ -9,8 +9,7 @@ dtools.ip () {
     local dname; dname="$1"
     dtools.waitfor "$dname"
     local ip; ip=$(docker inspect --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$dname")
-    echo "$ip"
-    return 0
+    printf '%s\n' "$ip"
 }
 
 dtools.stop () {
@@ -64,7 +63,7 @@ dtools.volume.find () {
 # generate log output. Then cleanup the log process.
 dtools.waitfor () {
     local dname; dname="$1"
-    local pid; pid=$(dtools.tail.log "$dname" /dev/null)
+    local pid; pid="$(dtools.tail.log "$dname" /dev/null)"
     stop.pid "$pid"
 }
 
@@ -113,7 +112,6 @@ dtools.tail.log () {
     done
 
     echo "$pid"
-    return 0
 }
 
 # https://docs.docker.com/engine/install/debian/

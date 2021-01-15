@@ -1,9 +1,12 @@
 #!/bin/sh
 
-echo "$0: I am $USER" >&2
-
+# set -x
 if [ -d /home/chrome/.ca ]
 then
+    # echo "$0: Found /home/chrome/.ca" >&2
+    # id >&2
+    # ls -al /home/chrome >&2
+
     [ -d /home/chrome/.ca/nssdb ]            || { echo "Missing CA dir: nssdb"; exit 10; }
     [ -f /home/chrome/.ca/nssdb/pkcs11.txt ] || { echo "Missing CA file: nssdb/pkcs11.txt"; exit 11; }
     # set -x
@@ -14,6 +17,20 @@ then
     sed -i 's#sql:.\+.pki/nssdb#sql:/home/chrome/.pki/nssdb#' /home/chrome/.pki/nssdb/pkcs11.txt || exit 14
     # cat /home/chrome/.pki/nssdb/pkcs11.txt >&2
     # set +x
+    chown --recursive chrome:chrome /home/chrome/.pki
+else
+    echo "z5.zenika-chrome $0: WARNING: no /home/chrome/.ca" >&2
 fi
 
-chromium-browser --headless --disable-gpu --disable-software-rasterizer --disable-dev-shm-usage "$@"
+cargs="--headless --disable-gpu --disable-software-rasterizer --disable-dev-shm-usage"
+# chrome="su-exec chrome:chrome chromium-browser --headless --disable-gpu --disable-software-rasterizer --disable-dev-shm-usage"
+
+# shellcheck disable=SC2086
+if [ "$Z5_NO_CHROME_ERRORS" -eq 1 ]
+then
+    su-exec chrome:chrome chromium-browser $cargs "$@" 2> /dev/null
+else
+    su-exec chrome:chrome chromium-browser $cargs "$@"
+fi
+
+# set +x

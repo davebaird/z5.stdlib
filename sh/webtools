@@ -48,8 +48,13 @@ webtools.runjs () {
 
     check.is.url "$1"
 
-    local -a vols
-    vols=(
+    local -a env; env=(
+        --env Z5_NO_CHROME_ERRORS=1
+        --env Z5_UID="$(id -u)"
+        --env Z5_GID="$(id -g)"
+    )
+
+    local -a vols; vols=(
         --volume "$(pwd)":/usr/src/app
     )
 
@@ -64,11 +69,11 @@ webtools.runjs () {
     #  + document.documentElement.outerHTML
     # set -x
     printf '%s\nquit\n' "$2" | \
-        docker run -i --rm --user "$(id -u)" --name "$zenika" "${vols[@]}" z5.zenika-chrome \
-        --no-sandbox --repl --proxy-server="${PROXY_SERVER:-}" "$1"  \
+        docker run -i --rm "${env[@]}" --name "$zenika" "${vols[@]}" z5.zenika-chrome \
+        --no-sandbox --repl --proxy-server="${PROXY_SERVER:-}" "$1" \
         | sed 's/>>> //' | jq --raw-output '.result.value'
     # set +x
-    # 2> /dev/null
+    # --user "$(id -u)"
 }
 
 webtools.redirected_url.native () {

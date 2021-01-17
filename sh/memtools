@@ -1,0 +1,26 @@
+#!/bin/bash
+import errcho
+
+mem.info () {
+    local var; var="$1"
+
+    local meminfo; meminfo="$(</proc/meminfo)"
+
+    [[ -z $var ]] && { printf '%s\n' "$meminfo"; return 0; }
+
+    printf '%s\n' "$meminfo" | grep --perl-regex --ignore-case "\b$var\b" | \
+        tr --squeeze-repeats ' ' | cut --delimiter=' ' --fields=2
+}
+
+mem.shared.pct () {
+    local shared; shared="$(mem.info shmem)"
+    local total; total="$(mem.info memtotal)"
+    printf '%s\n' "$shared*100/$total" | bc
+}
+
+mem.available.pct () {
+    local available; available="$(mem.info MemAvailable)"
+    local total; total="$(mem.info memtotal)"
+    printf '%s\n' "$available*100/$total" | bc
+}
+

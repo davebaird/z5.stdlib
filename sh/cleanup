@@ -1,5 +1,6 @@
 #!/bin/bash
 import errcho
+import jsontools
 
 rerrcho "BUG: z5.stdlib import() is broken, because it only imports any lib once, \
 without checking for the presence of import parameters e.g. cleanup DEBUG"
@@ -63,10 +64,10 @@ cleanup._on_exit () {
     nostrict
     ((__debug_cleanup == 1)) && berrcho "===== Running EXIT cleanup for $0 ====="
 
-    for i in "${__cleanup_on_exit_items[@]}"
+    for cleanup in "${__cleanup_on_exit_items[@]}"
     do
-        ((__debug_cleanup == 1)) && berrcho "CLEANUP: $i"
-        eval "$i"
+        ((__debug_cleanup == 1)) && berrcho "CLEANUP: $cleanup"
+        eval "$cleanup"
     done
 
     exit "$rc"
@@ -87,16 +88,17 @@ cleanup._on_exit () {
 # }
 
 cleanup.add () {
-    local -i n; n="${#__cleanup_on_exit_items[@]}"
-    local IFS=$' \n\t'
+    # local IFS=$' \n\t'
     # gerrcho "Adding cleanup: " "$@"
-    __cleanup_on_exit_items[$n]="$*"
-    # [[ $n -eq 0 ]] && trap cleanup._on_exit EXIT
+    ((BASH_SUBSHELL > 0)) && { errcho "ERROR: 'cleanup.add $*' called in subshell, it will be lost"; return 1; }
+    __cleanup_on_exit_items+=("$*")
+    ((__debug_cleanup == 1)) && berrcho "CLEANUP added: $*"
+    # ((__debug_cleanup == 1)) && merrcho "$(a2j "$(declare -p __cleanup_on_exit_items)")"
     :
 }
 
 cleanup.last () {
-    [[ -n $__cleanup_on_exit_last ]] && errxit "ERROR: cleanup.last can only be called once"
+    [[ -n $__cleanup_on_exit_last ]] && { errcho "ERROR: cleanup.last can only be called once"; return 1; }
     __cleanup_on_exit_last="$*"
 }
 

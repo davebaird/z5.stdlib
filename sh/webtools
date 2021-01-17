@@ -64,7 +64,6 @@ webtools.runjs () {
     [[ -n ${Z5_STDLIB_WEBTOOLS_PKI_DIR:-} ]] && vols+=(--volume "$Z5_STDLIB_WEBTOOLS_PKI_DIR":/home/chrome/.ca:ro)
 
     local zenika; zenika=z5.zenika-chrome.$$
-    cleanup.add dtools.stop "$zenika"
 
     #  + document.documentElement.outerHTML
     # set -x

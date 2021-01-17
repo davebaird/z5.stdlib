@@ -74,3 +74,33 @@ pidfile.set () {
 pidfile.get () {
     cat < "$1"
 }
+
+# https://stackoverflow.com/a/32327705/2334574
+mem.swapusage () (
+    nostrict
+
+    grep VmSwap /proc/[0-9]*/status | awk -F':' -v sort="$1" '
+    {
+        split($1,pid,"/") # Split first field on /
+        split($3,swp," ") # Split third field on space
+        cmdlinefile = "/proc/"pid[3]"/cmdline" # Build the cmdline filepath
+        getline pname[pid[3]] < cmdlinefile # Get the command line from pid
+        swap[pid[3]] = sprintf("%6i %s",swp[1],swp[2]) # Store the swap used (with unit to avoid rebuilding at print)
+        sum+=swp[1] # Sum the swap
+    }
+    END {
+        OFS="\t" # Change the output separator to tabulation
+        print "Pid","Swap used","Command line" # Print header
+        if(sort) {
+        getline max_pid < "/proc/sys/kernel/pid_max"
+        for(p=1;p<=max_pid;p++) {
+            if(p in pname) print p,swap[p],pname[p] # print the values
+        }
+        } else {
+        for(p in pname) { # Loop over all pids found
+            print p,swap[p],pname[p] # print the values
+        }
+        }
+        print "Total swap used:",sum # print the sum
+    }'
+)

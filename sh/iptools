@@ -27,11 +27,10 @@ iptools.etchosts.add () {
     local ip; ip="$2"
     local etc_hosts; etc_hosts=${3:-/etc/hosts} # useful for debugging
 
-    if grep --extended-regexp "^$ip(\s|\s.*\s)$hostname(\s|$)" "$etc_hosts" > /dev/null
-    then
-        return 0
-    fi
+    # if it's already in there, do nothing
+    grep --extended-regexp "^$ip(\s|\s.*\s)$hostname(\s|$)" "$etc_hosts" > /dev/null && return 0
 
+    # if the IP is already in there, append the hostname
     local line
     if line="$(grep --extended-regexp "^$ip\s" "$etc_hosts")"
     then
@@ -40,12 +39,14 @@ iptools.etchosts.add () {
         return 0
     fi
 
+    # if the hostname is in there, it's associated with the wrong IP, so remove it
     if grep --extended-regexp "\s$hostname(\s|$)" "$etc_hosts" > /dev/null
     then
         iptools.etchosts.rm "$hostname" "$etc_hosts"
     fi
 
-    echo "$ip $hostname" >> "$etc_hosts"
+    # neither hostname nor IP are in the file, so add them
+    printf '%s\n' "$ip $hostname" >> "$etc_hosts"
 }
 
 iptools.etchosts.rm () {
@@ -54,19 +55,25 @@ iptools.etchosts.rm () {
 
     local line
 
+    # hostname not found in file, so do nothing
     if ! line="$(grep --extended-regexp "\s$hostname(\s|$)" "$etc_hosts")"
     then
         errcho "hostname $hostname not found in $etc_hosts"
         return 0
     fi
 
-    sed -i --regexp-extended "/\s$hostname(\s|$)/d" "$etc_hosts"            # delete the line
+    # the hostname was found, we've captured into $line
 
+    # delete the line from the file
+    sed -i --regexp-extended "/\s$hostname(\s|$)/d" "$etc_hosts"
+
+    # remove hostname from the line
     # shellcheck disable=SC2001
-    line="$(echo "$line" | sed --regexp-extended "s/\s$hostname(\s|$)/ /")"  # remove hostname from the line
+    line="$(echo "$line" | sed --regexp-extended "s/\s$hostname(\s|$)/ /")"
 
     # append the line back in, if it still has other hostname(s)
-    if [[ $(echo "$line" | wc --words) -gt 1 ]]; then
-        echo "$line" >> "$etc_hosts"
+    if [[ $(echo "$line" | wc --words) -gt 1 ]]
+    then
+        printf '%s\n' "$line" >> "$etc_hosts"
     fi
 }

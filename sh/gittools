@@ -70,7 +70,8 @@ git.ignore () {
 git.init.repo () {
     local remote_repo_url; remote_repo_url="$1"
 
-    if [[ -z $remote_repo_url ]]; then
+    if [[ -z $remote_repo_url ]]
+    then
         rerrcho "${FUNCNAME[0]}: must supply a remote repo URL"
         return 1
     fi
@@ -120,7 +121,8 @@ git3- () {
 
     test.is_git_repo && errxit "Don't run git3- from inside a repo"
 
-    for d in "$PWD"/*; do
+    for d in "$PWD"/*
+    do
         if [[ -d "$d" ]] && test.is_git_repo "$d"
         then
         (

@@ -9,7 +9,8 @@ sshtools.generate_keypair () {
     local comment; comment=${1:-"$USER@$(hostname)"}
     local keyfile; keyfile=${2:-"$HOME/.ssh/id_rsa"}
 
-    if [[ -f $keyfile ]]; then
+    if [[ -f $keyfile ]]
+    then
         rerrcho "ERROR: keyfile $keyfile already exists - skipping"
         return 1
     fi
@@ -61,4 +62,17 @@ sshtools.mount_remote () {
 
     # ,IdentityFile="$id_file"
     sshfs -o allow_other,default_permissions "${server_connect}:${remote_dir}" "$local_dir"
+}
+
+
+sshtools.keyscan () {
+    local server; server="$1"
+    local user; user="${2:-$USER}"
+    local group; group=$(id -gn "$user")
+    local homedir; homedir=$(usertools.homedir "$user")
+
+    install --owner="$user" --group="$group" --mode=0700 --directory "$homedir/.ssh"
+
+    grep "$server" "$homedir/.ssh/known_hosts" > /dev/null 2>&1 || \
+        ssh-keyscan "$server" | sudo -u "$user" tee -a "$homedir/.ssh/known_hosts" > /dev/null
 }

@@ -19,6 +19,8 @@ git.install () {
 # early in host setups, perhaps before sudo is available, so don't be tempted to
 # improve it by passing in the username and using sudo here.
 github.keyscan () {
+    errxit "github.keyscan: use 'sshtools.keyscan github.com' instead"
+
     local user; user="${1:-$USER}"
     local group; group=$(id -gn "$user")
     local homedir; homedir=$(usertools.homedir "$user")

@@ -64,7 +64,6 @@ sshtools.mount_remote () {
     sshfs -o allow_other,default_permissions "${server_connect}:${remote_dir}" "$local_dir"
 }
 
-
 sshtools.keyscan () {
     local server; server="$1"
     local user; user="${2:-$USER}"

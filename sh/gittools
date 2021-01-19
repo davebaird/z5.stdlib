@@ -11,13 +11,13 @@ GIT_INSTALL_REPO_CLONE_DEPTH=1
 git.install () {
     local user; user="${1:-$USER}"
     install.apt.pkgs git sudo
-    github.keyscan "$user"
+    sshtools.keyscan github.com "$user"
 }
 
-# To run this under sudo, make sure the homedir has been properly changed
-# (sometimes sudo doesn't change it). Note: this can be run for the root user
-# early in host setups, perhaps before sudo is available, so don't be tempted to
-# improve it by passing in the username and using sudo here.
+# # To run this under sudo, make sure the homedir has been properly changed
+# # (sometimes sudo doesn't change it). Note: this can be run for the root user
+# # early in host setups, perhaps before sudo is available, so don't be tempted to
+# # improve it by passing in the username and using sudo here.
 github.keyscan () {
     errxit "github.keyscan: use 'sshtools.keyscan github.com' instead"
 

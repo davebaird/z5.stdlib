@@ -114,7 +114,8 @@ reimport () {
     return 1
 }
 
-if [[ $DEBUG_STDLIB -eq 1 ]]; then
+if [[ $DEBUG_STDLIB -eq 1 ]]
+then
     import errcho
     import stacktrace
 fi

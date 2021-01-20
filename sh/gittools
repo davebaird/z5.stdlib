@@ -4,6 +4,7 @@ import pathtools
 import checks
 import installer
 import usertools
+import sshtools
 
 # might occasionally want to set this to 'full'
 GIT_INSTALL_REPO_CLONE_DEPTH=1
@@ -65,26 +66,49 @@ git.install.github.repo () {
     git.install.repo git@github.com "$@"
 }
 
+# git.install.repo.OLD () {
+#     local server; server="$1"   # git@github.com
+#     local path; path="$2"       # for github: accountname    elsewhere: path on server e.g. /srv/git
+#     local repo; repo="$3"
+#     local installdir; installdir="$4"
+#     local user; user="${5:-$USER}"
+#     local group; group=$(id -gn "$user")
+
+#     install --owner="$user" --group="$group" --mode=0755 --directory "$installdir"
+
+#     if [[ -n $(ls -A "$installdir") ]]
+#     then
+#         rerrcho "Files found in $installdir - DISCARDING ANY LOCAL MODS and updating contents"
+#         (
+#             cd "$installdir" || { printf '%s\n' "couldn't cd $installdir: $?"; return 1; }
+#             sudo -u "$user" git reset --hard
+#             sudo -u "$user" git pull
+#         )
+#     else
+#         sudo -u "$user" git clone --depth $GIT_INSTALL_REPO_CLONE_DEPTH "$server:$path/$repo.git" "$installdir"
+#     fi
+# }
+
 git.install.repo () {
     local server; server="$1"   # git@github.com
     local path; path="$2"       # for github: accountname    elsewhere: path on server e.g. /srv/git
     local repo; repo="$3"
     local installdir; installdir="$4"
-    local user; user="${5:-$USER}"
-    local group; group=$(id -gn "$user")
 
-    install --owner="$user" --group="$group" --mode=0755 --directory "$installdir"
+    [[ $server = *@* ]] || errxit "ERROR: no username for git server"
+
+    install --mode=0755 --directory "$installdir"
 
     if [[ -n $(ls -A "$installdir") ]]
     then
         rerrcho "Files found in $installdir - DISCARDING ANY LOCAL MODS and updating contents"
         (
             cd "$installdir" || { printf '%s\n' "couldn't cd $installdir: $?"; return 1; }
-            sudo -u "$user" git reset --hard
-            sudo -u "$user" git pull
+            git reset --hard
+            git pull
         )
     else
-        sudo -u "$user" git clone --depth $GIT_INSTALL_REPO_CLONE_DEPTH "$server:$path/$repo.git" "$installdir"
+        git clone --depth $GIT_INSTALL_REPO_CLONE_DEPTH "$server:$path/$repo.git" "$installdir"
     fi
 }
 
@@ -166,11 +190,12 @@ git3- () {
     done
 }
 
-test.is_git_repo () {(
+test.is_git_repo () (
+    set +e
     local dir; dir="${1:-$PWD}"
     cd "$dir" || return 1
     git rev-parse 2> /dev/null
-)}
+)
 
 gitpull- () {
     for d in "$PWD"/*; do

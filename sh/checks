@@ -98,7 +98,7 @@ check.homedir () {
 check.env () {
     for var in "$@"
     do
-        [[ -n ${!var} ]] || errxit "ENV ERROR: $var is empty"
+        [[ -n ${!var+isset} ]] || errxit "ENV ERROR: $var is empty"
     done
 }
 

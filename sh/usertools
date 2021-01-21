@@ -32,3 +32,7 @@ usertools.homedir () {
     errcho "Home dir '$homedir' for user '$user' does not exist"
     return 1
 }
+
+usertools.gid () {
+    getent group "$1" | awk -F: '{printf "%d\n", $3}'
+}

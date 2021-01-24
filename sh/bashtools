@@ -83,6 +83,31 @@ laa.has.true () (
     laa.has "$attr" "$(declare -p aarray)" && [[ ${aarray[$attr]} -eq 1 ]]
 )
 
+# I haven't tested this bc the one time I thought it might be useful, I ended up doing
+# something else. But I noticed somewhere else that it seems possible to pass in
+# the name of a locally declared variable and do work on it inside a function so
+# in time that might be a better way to refactor many of the array functions in
+# this lib.
+aa2a () {
+    local aaname; aaname="$1"; shift
+    local -n aa="$aaname" || errxit "ERROR: Need bash 4.3 or newer"
+
+    if [[ -n $1 ]]
+    then
+        local aname; aname="$1"
+        local -n a="$aname"
+        for k in "${!aa[@]}"
+        do
+            a+=("$k" "${aa["$k"]}")
+        done
+    else
+        for k in "${!aa[@]}"
+        do
+            printf '%s\n%s\n' "$k" "${aa["$k"]}"
+        done
+    fi
+}
+
 # marginally safe
 rmrf_safe () {
     local dir; dir="$1"

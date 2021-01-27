@@ -16,6 +16,36 @@ Usage:
     ...
 
 
+Other tools:
+
+    bin/z5.wrap
+
+        Convenient wrapper, for non-shellscript access. Needs Z5_STDLIB to be
+        set in environment.
+
+            ./bin/z5.wrap libname funcname [args]
+
+    perl/get.dom
+
+        get.dom $url
+
+        Uses headless Chrome to download and render a URL, in headless mode. Takes
+        a lot of care to ensure, as far as is possible, that the DOM has been fully
+        rendered, before dumping the DOM to STDOUT.
+
+        webtools.dump_dom() is a simple wrapper around this script, but you can
+        use it directly.
+
+        Chrome/chromium must be installed. I've tried using a containerized
+        Chrome but no luck so far.
+
+    git/post-receive-hook
+
+        A simple hook supporting push-to-deploy using a git repository. Read
+        comments in the source for more info.
+
+
+
  - [azuretools](https://github.com/davebaird/z5.stdlib/blob/master/sh/azuretools)
    - azure.set_up_swap
    - azure.tr
@@ -23,6 +53,7 @@ Usage:
  - [bashtools](https://github.com/davebaird/z5.stdlib/blob/master/sh/bashtools)
    - aa.has
    - aa.has.set
+   - aa2a
    - cancel.alarm
    - ellipsize
    - ellipsize_middle
@@ -30,6 +61,7 @@ Usage:
    - join_by
    - laa.has
    - laa.has.set
+   - laa.has.true
    - rmrf_safe
    - set.alarm
  - [checks](https://github.com/davebaird/z5.stdlib/blob/master/sh/checks)
@@ -161,12 +193,14 @@ Usage:
    - path.relative
    - path.rootdir
    - path.rootdir.pwd
+   - path.scriptdir
    - path.their.rootdir
    - test.dirs_exist_xr
    - test.dirs_exist_xw
  - [pidtools](https://github.com/davebaird/z5.stdlib/blob/master/sh/pidtools)
    - list.descendants
    - list.descendants.comma_separated
+   - mem.swapusage
    - pid.command
    - pidfile.get
    - pidfile.set
@@ -181,6 +215,7 @@ Usage:
  - [sshtools](https://github.com/davebaird/z5.stdlib/blob/master/sh/sshtools)
    - sshtools.configure_identity_files
    - sshtools.generate_keypair
+   - sshtools.keyscan
    - sshtools.mount_remote
  - [stacktrace](https://github.com/davebaird/z5.stdlib/blob/master/sh/stacktrace)
    - stacktrace
@@ -194,6 +229,7 @@ Usage:
    - throwErrors
    - try
  - [usertools](https://github.com/davebaird/z5.stdlib/blob/master/sh/usertools)
+   - usertools.gid
    - usertools.homedir
    - usertools.sudoer
  - [vboxtools](https://github.com/davebaird/z5.stdlib/blob/master/sh/vboxtools)

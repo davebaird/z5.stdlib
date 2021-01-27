@@ -42,7 +42,7 @@ get_title();
 
 # In the normal case, one of the listeners will trigger dump_dom() and exit ...
 for (1..100) {
-    $mech->sleep(0.1);
+    $mech->sleep(0.1); # sleep(10) doesn't work
 }
 
 # ... but if not, we do it here

@@ -2,4 +2,7 @@
 source ${Z5_STDLIB}/sh/importer vstrict || exit 1
 import pathtools
 
+# Deprecated. Instead, use:
+    # z5.wrap pathtools path.last_modified $path
+
 path.last_modified "$1"

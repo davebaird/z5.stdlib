@@ -2,8 +2,8 @@
 import errcho
 import jsontools
 
-rerrcho "BUG: z5.stdlib import() is broken, because it only imports any lib once, \
-without checking for the presence of import parameters e.g. cleanup DEBUG"
+# rerrcho "BUG: z5.stdlib import() is broken, because it only imports any lib once, \
+# without checking for the presence of import parameters e.g. cleanup DEBUG"
 
 # =============================
 declare -g __debug_cleanup; __debug_cleanup=0

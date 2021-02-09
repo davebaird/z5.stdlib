@@ -210,3 +210,20 @@ gitpull- () {
     done
 }
 
+# https://stackoverflow.com/a/13878026/2334574
+# That will give an output like this:
+# <commit>:<path>:<matched line>
+# Then you can use git branch --contains to find out which branch the commit is on:
+# git branch --contains <commit>
+# shellcheck disable=SC2046
+git.deepsearch () {
+    local searchterm; searchterm="$1"; shift
+
+    if (($# == 0))
+    then
+        git grep "$searchterm" $(git rev-list --all)
+    else
+        local path; path="$1"
+        git grep "$searchterm" $(git rev-list --all) -- "$path"
+    fi
+}

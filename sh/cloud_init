@@ -67,7 +67,7 @@ cloud_init._user () {
 
     if getent passwd "$name" > /dev/null
     then
-        usermod --shell /bin/bash --groups "$groups" --comment "$gecos" \
+        usermod --shell /bin/bash --append --groups "$groups" --comment "$gecos" \
             --password "$(echo "$plain_text_passwd" | openssl passwd -1 -stdin)" \
             "${name}"
     else

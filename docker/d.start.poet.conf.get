@@ -1,5 +1,6 @@
 #!/bin/bash
-source /usr/local/src/z5.stdlib/sh/importer strict || exit 1
+
+source $Z5_STDLIB/sh/importer strict || exit 1
 import errcho
 
 # $1 is the path supplied to the 'import poettools' line
@@ -16,6 +17,8 @@ main () {
 
 setup_args () {
     local poet_root; poet_root="$1"
+
+    gerrcho "$0 setup: poet_root=$poet_root"
 
     DArgs=(
         --init

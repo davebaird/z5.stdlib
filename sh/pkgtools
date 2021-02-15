@@ -33,7 +33,10 @@ generate.pkglists () {
     cat "$tmpfile" >> cpanfile
 
     rm "$tmpfile"; sort -u cpanfile > "$tmpfile"; rm cpanfile; cat "$tmpfile" > cpanfile
-    rm "$tmpfile"; sort -u apt.list > "$tmpfile"; rm apt.list; cat "$tmpfile" > apt.list
+
+    # have to filter out the hobbit thing which gets added from fuck knows where and causes
+    # xymon to be pulled in which has an interactive installation ffs!!!
+    rm "$tmpfile"; sort -u apt.list > "$tmpfile"; rm apt.list; cat "$tmpfile" | grep -v hobbit > apt.list
 }
 
 generate.pkglists._cleanup () {

@@ -11,6 +11,20 @@ PATH.add () {
     esac
 }
 
+PATH.add.persist () {
+    local dir pfile; dir="$1"; pfile="${2:-.profile}"
+
+    [[ -f $pfile ]] || { errcho "ERROR: $pfile not found"; return 1; }
+    [[ -z $dir ]]   && { errcho "No dir specified to add to PATH"; return 2; }
+
+    # a rough and ready check
+    grep "$dir" "$pfile" > /dev/null && return 0
+
+    errcho "Adding $dir to PATH in $pfile"
+
+    printf "\nPATH="%s:\$PATH"\n" "$dir" >> "$pfile"
+}
+
 # https://unix.stackexchange.com/a/40973/154825
 PATH.dedup () {
     if [ -n "$PATH" ]

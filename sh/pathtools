@@ -4,16 +4,18 @@ import errcho
 # https://unix.stackexchange.com/a/40973/154825
 PATH.add () {
     local dir; dir="$1"
+    [[ -z $dir ]] && { errcho "No dir specified to add to PATH"; return 2; }
 
     case ":$PATH:" in
         *":$dir:"*) :;; # already there
         *) PATH="$dir:$PATH";;
     esac
+
+    export PATH
 }
 
-PATH.add.persist () {
-    local dir pfile; dir="$1"; pfile="${2:-.profile}"
-
+PATH.persist () {
+    local dir pfile; dir="$1"; pfile="${2:-"$HOME"/.profile}"
     [[ -f $pfile ]] || { errcho "ERROR: $pfile not found"; return 1; }
     [[ -z $dir ]]   && { errcho "No dir specified to add to PATH"; return 2; }
 
@@ -23,6 +25,12 @@ PATH.add.persist () {
     errcho "Adding $dir to PATH in $pfile"
 
     printf "\nPATH="%s:\$PATH"\n" "$dir" >> "$pfile"
+}
+
+PATH.add.persist () {
+    local dir pfile; dir="$1"; pfile="$2"
+    PATH.add "$dir"
+    PATH.persist "$dir" "$pfile"
 }
 
 # https://unix.stackexchange.com/a/40973/154825

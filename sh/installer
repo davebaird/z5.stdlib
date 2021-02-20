@@ -146,14 +146,14 @@ install.urifind () {
 }
 
 install.perlmodules () {
-    install.cpanm
+    # install.cpanm
     cpanm --install --notest "$@"
 }
 
-install.cpanm () {
-    which cpanm > /dev/null && return 0
-    test.i_can_root || errxit "Must be root to ${FUNCNAME[0]}"
-    apt-get install cpanminus
-}
+# install.cpanm () {
+#     which cpanm > /dev/null && return 0
+#     test.i_can_root || errxit "Must be root to ${FUNCNAME[0]}"
+#     apt-get install cpanminus
+# }
 
 :

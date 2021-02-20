@@ -58,14 +58,15 @@ waitfor.umount () {
 
     errcho -n "Unmounting $mountpoint..."
 
-    while : ; do
+    while :
+    do
         umount "$mountpoint" 2> /dev/null && break
 
         errcho -n '.'
         sleep 1
     done
 
-    errcho
+    errcho ''
 }
 
 waitfor.host.port () {

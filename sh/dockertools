@@ -8,8 +8,9 @@ import pathtools
 dtools.ip () {
     local dname; dname="$1"
     dtools.waitfor "$dname"
-    local ip; ip=$(docker inspect --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$dname")
-    printf '%s\n' "$ip"
+    # local ip; ip=$(docker inspect --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$dname")
+    # printf '%s\n' "$ip"
+    docker inspect --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$dname"
 }
 
 dtools.stop () {

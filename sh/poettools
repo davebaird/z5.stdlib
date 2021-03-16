@@ -11,6 +11,7 @@ poet._import () {
 }
 
 poet.conf.get () {
+    pause_fn "$PoetRootDir" "$@"
     "$Z5_STDLIB/docker/d.start.poet.conf.get" "$PoetRootDir" "$@"
 }
 

@@ -7,6 +7,15 @@
 # readmenew:
 # 	echo $$README > README.md
 
+default: update.omen
+
 
 readme: # README.md.src
 	bin/z5stdlib-funclist > README.md
+
+HOST := $(shell hostname)
+
+update.omen:
+	[ ${HOST} = xomen ] || exit 5
+	sudo rsync --update --recursive --perms --times --copy-links --delete --exclude=".git*" ./ /usr/local/src/z5.stdlib
+

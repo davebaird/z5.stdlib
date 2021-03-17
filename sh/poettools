@@ -11,7 +11,8 @@ poet._import () {
 }
 
 poet.conf.get () {
-    pause_fn "$PoetRootDir" "$@"
+    pause_fn "$PoetRootDir $*"
+    [[ -z $* ]] && errxit "ERROR: no config target key supplied"
     "$Z5_STDLIB/docker/d.start.poet.conf.get" "$PoetRootDir" "$@"
 }
 

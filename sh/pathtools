@@ -80,14 +80,16 @@ path.rootdir () {
     local depth; depth=${2:-0}
 
     # If the supplied markerfile is the actual path to the file, we simply use its dir
-    if [[ -f $markerfile ]]; then
+    if [[ -f $markerfile ]]
+    then
         readlink --canonicalize-existing "$(dirname "$markerfile")"
         return 0
     fi
 
     # user supplied a relative or absolute path that includes at least one dir
     # component, but the file does not exist there
-    if [[ $(dirname "$markerfile") != '.' ]]; then
+    if [[ $(dirname "$markerfile") != '.' ]]
+    then
         errcho "ERROR: markerfile '$markerfile' was expected to exist but it doesn't"
         return 1
     fi
@@ -138,7 +140,7 @@ _search_upwards_for_rootdir () {
 # more frame in the callstack for the calling stdlib function, plus one more
 # for this function
 path.their.rootdir () {
-    path._rootdir "$1" 2
+    path.rootdir "$1" 2
 }
 
 path.parent.exists () {

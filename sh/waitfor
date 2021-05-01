@@ -72,3 +72,8 @@ waitfor.umount () {
 waitfor.host.port () {
     "$Z5_STDLIB"/bin/wait-for-it --quiet --host="$1" --port="$2" --timeout="${3:-5}"
 }
+
+waitfor.anykey () {
+    prompt="${1:-Press any key to continue}"
+    read -n 1 -s -r -p "$prompt"
+}

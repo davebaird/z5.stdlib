@@ -2,52 +2,64 @@
 import errcho
 
 # https://stackoverflow.com/a/17841619/2334574
-join_by () {
-    local d=$1; shift;
-    local f=$1; shift;
-    printf %s "$f" "${@/#/$d}";
+join_by() {
+    local d=$1
+    shift
+    local f=$1
+    shift
+    printf %s "$f" "${@/#/$d}"
 }
 
 # https://askubuntu.com/questions/523861/shorten-lines-adding-ellipsis
-ellipsize_middle () {
-    local len str; len="$1"; str="$2"
-    printf '%s' "$str" | \
-    awk -v len="$len" '{ if (length($0) > len) print substr($0, 1, len-3) "..." substr($0, length($0) - len, length($0)); else print; }'
+ellipsize_middle() {
+    local len str
+    len="$1"
+    str="$2"
+    printf '%s' "$str" |
+        awk -v len="$len" '{ if (length($0) > len) print substr($0, 1, len-3) "..." substr($0, length($0) - len, length($0)); else print; }'
 }
 
 # https://askubuntu.com/questions/523861/shorten-lines-adding-ellipsis
-ellipsize () {
-    local len str; len="$1"; str="$2"
-    printf '%s' "$str" | \
-    awk -v len="$len" '{ if (length($0) > len) print substr($0, 1, len-3) "..."; else print; }'
+ellipsize() {
+    local len str
+    len="$1"
+    str="$2"
+    printf '%s' "$str" |
+        awk -v len="$len" '{ if (length($0) > len) print substr($0, 1, len-3) "..."; else print; }'
 }
 
 # For global assoc arrays
-aa.has () {(
+aa.has() { (
     set +o errexit
     set +o nounset
-    local attr aarrayname; attr="$1"; aarrayname="$2"
+    local attr aarrayname
+    attr="$1"
+    aarrayname="$2"
     local -n aa_has_set_AArray="$aarrayname" || errxit "ERROR: Need bash 4.3 or newer"
     # berrcho "Got value: $value"
     aa.has.set "$attr" "$aarrayname" && [[ -n ${aa_has_set_AArray[$attr]} ]]
-)}
+); }
 
 # For global assoc arrays
-aa.has.set () {(
+aa.has.set() { (
     set +o errexit
     set +o nounset
-    local attr aarrayname; attr="$1"; aarrayname="$2"
+    local attr aarrayname
+    attr="$1"
+    aarrayname="$2"
     local -n aa_has_set_AArray="$aarrayname" || errxit "ERROR: Need bash 4.3 or newer"
     # eval "value=\${${aarrayname}[$attr]}"
     [[ -n ${aa_has_set_AArray[$attr]+isset} ]]
-)}
+); }
 
 # For local assoc arrays
 # Usage: laa.has.set "$attr" "$(declare -p aarray)"
-laa.has.set () {(
+laa.has.set() { (
     set +o errexit
     set +o nounset
-    local attr array_as_str; attr="$1"; array_as_str="$2"
+    local attr array_as_str
+    attr="$1"
+    array_as_str="$2"
 
     local -A aa_has_set_aarray
     eval "aa_has_set_aarray=${array_as_str#*=}"
@@ -55,14 +67,16 @@ laa.has.set () {(
     # local -n aa_has_set_AArray="$aarrayname" || errxit "ERROR: Need bash 4.3 or newer"
     # eval "value=\${${aarrayname}[$attr]}"
     [[ -n ${aa_has_set_aarray[$attr]+isset} ]]
-)}
+); }
 
 # For local assoc arrays
 # Usage: laa.has "$attr" "$(declare -p aarray)"
-laa.has () (
+laa.has() (
     set +o errexit
     set +o nounset
-    local attr array_as_str; attr="$1"; array_as_str="$2"
+    local attr array_as_str
+    attr="$1"
+    array_as_str="$2"
 
     local -A aa_has_set_aarray
     eval "aa_has_set_aarray=${array_as_str#*=}"
@@ -72,10 +86,12 @@ laa.has () (
 
 # For local assoc arrays
 # Usage: laa.has.true "$attr" "$(declare -p aarray)"
-laa.has.true () (
+laa.has.true() (
     set +o errexit
     set +o nounset
-    local attr array_as_str; attr="$1"; array_as_str="$2"
+    local attr array_as_str
+    attr="$1"
+    array_as_str="$2"
 
     local -A aarray
     eval "aarray=${array_as_str#*=}"
@@ -88,29 +104,30 @@ laa.has.true () (
 # the name of a locally declared variable and do work on it inside a function so
 # in time that might be a better way to refactor many of the array functions in
 # this lib.
-aa2a () {
-    local aaname; aaname="$1"; shift
+aa2a() {
+    local aaname
+    aaname="$1"
+    shift
     local -n aa="$aaname" || errxit "ERROR: Need bash 4.3 or newer"
 
-    if [[ -n $1 ]]
-    then
-        local aname; aname="$1"
+    if [[ -n $1 ]]; then
+        local aname
+        aname="$1"
         local -n a="$aname"
-        for k in "${!aa[@]}"
-        do
+        for k in "${!aa[@]}"; do
             a+=("$k" "${aa["$k"]}")
         done
     else
-        for k in "${!aa[@]}"
-        do
+        for k in "${!aa[@]}"; do
             printf '%s\n%s\n' "$k" "${aa["$k"]}"
         done
     fi
 }
 
 # marginally safe
-rmrf_safe () {
-    local dir; dir="$1"
+rmrf_safe() {
+    local dir
+    dir="$1"
 
     [[ $dir == / ]] && errxit "Attempt to rm -rf /"
 
@@ -123,8 +140,10 @@ rmrf_safe () {
 #   local alarm; alarm=$!
 #   code_that_might_take_too_long
 #   cancel.alarm "$alarm"
-set.alarm () {
-    local sleep func_or_code; sleep="$1"; func_or_code="$2"
+set.alarm() {
+    local sleep func_or_code
+    sleep="$1"
+    func_or_code="$2"
 
     # shellcheck disable=SC2064
     trap "$func_or_code" SIGALRM
@@ -134,8 +153,7 @@ set.alarm () {
         # merrcho "- command will be: $func_or_code"
 
         # sleep "$sleep" - this breaks in some mysterious circumstances - sleep never ends
-        for ((i=sleep; i>=0; i--))
-        do
+        for ((i = sleep; i >= 0; i--)); do
             # merrcho "set.alarm subprocess $BASHPID still sleeping..."
             sleep 1
         done
@@ -143,21 +161,20 @@ set.alarm () {
         merrcho "set.alarm subprocess $BASHPID done sleeping: SENDING ALRM TO $$ NOW"
 
         # if the parent is still around, go ahead and send the signal
-        if ps $$ > /dev/null
-        then
-            kill -ALRM $$ > /dev/null
+        if ps $$ >/dev/null; then
+            kill -ALRM $$ >/dev/null
         fi
     ) &
     # printf '%s' $!
 }
 
-cancel.alarm () {
+cancel.alarm() {
     # kill the sleeping bg process, if it's still around, before it sends the signal
-    kill "$1" > /dev/null 2>&1 || :
+    kill "$1" >/dev/null 2>&1 || :
 }
 
 # shellcheck disable=SC2016
-_get_func_list () {
+_get_func_list() {
     env -i bash --noprofile --norc -c '
     source "'"$1"'"
     typeset -f |
@@ -171,13 +188,24 @@ _get_func_list () {
 }
 
 # https://superuser.com/a/1111244
-get_func_list () {
-    local scriptpath; scriptpath="$1"
+get_func_list() {
+    local scriptpath
+    scriptpath="$1"
 
-    for fcn_name in $(_get_func_list "$scriptpath")
-    do
+    for fcn_name in $(_get_func_list "$scriptpath"); do
         echo "$fcn_name"
     done
 }
 
-
+# $1 = # of seconds
+# $@ = What to print after "Waiting n seconds"
+countdown() {
+    secs=$1
+    shift
+    msg=$@
+    while [ $secs -gt 0 ]; do
+        printf "\r\033[KWaiting %.d seconds $msg" $((secs--)) >&2
+        sleep 1
+    done
+    echo
+}

@@ -47,6 +47,11 @@ dtools.container.exists () (
     docker container inspect "$1" > /dev/null 2>&1
 )
 
+dtools.image.exists () (
+    set +e
+    docker image inspect "$1" > /dev/null 2>&1
+)
+
 dtools.volume.ls () {
     if [[ $1 = */* ]]
     then

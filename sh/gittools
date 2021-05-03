@@ -165,9 +165,10 @@ git-cmp-remote () {
 
 git3 () {
     local logmsg; logmsg=${1-No log message supplied}
+    current_branch="$(git rev-parse --abbrev-ref HEAD)"
     git add .               || return $?
     git commit -m "$logmsg" || return $?
-    git push origin master  || return $?
+    git push origin "$current_branch" || return $?
 }
 
 git3- () {

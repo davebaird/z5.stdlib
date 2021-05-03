@@ -5,6 +5,10 @@ dt.now () {
     perl -MDateTime -e 'print DateTime->now'
 }
 
+dt.ts () {
+    perl -MDateTime -E 'say DateTime->now->strftime("%Y-%m-%d_%H%M%S")'
+}
+
 dt.YYYY-MM-DD.2iso8601 () {
     local dt_str; dt_str="$1"
 
